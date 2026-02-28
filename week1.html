@@ -404,8 +404,9 @@ body::before {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   border-radius: var(--radius);
-  margin: 0 auto;
+  flex: 1; min-width: 0;
   position: relative;
+  cursor: grab;
 }
 .mountain-scroll-hint {
   display: none;
@@ -419,6 +420,18 @@ body::before {
   transform: translateY(-50%); font-size: 1rem; opacity: 0.5;
 }
 @keyframes scrollHintPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+.mountain-scroll-wrap {
+  display: flex; align-items: center; gap: 4px;
+}
+.mountain-arrow {
+  flex-shrink: 0; width: 36px; height: 60px;
+  border: none; border-radius: 10px;
+  background: rgba(0,0,0,0.08); color: #636E72;
+  font-size: 1.1rem; cursor: pointer;
+  transition: all 0.2s;
+}
+.mountain-arrow:hover { background: rgba(0,0,0,0.15); }
+.mountain-arrow:active { transform: scale(0.92); }
 .mountain {
   display: flex;
   flex-direction: column;
@@ -428,7 +441,6 @@ body::before {
   padding: 10px 0;
   background: linear-gradient(180deg, #87CEEB 0%, #87CEEB 20%, #E8D5B7 100%);
   border-radius: var(--radius);
-  overflow: hidden;
 }
 .mountain-row {
   display: flex;
@@ -452,11 +464,14 @@ body::before {
 
 .mine-cell.unexposed { opacity: 0.85; cursor: default; }
 .mine-cell.unexposed:hover { transform: none; box-shadow: inset 0 -2px 4px rgba(0,0,0,0.2); }
+.mine-cell.spacer {
+  background: transparent; border: none; box-shadow: none;
+  cursor: default; pointer-events: auto;
+}
 .mine-cell.mined {
   background: rgba(135,206,235,0.25) !important;
   border-color: transparent;
   box-shadow: none;
-  pointer-events: none;
 }
 .mine-cell.locked {
   cursor: not-allowed;
@@ -488,10 +503,11 @@ body::before {
 .mine-cell.tier5 { background: linear-gradient(180deg, #2C3E6D, #1A2547); }
 .mine-cell.tree { background: none; border: none; box-shadow: none; font-size: 1.5rem; cursor: pointer; }
 .mine-cell.tree:hover { transform: scale(1.15); }
-.mine-cell.tree.mined { background: none !important; border: none; box-shadow: none; opacity: 0; pointer-events: none; }
+.mine-cell.tree.mined { background: rgba(135,206,235,0.25) !important; border: none; box-shadow: none; pointer-events: none; }
 .mine-cell.animal { background: none; border: none; box-shadow: none; font-size: 1.5rem; cursor: pointer; }
 .mine-cell.animal:hover { transform: scale(1.15); }
-.mine-cell.animal.mined { background: none !important; border: none; box-shadow: none; opacity: 0; pointer-events: none; }
+.mine-cell.animal.mined { background: rgba(135,206,235,0.25) !important; border: none; box-shadow: none; pointer-events: none; }
+
 
 .mine-result {
   text-align: center; margin-top: 12px; padding: 10px;
@@ -901,6 +917,8 @@ body::before {
       <div class="nav-group-label">⛏️ 遊戲</div>
       <div class="nav-group-tabs">
         <button class="nav-tab" data-tab="mine">⛏️ Mine</button>
+        <button class="nav-tab" data-tab="craft">🔨 合成</button>
+        <button class="nav-tab" data-tab="equip">👤 裝備</button>
         <button class="nav-tab" data-tab="collection">📦 收藏</button>
       </div>
     </div>
@@ -943,6 +961,14 @@ body::before {
     <div id="mineArea"></div>
   </div>
 
+  <div id="craft" class="section">
+    <div id="craftArea"></div>
+  </div>
+
+  <div id="equip" class="section">
+    <div id="equipArea"></div>
+  </div>
+
   <div id="collection" class="section">
     <div id="collectionArea"></div>
   </div>
@@ -976,6 +1002,9 @@ body::before {
 </div>
 
 <script>
+// ===== CHEAT =====
+const isCheat = new URLSearchParams(window.location.search).get('cheat') === '1';
+
 // ===== DATA =====
 const feelings = [
   { word: 'happy',   zh: '開心的', emoji: '😊', color: '#FFD93D' },
@@ -1652,6 +1681,8 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
     if (tab.dataset.tab === 'quiz') { if (quizIndex === 0 || quizIndex >= quizQuestions.length) initQuiz(); }
     if (tab.dataset.tab === 'sight') { if (!document.getElementById('sightWordsArea').children.length) initSightWords(); }
     if (tab.dataset.tab === 'mine') { if (!mineData.length) initMine(); else refreshMineHeader(); }
+    if (tab.dataset.tab === 'craft') initCraftTab();
+    if (tab.dataset.tab === 'equip') initEquipTab();
     if (tab.dataset.tab === 'collection') initCollection();
   });
 });
@@ -1983,21 +2014,20 @@ function initSightWords() {
 // ===== MINE =====
 // Mountain shape: each row = { width, tier } — triangle from peak to base
 const mountainShape = [
-  { width: 2, tier: 0 },   // tree tops
-  { width: 4, tier: 0 },   // more trees
-  { width: 6, tier: 1 },   // dirt/wood
-  { width: 8, tier: 1 },
-  { width: 10, tier: 1 },
-  { width: 12, tier: 2 },  // stone/coal
-  { width: 12, tier: 2 },
-  { width: 12, tier: 2 },
-  { width: 12, tier: 3 },  // iron/copper
-  { width: 12, tier: 3 },
-  { width: 12, tier: 3 },
-  { width: 12, tier: 4 },  // gold/emerald
-  { width: 12, tier: 4 },
-  { width: 12, tier: 5 },  // diamond/amethyst
-  { width: 12, tier: 5 },
+  { width: 16, tier: 1 },  // dirt/wood (trees auto-generated on surface)
+  { width: 20, tier: 1 },
+  { width: 24, tier: 1 },
+  { width: 26, tier: 2 },  // stone/coal
+  { width: 28, tier: 2 },
+  { width: 30, tier: 2 },
+  { width: 30, tier: 3 },  // iron/copper
+  { width: 30, tier: 3 },
+  { width: 30, tier: 3 },
+  { width: 30, tier: 4 },  // gold/emerald
+  { width: 30, tier: 4 },
+  { width: 30, tier: 4 },
+  { width: 30, tier: 5 },  // diamond/amethyst
+  { width: 30, tier: 5 },
 ];
 
 let mineData = []; // 2D array: each cell = { block, mined, tier, el } or null
@@ -2189,7 +2219,7 @@ function initMine() {
   // Mountain
   const mountain = document.createElement('div');
   mountain.className = 'mountain';
-  const maxWidth = 12;
+  const maxWidth = 30;
 
   mountainShape.forEach((rowDef, r) => {
     const rowEl = document.createElement('div');
@@ -2201,13 +2231,21 @@ function initMine() {
     for (let c = 0; c < maxWidth; c++) {
       if (c < offset || c >= offset + rowDef.width) {
         rowData.push(null);
+        const spacer = document.createElement('div');
+        spacer.className = 'mine-cell spacer';
+        rowEl.appendChild(spacer);
         continue;
       }
 
       const cellEl = document.createElement('div');
       cellEl.className = 'mine-cell';
 
-      if (rowDef.tier === 0) {
+      // Check if this cell is a "surface" cell (ledge — row above doesn't cover it)
+      const prevWidth = r > 0 ? mountainShape[r - 1].width : 0;
+      const prevOffset = Math.floor((maxWidth - prevWidth) / 2);
+      const isSurface = rowDef.tier === 0 || (c < prevOffset || c >= prevOffset + prevWidth);
+
+      if (isSurface) {
         if (Math.random() < 0.35) {
           // Animal
           const animal = animals[Math.floor(Math.random() * animals.length)];
@@ -2259,7 +2297,42 @@ function initMine() {
   mountainScroll.addEventListener('scroll', () => {
     if (mountainScroll.scrollLeft > 10) scrollHint.style.display = 'none';
   }, { passive: true });
-  area.appendChild(mountainScroll);
+
+  // Mouse drag-to-scroll
+  let dragState = null;
+  mountainScroll.addEventListener('mousedown', (e) => {
+    if (e.target.closest('.mine-cell:not(.spacer):not(.mined)')) return;
+    dragState = { startX: e.pageX, scrollL: mountainScroll.scrollLeft };
+    mountainScroll.style.cursor = 'grabbing';
+  });
+  document.addEventListener('mousemove', (e) => {
+    if (!dragState) return;
+    mountainScroll.scrollLeft = dragState.scrollL - (e.pageX - dragState.startX);
+  });
+  document.addEventListener('mouseup', () => {
+    if (dragState) { mountainScroll.style.cursor = ''; dragState = null; }
+  });
+
+  // Wrap with arrow buttons
+  const scrollWrap = document.createElement('div');
+  scrollWrap.className = 'mountain-scroll-wrap';
+  const leftBtn = document.createElement('button');
+  leftBtn.className = 'mountain-arrow mountain-arrow-left';
+  leftBtn.textContent = '◀';
+  const rightBtn = document.createElement('button');
+  rightBtn.className = 'mountain-arrow mountain-arrow-right';
+  rightBtn.textContent = '▶';
+  const scrollStep = 120;
+  leftBtn.addEventListener('click', () => {
+    mountainScroll.scrollBy({ left: -scrollStep, behavior: 'smooth' });
+  });
+  rightBtn.addEventListener('click', () => {
+    mountainScroll.scrollBy({ left: scrollStep, behavior: 'smooth' });
+  });
+  scrollWrap.appendChild(leftBtn);
+  scrollWrap.appendChild(mountainScroll);
+  scrollWrap.appendChild(rightBtn);
+  area.appendChild(scrollWrap);
 
   // Refresh button
   const refreshBtn = document.createElement('button');
@@ -2275,17 +2348,18 @@ function initMine() {
 
 function attackAnimal(cellData) {
   if (cellData.mined) return;
-  if (gems < 1) {
+  if (!isCheat && gems < 1) {
     playLockedSfx();
     resetCellProgress(cellData.el);
     document.getElementById('mineResult').textContent = '⚡ 體力不足！去答題補充吧！';
     return;
   }
   playMineSfx(1);
-  gems--;
+  if (!isCheat) gems--;
   updateGemDisplay();
   cellData.mined = true;
   cellData.el.classList.add('mined');
+  cellData.el.textContent = '';
 
   const animal = cellData.animal;
   const activeSword = getEffectiveSword();
@@ -2309,17 +2383,18 @@ function attackAnimal(cellData) {
 
 function chopTree(cellData) {
   if (cellData.mined) return;
-  if (gems < 1) {
+  if (!isCheat && gems < 1) {
     playLockedSfx();
     resetCellProgress(cellData.el);
     document.getElementById('mineResult').textContent = '⚡ 體力不足！去答題補充吧！';
     return;
   }
   playMineSfx(1);
-  gems--;
+  if (!isCheat) gems--;
   updateGemDisplay();
   cellData.mined = true;
   cellData.el.classList.add('mined');
+  cellData.el.textContent = '';
   const activeTool = getEquippedTool();
   const isAxe = activeTool && activeTool.woodBonus;
   const woodCount = isAxe ? activeTool.woodBonus : 1;
@@ -2349,7 +2424,7 @@ function mineMountainCell(row, col, cellData) {
 
   if (!isExposed(row, col)) return;
 
-  if (gems < 1) {
+  if (!isCheat && gems < 1) {
     playLockedSfx();
     resetCellProgress(cellData.el);
     document.getElementById('mineResult').textContent = '⚡ 體力不足！去答題補充吧！';
@@ -2357,7 +2432,7 @@ function mineMountainCell(row, col, cellData) {
   }
 
   playMineSfx(cellData.tier);
-  gems--;
+  if (!isCheat) gems--;
   updateGemDisplay();
   cellData.mined = true;
   cellData.el.classList.add('mined');
@@ -2388,7 +2463,7 @@ function mineMountainCell(row, col, cellData) {
 
 function updateMineRefreshBtn() {
   const btn = document.getElementById('mineRefresh');
-  if (btn) btn.disabled = gems < 1;
+  if (btn) btn.disabled = !isCheat && gems < 1;
 }
 
 function renderToolChips(container) {
@@ -2475,7 +2550,7 @@ function openToolPicker(chipEl, type) {
       e.stopPropagation();
       selectedTools[selKey] = isHands ? null : t.id;
       saveGame(); closeToolPicker(); refreshToolChips(); updateExposure();
-      if (collectionView === 'equip') initCollection();
+      if (document.getElementById('equip').classList.contains('active')) initEquipTab();
     });
     picker.appendChild(opt);
   });
@@ -2559,7 +2634,7 @@ function openArmorPicker(cellEl, slot) {
         if (inventory[o.id] <= 0) delete inventory[o.id];
         equipped[slot] = o.id;
       }
-      saveGame(); closeToolPicker(); initCollection();
+      saveGame(); closeToolPicker(); initEquipTab();
     });
     picker.appendChild(opt);
   });
@@ -2658,15 +2733,27 @@ function renderCharacter(container, size) {
   container.appendChild(display);
 }
 
+function initCraftTab() {
+  const area = document.getElementById('craftArea');
+  area.textContent = '';
+  renderCraft(area);
+}
+
+function initEquipTab() {
+  const area = document.getElementById('equipArea');
+  area.textContent = '';
+  renderEquipment(area);
+}
+
 function initCollection() {
   const area = document.getElementById('collectionArea');
   area.textContent = '';
 
-  // Sub-tabs
+  // Sub-tabs (only encyclopedia and house remain)
   const tabs = document.createElement('div');
   tabs.className = 'collection-tabs';
-  ['encyclopedia', 'craft', 'house', 'equip'].forEach(view => {
-    const labels = { encyclopedia: '📖 圖鑑', craft: '🔨 合成', house: '🏠 蓋房子', equip: '👤 裝備' };
+  ['encyclopedia', 'house'].forEach(view => {
+    const labels = { encyclopedia: '📖 圖鑑', house: '🏠 蓋房子' };
     const btn = document.createElement('button');
     btn.className = 'collection-tab' + (collectionView === view ? ' active' : '');
     btn.textContent = labels[view];
@@ -2680,9 +2767,7 @@ function initCollection() {
   area.appendChild(content);
 
   if (collectionView === 'encyclopedia') renderEncyclopedia(content);
-  else if (collectionView === 'craft') renderCraft(content);
   else if (collectionView === 'house') renderHouse(content);
-  else if (collectionView === 'equip') renderEquipment(content);
 }
 
 function renderEncyclopedia(c) {
@@ -3129,7 +3214,7 @@ function doCraft() {
 
   saveGame();
   doConfetti();
-  initCollection();
+  initCraftTab();
 }
 
 function getHouseArt() {
