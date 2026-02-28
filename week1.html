@@ -57,7 +57,7 @@ body::before {
   z-index: 0;
 }
 
-.app { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 16px; padding-top: 40px; }
+.app { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 16px; padding-top: 40px; min-height: 100vh; display: flex; flex-direction: column; }
 
 .header {
   position: fixed; top: 0; left: 0; right: 0; z-index: 50;
@@ -109,7 +109,7 @@ body::before {
   background: var(--surface); border-radius: 50px; padding: 4px;
 }
 .nav-group-label {
-  font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-display);
+  font-size: 0.8rem; color: var(--text-secondary); font-family: var(--font-display);
   font-weight: 600; padding: 0 6px; white-space: nowrap;
 }
 .nav-tab {
@@ -137,11 +137,19 @@ body::before {
 .section.active { display: block; }
 .section-title {
   font-family: var(--font-display); font-size: 1.2rem; font-weight: 600;
-  color: var(--text); text-align: center; margin-bottom: 12px;
+  color: var(--text); text-align: center; margin-bottom: 4px;
 }
+.section-subtitle {
+  font-size: 0.85rem; color: var(--text-secondary); text-align: center; margin-bottom: 12px;
+}
+.section-empty {
+  text-align: center; color: var(--text-muted); padding: 40px 0;
+}
+.section-empty span { font-size: 0.85rem; }
 .app-footer {
   text-align: center; font-size: 0.7rem; color: var(--text-muted);
   padding: 24px 16px 12px; line-height: 1.6;
+  margin-top: auto;
 }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 
@@ -416,7 +424,6 @@ body::before {
 
 /* ===== MINE ===== */
 .mine-header { text-align: center; margin-bottom: 12px; }
-.mine-header h3 { font-family: var(--font-display); font-size: 1.3rem; color: var(--text); }
 .mine-pickaxe { font-size: 1rem; color: var(--text-secondary); margin-top: 4px; }
 
 .mountain-scroll {
@@ -601,7 +608,6 @@ body::before {
 .block-card .block-tier { font-size: 0.7rem; color: var(--accent); margin-top: 2px; }
 
 .craft-area { max-width: 500px; margin: 0 auto; }
-.craft-current { text-align: center; font-family: var(--font-display); color: var(--text-secondary); margin-bottom: 12px; font-size: 1rem; }
 .craft-guide {
   text-align: center; font-family: var(--font-display);
   font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;
@@ -948,7 +954,7 @@ body::before {
 
 <div class="app">
   <div class="header">
-    <h1>Feelings Fun! 🎭 <span style="font-size:0.45em;font-weight:400;color:#636E72;vertical-align:middle;">Week 1 · v3.0.0</span></h1>
+    <h1>Feelings Fun! 🎭 <span style="font-size:0.45em;font-weight:400;color:#636E72;vertical-align:middle;">Week 1 · v3.1.0</span></h1>
     <div class="score-bar">
       <div class="score-item" id="starBar"><span>⭐</span> <span id="stars">0</span></div>
       <div class="score-item" id="streakBar"><span>🔥</span> <span id="streak">0</span></div>
@@ -1070,7 +1076,7 @@ body::before {
       </div>
     </div>
     <div id="engineStatus" style="text-align:center;font-size:0.8rem;color:#B2BEC3;margin-top:12px;font-family:'Nunito',sans-serif;">🔍 偵測中...</div>
-    <div style="text-align:center;font-size:0.7rem;color:#B2BEC3;margin-top:8px;font-family:'Nunito',sans-serif;">v3.0.0</div>
+    <div style="text-align:center;font-size:0.7rem;color:#B2BEC3;margin-top:8px;font-family:'Nunito',sans-serif;">v3.1.0</div>
   </div>
 </div>
 
@@ -2298,6 +2304,7 @@ function initMine() {
   const header = document.createElement('div');
   header.className = 'mine-header';
   const h3 = document.createElement('h3');
+  h3.className = 'section-title';
   h3.textContent = '⛏️ 挖礦 Mine';
   const toolChips = document.createElement('div');
   toolChips.className = 'tool-slots';
@@ -2847,11 +2854,10 @@ function initFurnaceTab() {
   const ownedCount = getBlockCount('furnace');
   if (ownedCount < 1) {
     const msg = document.createElement('div');
-    msg.style.cssText = 'text-align:center;color:#B2BEC3;padding:40px 0;font-family:Nunito,sans-serif;';
+    msg.className = 'section-empty';
     const line1 = document.createTextNode('需要先合成 🔥 熔爐');
     const br = document.createElement('br');
     const line2 = document.createElement('span');
-    line2.style.fontSize = '0.85rem';
     line2.textContent = '8 🪨 石頭 → 合成表';
     msg.appendChild(line1);
     msg.appendChild(br);
@@ -3064,9 +3070,14 @@ function initHouseTab() {
 }
 
 function renderEncyclopedia(c) {
+  const title = document.createElement('h3');
+  title.className = 'section-title';
+  title.textContent = '📖 圖鑑 Encyclopedia';
+  c.appendChild(title);
+
   const discoveredCount = discovered.size;
   const counter = document.createElement('div');
-  counter.style.cssText = 'text-align:center;margin-bottom:12px;font-family:Fredoka,sans-serif;color:#636E72';
+  counter.className = 'section-subtitle';
   counter.textContent = `已發現 ${discoveredCount} / ${blocks.length} 種物品`;
   c.appendChild(counter);
 
@@ -3109,9 +3120,14 @@ let craftSelected = null; // selected block id from inventory
 function renderCraft(c) {
   // craftGrid persists across tab switches (items are already deducted from inventory)
 
+  const title = document.createElement('h3');
+  title.className = 'section-title';
+  title.textContent = '🔨 合成 Craft';
+  c.appendChild(title);
+
   const currentPick = pickaxes[getEffectivePickaxeLevel()];
   const current = document.createElement('div');
-  current.className = 'craft-current';
+  current.className = 'section-subtitle';
   const axeB = getEffectiveAxeBonus();
   const axeStr = axeB > 1 ? `  |  🪓 斧頭（砍樹 x${axeB}）` : '';
   current.textContent = `⛏️ ${currentPick.name}${axeStr}`;
@@ -3471,6 +3487,7 @@ function updateCraftUI() {
     if (count <= 0) return;
     const item = document.createElement('div');
     item.className = 'craft-inv-item' + (craftSelected === b.id ? ' selected' : '');
+    item.title = b.name;
     item.textContent = b.emoji;
     const countEl = document.createElement('span');
     countEl.className = 'inv-count';
@@ -3535,6 +3552,11 @@ function getHouseArt() {
 }
 
 function renderHouse(c) {
+  const title = document.createElement('h3');
+  title.className = 'section-title';
+  title.textContent = '🏠 蓋房子 Build';
+  c.appendChild(title);
+
   const houseArea = document.createElement('div');
   houseArea.className = 'house-area';
 
@@ -3599,11 +3621,16 @@ function renderHouse(c) {
 }
 
 function renderEquipment(c) {
+  const title = document.createElement('h3');
+  title.className = 'section-title';
+  title.textContent = '👤 裝備 Equipment';
+  c.appendChild(title);
+
   const area = document.createElement('div');
   area.className = 'equip-area';
 
   const hint = document.createElement('div');
-  hint.style.cssText = 'text-align:center;font-family:Fredoka,sans-serif;font-size:0.8rem;color:#B2BEC3;margin-bottom:4px;';
+  hint.className = 'section-subtitle';
   hint.textContent = '👆 點擊部位可更換裝備與工具';
   area.appendChild(hint);
 
