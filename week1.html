@@ -954,6 +954,7 @@ let inventory = {};
 let houseProgress = 0;
 let toolDurability = {}; // { 'stone_pick': 28, ... } — remaining uses for active tool
 let discovered = new Set(); // permanently tracks every item ID ever obtained
+let equipped = { helmet: null, chest: null, legs: null, boots: null };
 
 function getEffectivePickaxeLevel() {
   let best = 0;
@@ -976,7 +977,7 @@ function getEffectiveAxeBonus() {
 function getActiveTool(toolList) {
   for (let i = toolList.length - 1; i >= 0; i--) {
     const t = toolList[i];
-    if (i === 0 && toolList === pickaxes) return t; // wood pick always available
+    if (i === 0 && (toolList === pickaxes || toolList === swords)) return t; // wood pick/sword always available
     if (getBlockCount(t.id) > 0) {
       if (t.durability !== Infinity && toolDurability[t.id] === undefined) {
         toolDurability[t.id] = t.durability;
@@ -984,7 +985,16 @@ function getActiveTool(toolList) {
       return t;
     }
   }
-  return toolList === pickaxes ? toolList[0] : null; // null = no axe owned
+  return (toolList === pickaxes || toolList === swords) ? toolList[0] : null; // null = no axe owned
+}
+
+function getEffectiveSword() {
+  return getActiveTool(swords);
+}
+
+function getEffectiveSwordHoldTime() {
+  const sword = getEffectiveSword();
+  return sword ? sword.holdTime : 2000;
 }
 
 // Use a tool: decrement durability, return break message or null
@@ -1015,7 +1025,7 @@ function getToolDurabilityText(tool) {
 }
 
 function saveGame() {
-  localStorage.setItem('mineGame', JSON.stringify({ gems, inventory, houseProgress, stars, streak, craftGrid, toolDurability, discovered: [...discovered] }));
+  localStorage.setItem('mineGame', JSON.stringify({ gems, inventory, houseProgress, stars, streak, craftGrid, toolDurability, discovered: [...discovered], equipped }));
 }
 
 function loadGame() {
@@ -1026,6 +1036,7 @@ function loadGame() {
     inventory = d.inventory || {};
     toolDurability = d.toolDurability || {};
     if (d.discovered) discovered = new Set(d.discovered);
+    if (d.equipped) equipped = { helmet: null, chest: null, legs: null, boots: null, ...d.equipped };
     // Also mark any current inventory items as discovered
     Object.keys(inventory).forEach(id => discovered.add(id));
     // Migration: convert old pickaxeLevel to inventory item
@@ -2048,6 +2059,20 @@ function renderRecipeBook(c) {
       needs: axe.recipe, itemId: axe.id, type: 'axe'
     });
   });
+  swords.forEach((sword) => {
+    if (!sword.pattern) return;
+    allRecipes.push({
+      pattern: sword.pattern, emoji: sword.emoji, name: sword.name,
+      needs: sword.recipe, itemId: sword.id, type: 'sword'
+    });
+  });
+  armorRecipes.forEach((armor) => {
+    const b = blocks.find(x => x.id === armor.outputId);
+    allRecipes.push({
+      pattern: armor.pattern, emoji: b ? b.emoji : '?', name: b ? b.name : armor.outputId,
+      needs: armor.recipe, itemId: armor.outputId, type: 'armor'
+    });
+  });
   craftRecipes.forEach(recipe => {
     const needs = recipe.needs || {};
     const pattern = recipe.pattern || (recipe.shapeless ?
@@ -2161,6 +2186,26 @@ function checkCraftMatch() {
     });
     if (match) return { type: 'axe', item: axe, emoji: axe.emoji, name: axe.name };
   }
+  // Check sword recipes
+  for (const sword of swords) {
+    if (!sword.pattern) continue;
+    const match = sword.pattern.every((need, i) => {
+      if (need === null) return craftGrid[i] === null;
+      return craftGrid[i] === need;
+    });
+    if (match) return { type: 'sword', item: sword, emoji: sword.emoji, name: sword.name };
+  }
+  // Check armor recipes
+  for (const armor of armorRecipes) {
+    const match = armor.pattern.every((need, i) => {
+      if (need === null) return craftGrid[i] === null;
+      return craftGrid[i] === need;
+    });
+    if (match) {
+      const b = blocks.find(x => x.id === armor.outputId);
+      return { type: 'armor', item: armor, emoji: b.emoji, name: b.name };
+    }
+  }
   // Check general recipes
   for (const recipe of craftRecipes) {
     if (recipe.shapeless) {
@@ -2225,7 +2270,7 @@ function updateCraftUI() {
     item.appendChild(countEl);
     // Show durability bar for tools
     if (toolDurability[b.id] && b.tier === 0) {
-      const toolDef = pickaxes.find(p => p.id === b.id) || axes.find(a => a.id === b.id);
+      const toolDef = pickaxes.find(p => p.id === b.id) || axes.find(a => a.id === b.id) || swords.find(s => s.id === b.id);
       if (toolDef && toolDef.durability !== Infinity) {
         const pct = (toolDurability[b.id] / toolDef.durability) * 100;
         const barColor = pct > 50 ? '#00B894' : pct > 20 ? '#FDCB6E' : '#FF6B6B';
@@ -2253,12 +2298,13 @@ function doCraft() {
   // Clear the grid (blocks already deducted when placed)
   craftGrid = [null,null,null, null,null,null, null,null,null];
 
-  if (match.type === 'pickaxe' || match.type === 'axe') {
+  if (match.type === 'pickaxe' || match.type === 'axe' || match.type === 'sword') {
     addBlock(match.item.id);
-    // Set durability for new tool if none active
-    if (!toolDurability[match.item.id]) {
+    if (!toolDurability[match.item.id] && match.item.durability !== Infinity) {
       toolDurability[match.item.id] = match.item.durability;
     }
+  } else if (match.type === 'armor') {
+    addBlock(match.item.outputId);
   } else if (match.type === 'item') {
     addBlock(match.item.outputId, match.item.outputCount);
   }
