@@ -786,6 +786,12 @@ const blocks = [
   { id: 'emerald',  name: '綠寶石', emoji: '💚', tier: 4, weight: 5 },
   { id: 'diamond',  name: '鑽石',   emoji: '💎', tier: 5, weight: 3 },
   { id: 'amethyst', name: '紫水晶', emoji: '🟣', tier: 5, weight: 2 },
+  // Animal drops (tier 0, weight 0 = drop-only)
+  { id: 'leather',      name: '皮革',   emoji: '🟤', tier: 0, weight: 0 },
+  { id: 'pork',         name: '豬排',   emoji: '🍖', tier: 0, weight: 0 },
+  { id: 'chicken_meat', name: '雞肉',   emoji: '🍗', tier: 0, weight: 0 },
+  { id: 'feather',      name: '羽毛',   emoji: '🪶', tier: 0, weight: 0 },
+  { id: 'wool',         name: '羊毛',   emoji: '🧶', tier: 0, weight: 0 },
   // Tools (tier 0, weight 0 = never mined, only crafted)
   { id: 'stone_pick',   name: '石鎬',   emoji: '⛏️', tier: 0, weight: 0 },
   { id: 'iron_pick',    name: '鐵鎬',   emoji: '⛏️', tier: 0, weight: 0 },
@@ -795,6 +801,27 @@ const blocks = [
   { id: 'iron_axe',     name: '鐵斧',   emoji: '🪓', tier: 0, weight: 0 },
   { id: 'gold_axe',     name: '金斧',   emoji: '🪓', tier: 0, weight: 0 },
   { id: 'diamond_axe',  name: '鑽石斧', emoji: '🪓', tier: 0, weight: 0 },
+  { id: 'stone_sword',   name: '石劍',   emoji: '🗡️', tier: 0, weight: 0 },
+  { id: 'iron_sword',    name: '鐵劍',   emoji: '🗡️', tier: 0, weight: 0 },
+  { id: 'gold_sword',    name: '金劍',   emoji: '🗡️', tier: 0, weight: 0 },
+  { id: 'diamond_sword', name: '鑽石劍', emoji: '🗡️', tier: 0, weight: 0 },
+  // Armor items (tier 0, weight 0)
+  { id: 'leather_helmet',  name: '皮革頭盔', emoji: '🪖', tier: 0, weight: 0 },
+  { id: 'leather_chest',   name: '皮革盔甲', emoji: '🦺', tier: 0, weight: 0 },
+  { id: 'leather_legs',    name: '皮革褲子', emoji: '👖', tier: 0, weight: 0 },
+  { id: 'leather_boots',   name: '皮革鞋子', emoji: '👢', tier: 0, weight: 0 },
+  { id: 'iron_helmet',     name: '鐵頭盔',   emoji: '🪖', tier: 0, weight: 0 },
+  { id: 'iron_chest',      name: '鐵盔甲',   emoji: '🦺', tier: 0, weight: 0 },
+  { id: 'iron_legs',       name: '鐵褲子',   emoji: '👖', tier: 0, weight: 0 },
+  { id: 'iron_boots',      name: '鐵鞋子',   emoji: '👢', tier: 0, weight: 0 },
+  { id: 'gold_helmet',     name: '金頭盔',   emoji: '🪖', tier: 0, weight: 0 },
+  { id: 'gold_chest',      name: '金盔甲',   emoji: '🦺', tier: 0, weight: 0 },
+  { id: 'gold_legs',       name: '金褲子',   emoji: '👖', tier: 0, weight: 0 },
+  { id: 'gold_boots',      name: '金鞋子',   emoji: '👢', tier: 0, weight: 0 },
+  { id: 'diamond_helmet',  name: '鑽石頭盔', emoji: '🪖', tier: 0, weight: 0 },
+  { id: 'diamond_chest',   name: '鑽石盔甲', emoji: '🦺', tier: 0, weight: 0 },
+  { id: 'diamond_legs',    name: '鑽石褲子', emoji: '👖', tier: 0, weight: 0 },
+  { id: 'diamond_boots',   name: '鑽石鞋子', emoji: '👢', tier: 0, weight: 0 },
 ];
 
 const pickaxes = [
@@ -802,7 +829,7 @@ const pickaxes = [
   { id: 'stone_pick',   name: '石鎬',   emoji: '⛏️', maxTier: 3, durability: 30,
     recipe: { stick: 2, stone: 3 },
     pattern: ['stone','stone','stone', null,'stick',null, null,'stick',null] },
-  { id: 'iron_pick',    name: '鐵鎬',   emoji: '⛏️', maxTier: 4, durability: 60,
+  { id: 'iron_pick',    name: '鐵鎬',   emoji: '⛏️', maxTier: 5, durability: 60,
     recipe: { stick: 2, iron: 3 },
     pattern: ['iron','iron','iron', null,'stick',null, null,'stick',null] },
   { id: 'gold_pick',    name: '金鎬',   emoji: '🔱', maxTier: 4, durability: 25,
@@ -827,6 +854,76 @@ const axes = [
   { id: 'diamond_axe', name: '鑽石斧', emoji: '🪓', woodBonus: 4, durability: 150,
     recipe: { stick: 2, diamond: 3 },
     pattern: ['diamond','diamond',null, 'diamond','stick',null, null,'stick',null] },
+];
+
+const animals = [
+  { id: 'cow',     name: '牛',  emoji: '🐄', drops: [{ id: 'leather', min: 1, max: 2 }] },
+  { id: 'pig',     name: '豬',  emoji: '🐷', drops: [{ id: 'pork', min: 1, max: 1 }] },
+  { id: 'chicken', name: '雞',  emoji: '🐔', drops: [{ id: 'chicken_meat', min: 1, max: 1 }, { id: 'feather', min: 1, max: 1 }] },
+  { id: 'sheep',   name: '羊',  emoji: '🐑', drops: [{ id: 'wool', min: 1, max: 2 }] },
+];
+
+const swords = [
+  { id: 'wood_sword',    name: '木劍',   emoji: '🗡️', holdTime: 1500, durability: Infinity, recipe: null, pattern: null },
+  { id: 'stone_sword',   name: '石劍',   emoji: '🗡️', holdTime: 1000, durability: 30,
+    recipe: { stick: 1, stone: 2 },
+    pattern: [null,'stone',null, null,'stone',null, null,'stick',null] },
+  { id: 'iron_sword',    name: '鐵劍',   emoji: '🗡️', holdTime: 700, durability: 60,
+    recipe: { stick: 1, iron: 2 },
+    pattern: [null,'iron',null, null,'iron',null, null,'stick',null] },
+  { id: 'gold_sword',    name: '金劍',   emoji: '🗡️', holdTime: 700, durability: 25,
+    recipe: { stick: 1, gold: 2 },
+    pattern: [null,'gold',null, null,'gold',null, null,'stick',null] },
+  { id: 'diamond_sword', name: '鑽石劍', emoji: '🗡️', holdTime: 400, durability: 150,
+    recipe: { stick: 1, diamond: 2 },
+    pattern: [null,'diamond',null, null,'diamond',null, null,'stick',null] },
+];
+
+const armorSlots = ['helmet', 'chest', 'legs', 'boots'];
+const armorMaterials = [
+  { id: 'leather', name: '皮革', emoji: '🟤' },
+  { id: 'iron',    name: '鐵',   emoji: '⬜' },
+  { id: 'gold',    name: '金',   emoji: '🟡' },
+  { id: 'diamond', name: '鑽石', emoji: '💎' },
+];
+
+const armorRecipes = [
+  // Helmets: XXX / X_X / ___
+  { outputId: 'leather_helmet', material: 'leather', slot: 'helmet', recipe: { leather: 5 },
+    pattern: ['leather','leather','leather', 'leather',null,'leather', null,null,null] },
+  { outputId: 'iron_helmet', material: 'iron', slot: 'helmet', recipe: { iron: 5 },
+    pattern: ['iron','iron','iron', 'iron',null,'iron', null,null,null] },
+  { outputId: 'gold_helmet', material: 'gold', slot: 'helmet', recipe: { gold: 5 },
+    pattern: ['gold','gold','gold', 'gold',null,'gold', null,null,null] },
+  { outputId: 'diamond_helmet', material: 'diamond', slot: 'helmet', recipe: { diamond: 5 },
+    pattern: ['diamond','diamond','diamond', 'diamond',null,'diamond', null,null,null] },
+  // Chestplates: X_X / XXX / XXX
+  { outputId: 'leather_chest', material: 'leather', slot: 'chest', recipe: { leather: 8 },
+    pattern: ['leather',null,'leather', 'leather','leather','leather', 'leather','leather','leather'] },
+  { outputId: 'iron_chest', material: 'iron', slot: 'chest', recipe: { iron: 8 },
+    pattern: ['iron',null,'iron', 'iron','iron','iron', 'iron','iron','iron'] },
+  { outputId: 'gold_chest', material: 'gold', slot: 'chest', recipe: { gold: 8 },
+    pattern: ['gold',null,'gold', 'gold','gold','gold', 'gold','gold','gold'] },
+  { outputId: 'diamond_chest', material: 'diamond', slot: 'chest', recipe: { diamond: 8 },
+    pattern: ['diamond',null,'diamond', 'diamond','diamond','diamond', 'diamond','diamond','diamond'] },
+  // Leggings: XXX / X_X / X_X
+  { outputId: 'leather_legs', material: 'leather', slot: 'legs', recipe: { leather: 7 },
+    pattern: ['leather','leather','leather', 'leather',null,'leather', 'leather',null,'leather'] },
+  { outputId: 'iron_legs', material: 'iron', slot: 'legs', recipe: { iron: 7 },
+    pattern: ['iron','iron','iron', 'iron',null,'iron', 'iron',null,'iron'] },
+  { outputId: 'gold_legs', material: 'gold', slot: 'legs', recipe: { gold: 7 },
+    pattern: ['gold','gold','gold', 'gold',null,'gold', 'gold',null,'gold'] },
+  { outputId: 'diamond_legs', material: 'diamond', slot: 'legs', recipe: { diamond: 7 },
+    pattern: ['diamond','diamond','diamond', 'diamond',null,'diamond', 'diamond',null,'diamond'] },
+  // Boots: ___ / X_X / X_X
+  { outputId: 'leather_boots', material: 'leather', slot: 'boots', recipe: { leather: 4 },
+    pattern: [null,null,null, 'leather',null,'leather', 'leather',null,'leather'] },
+  { outputId: 'iron_boots', material: 'iron', slot: 'boots', recipe: { iron: 4 },
+    pattern: [null,null,null, 'iron',null,'iron', 'iron',null,'iron'] },
+  { outputId: 'gold_boots', material: 'gold', slot: 'boots', recipe: { gold: 4 },
+    pattern: [null,null,null, 'gold',null,'gold', 'gold',null,'gold'] },
+  { outputId: 'diamond_boots', material: 'diamond', slot: 'boots', recipe: { diamond: 4 },
+    pattern: [null,null,null, 'diamond',null,'diamond', 'diamond',null,'diamond'] },
 ];
 
 // General crafting recipes (non-pickaxe)
