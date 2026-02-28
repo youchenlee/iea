@@ -446,6 +446,11 @@ body::before {
   .quiz-options { grid-template-columns: 1fr; }
   .nav-tab { padding: 8px 14px; font-size: 0.9rem; }
   .sentence-display { font-size: 1.2rem; }
+  .mine-grid { max-width: 280px; }
+  .mine-cell { font-size: 2rem; }
+  .encyclopedia-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+  .craft-card { flex-direction: column; text-align: center; }
+  .collection-tab { padding: 6px 12px; font-size: 0.8rem; }
 }
 </style>
 </head>
@@ -455,7 +460,7 @@ body::before {
   <div class="header">
     <h1>Feelings Fun! 🎭</h1>
     <div class="subtitle">學習表達情緒的英文 · Learn to express feelings</div>
-    <div style="font-size:0.7rem;color:#B2BEC3;margin-top:2px;font-family:'Nunito',sans-serif;">v1.4.1</div>
+    <div style="font-size:0.7rem;color:#B2BEC3;margin-top:2px;font-family:'Nunito',sans-serif;">v2.0.0</div>
   </div>
 
   <div class="score-bar">
@@ -1375,6 +1380,7 @@ function renderHouse(c) {
 }
 
 // ===== INIT =====
+loadGame();
 initLearn();
 
 // Pre-warm: load voices so pickBestVoice works on first click
