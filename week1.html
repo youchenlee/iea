@@ -344,9 +344,9 @@ body::before {
 .mine-cell.unexposed { opacity: 0.85; cursor: default; }
 .mine-cell.unexposed:hover { transform: none; box-shadow: inset 0 -2px 4px rgba(0,0,0,0.2); }
 .mine-cell.mined {
-  background: #1a1a2e !important;
-  border-color: #0d0d1a;
-  box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
+  background: rgba(135,206,235,0.25) !important;
+  border-color: transparent;
+  box-shadow: none;
   pointer-events: none;
 }
 .mine-cell.locked {
@@ -496,6 +496,36 @@ body::before {
   position: absolute; bottom: 2px; right: 2px;
 }
 
+.recipe-book { margin-top: 20px; }
+.recipe-book-title {
+  font-family: 'Fredoka', sans-serif; font-size: 1.1rem; font-weight: 600;
+  color: var(--text); text-align: center; margin-bottom: 12px;
+}
+.recipe-list { display: flex; flex-direction: column; gap: 10px; }
+.recipe-card {
+  background: white; border-radius: 14px; padding: 12px 16px;
+  box-shadow: 0 2px 10px var(--shadow); display: flex; align-items: center; gap: 12px;
+  border: 2px solid #DFE6E9; transition: all 0.2s;
+}
+.recipe-card.craftable { border-color: #00B894; background: #F0FFF8; }
+.recipe-card.crafted { border-color: #B2BEC3; opacity: 0.5; }
+.recipe-mini-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+  background: #8B6F47; padding: 4px; border-radius: 6px; flex-shrink: 0;
+}
+.recipe-mini-slot {
+  width: 22px; height: 22px; border-radius: 3px;
+  background: #A0855C; display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem;
+}
+.recipe-arrow { color: #636E72; font-size: 1.2rem; flex-shrink: 0; }
+.recipe-result { font-size: 1.4rem; flex-shrink: 0; }
+.recipe-info { flex: 1; }
+.recipe-name { font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 0.95rem; }
+.recipe-needs { font-size: 0.8rem; color: #636E72; margin-top: 2px; }
+.recipe-needs .has { color: #00B894; }
+.recipe-needs .need { color: #FF6B6B; }
+
 .house-area { text-align: center; max-width: 400px; margin: 0 auto; }
 .house-visual {
   font-size: 1.2rem; line-height: 1.8;
@@ -548,7 +578,7 @@ body::before {
   <div class="header">
     <h1>Feelings Fun! 🎭</h1>
     <div class="subtitle">學習表達情緒的英文 · Learn to express feelings</div>
-    <div style="font-size:0.7rem;color:#B2BEC3;margin-top:2px;font-family:'Nunito',sans-serif;">v2.2.0</div>
+    <div style="font-size:0.7rem;color:#B2BEC3;margin-top:2px;font-family:'Nunito',sans-serif;">v2.3.0</div>
   </div>
 
   <div class="score-bar">
@@ -670,9 +700,10 @@ const pickaxes = [
 ];
 
 // General crafting recipes (non-pickaxe)
+// shapeless: true means the item can be placed in any slot
 const craftRecipes = [
   { id: 'wood_to_sticks', name: '木棍', emoji: '🥢', outputId: 'stick', outputCount: 4,
-    pattern: [null,null,null, null,'wood',null, null,null,null] },
+    needs: { wood: 1 }, shapeless: true },
 ];
 
 const houseStages = [
@@ -1586,6 +1617,10 @@ function renderCraft(c) {
   const resultSlot = document.createElement('div');
   resultSlot.className = 'craft-result-slot';
   resultSlot.id = 'craftResultSlot';
+  resultSlot.style.cursor = 'pointer';
+  resultSlot.addEventListener('click', () => {
+    if (checkCraftMatch()) doCraft();
+  });
   table.appendChild(resultSlot);
 
   area.appendChild(table);
@@ -1626,7 +1661,108 @@ function renderCraft(c) {
   area.appendChild(inv);
 
   c.appendChild(area);
+
+  // Recipe book
+  renderRecipeBook(c);
+
   updateCraftUI();
+}
+
+function renderRecipeBook(c) {
+  const book = document.createElement('div');
+  book.className = 'recipe-book';
+  const title = document.createElement('div');
+  title.className = 'recipe-book-title';
+  title.textContent = '📜 合成表 Recipes';
+  book.appendChild(title);
+
+  const list = document.createElement('div');
+  list.className = 'recipe-list';
+
+  // Collect all recipes: pickaxes + general
+  const allRecipes = [];
+  pickaxes.forEach((pick, idx) => {
+    if (!pick.pattern) return;
+    const alreadyCrafted = pickaxeLevel >= idx;
+    const needs = pick.recipe;
+    allRecipes.push({
+      pattern: pick.pattern, emoji: pick.emoji, name: pick.name,
+      needs, crafted: alreadyCrafted, type: 'pickaxe'
+    });
+  });
+  craftRecipes.forEach(recipe => {
+    const needs = recipe.needs || {};
+    // For shapeless recipes, show item centered in mini grid
+    const pattern = recipe.pattern || (recipe.shapeless ?
+      (() => {
+        const p = [null,null,null, null,null,null, null,null,null];
+        const ids = Object.entries(needs);
+        if (ids.length === 1) { p[4] = ids[0][0]; } // center
+        return p;
+      })() : [null,null,null, null,null,null, null,null,null]);
+    allRecipes.push({
+      pattern, emoji: recipe.emoji,
+      name: `${recipe.name} x${recipe.outputCount}`,
+      needs, crafted: false, type: 'item',
+      shapeless: recipe.shapeless
+    });
+  });
+
+  allRecipes.forEach(r => {
+    const canCraft = !r.crafted && hasBlocks(r.needs);
+    const card = document.createElement('div');
+    card.className = 'recipe-card' + (r.crafted ? ' crafted' : canCraft ? ' craftable' : '');
+
+    // Mini 3x3 grid
+    const miniGrid = document.createElement('div');
+    miniGrid.className = 'recipe-mini-grid';
+    r.pattern.forEach(slot => {
+      const cell = document.createElement('div');
+      cell.className = 'recipe-mini-slot';
+      if (slot) {
+        const b = blocks.find(x => x.id === slot);
+        if (b) cell.textContent = b.emoji;
+      }
+      miniGrid.appendChild(cell);
+    });
+    card.appendChild(miniGrid);
+
+    const arrow = document.createElement('div');
+    arrow.className = 'recipe-arrow';
+    arrow.textContent = '➡️';
+    card.appendChild(arrow);
+
+    const result = document.createElement('div');
+    result.className = 'recipe-result';
+    result.textContent = r.emoji;
+    card.appendChild(result);
+
+    const info = document.createElement('div');
+    info.className = 'recipe-info';
+    const nameEl = document.createElement('div');
+    nameEl.className = 'recipe-name';
+    nameEl.textContent = r.name + (r.crafted ? ' ✅' : '') + (r.shapeless ? ' (任意位置)' : '');
+    info.appendChild(nameEl);
+
+    const needsEl = document.createElement('div');
+    needsEl.className = 'recipe-needs';
+    Object.entries(r.needs).forEach(([id, count], idx) => {
+      const b = blocks.find(x => x.id === id);
+      const have = getBlockCount(id);
+      const span = document.createElement('span');
+      span.className = have >= count ? 'has' : 'need';
+      span.textContent = `${b ? b.emoji : id} ${have}/${count}`;
+      if (idx > 0) needsEl.appendChild(document.createTextNode('  '));
+      needsEl.appendChild(span);
+    });
+    info.appendChild(needsEl);
+    card.appendChild(info);
+
+    list.appendChild(card);
+  });
+
+  book.appendChild(list);
+  c.appendChild(book);
 }
 
 function craftSlotClick(idx) {
@@ -1661,11 +1797,23 @@ function checkCraftMatch() {
   }
   // Check general recipes
   for (const recipe of craftRecipes) {
-    const match = recipe.pattern.every((need, i) => {
-      if (need === null) return craftGrid[i] === null;
-      return craftGrid[i] === need;
-    });
-    if (match) return { type: 'item', item: recipe, emoji: recipe.emoji, name: `${recipe.name} x${recipe.outputCount}` };
+    if (recipe.shapeless) {
+      // Shapeless: count placed blocks, must match needs exactly
+      const placed = {};
+      craftGrid.forEach(id => { if (id) placed[id] = (placed[id] || 0) + 1; });
+      const placedKeys = Object.keys(placed);
+      const needKeys = Object.keys(recipe.needs);
+      if (placedKeys.length === needKeys.length &&
+          needKeys.every(k => placed[k] === recipe.needs[k])) {
+        return { type: 'item', item: recipe, emoji: recipe.emoji, name: `${recipe.name} x${recipe.outputCount}` };
+      }
+    } else if (recipe.pattern) {
+      const match = recipe.pattern.every((need, i) => {
+        if (need === null) return craftGrid[i] === null;
+        return craftGrid[i] === need;
+      });
+      if (match) return { type: 'item', item: recipe, emoji: recipe.emoji, name: `${recipe.name} x${recipe.outputCount}` };
+    }
   }
   return null;
 }
