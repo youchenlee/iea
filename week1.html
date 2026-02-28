@@ -89,7 +89,7 @@ body::before {
   background: #F0F0F5; border-radius: 50px; padding: 4px;
 }
 .nav-group-label {
-  font-size: 0.65rem; color: #999; font-family: 'Fredoka', sans-serif;
+  font-size: 0.8rem; color: #999; font-family: 'Fredoka', sans-serif;
   font-weight: 600; padding: 0 6px; white-space: nowrap;
 }
 .nav-tab {
@@ -181,6 +181,46 @@ body::before {
   line-height: 1.4;
 }
 .sentence-display .hl { color: var(--accent); font-weight: 700; }
+
+.learn-section-title {
+  font-family: 'Fredoka', sans-serif; font-size: 1.1rem; color: var(--text);
+  margin: 10px 0 4px 4px;
+}
+.sight-learn-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 14px;
+}
+.sight-learn-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 16px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 3px 15px var(--shadow);
+  position: relative;
+}
+.sight-learn-card:hover { transform: translateY(-6px) scale(1.03); box-shadow: 0 8px 25px var(--shadow); }
+.sight-learn-card:active { transform: scale(0.95); }
+.sight-learn-card .speaker-hint {
+  position: absolute; top: 8px; right: 8px;
+  font-size: 1rem; opacity: 0.3; transition: opacity 0.2s;
+}
+.sight-learn-card:hover .speaker-hint { opacity: 0.7; }
+.sight-learn-card.speaking {
+  border-color: var(--accent);
+  animation: speakRing 0.6s ease;
+}
+.sight-learn-card .sl-word {
+  font-family: 'Fredoka', sans-serif; font-size: 1.3rem; font-weight: 700; color: var(--text);
+}
+.sight-learn-card .sl-zh {
+  font-size: 0.85rem; color: #636E72; margin-top: 2px;
+}
+.sight-learn-card .sl-sentence {
+  font-size: 0.75rem; color: #999; margin-top: 6px; font-style: italic;
+}
 
 .btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 .speak-btn {
@@ -360,12 +400,31 @@ body::before {
   50% { opacity: 1; }
 }
 
+.mountain-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: var(--radius);
+  margin: 0 auto;
+  position: relative;
+}
+.mountain-scroll-hint {
+  display: none;
+  position: absolute; right: 0; top: 0; bottom: 0; width: 28px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6));
+  pointer-events: none; z-index: 1;
+  animation: scrollHintPulse 2s ease-in-out infinite;
+}
+.mountain-scroll-hint::after {
+  content: '→'; position: absolute; right: 4px; top: 50%;
+  transform: translateY(-50%); font-size: 1rem; opacity: 0.5;
+}
+@keyframes scrollHintPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
 .mountain {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  margin: 0 auto;
+  min-width: fit-content;
   padding: 10px 0;
   background: linear-gradient(180deg, #87CEEB 0%, #87CEEB 20%, #E8D5B7 100%);
   border-radius: var(--radius);
@@ -713,6 +772,9 @@ body::before {
   .feelings-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
   .feeling-card { padding: 14px 8px; }
   .feeling-card .emoji { font-size: 2.2rem; }
+  .sight-learn-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
+  .sight-learn-card { padding: 12px 8px; }
+  .sight-learn-card .sl-word { font-size: 1.1rem; }
   .match-game { grid-template-columns: 1fr; }
   .quiz-options { grid-template-columns: 1fr; }
   .nav-groups { gap: 4px; }
@@ -721,6 +783,7 @@ body::before {
   .stamina-hint { display: none; }
   .nav-tab { padding: 8px 12px; font-size: 0.85rem; }
   .sentence-display { font-size: 1.2rem; }
+  .mountain-scroll-hint { display: block; }
   .mine-cell { width: 38px; height: 38px; font-size: 1.2rem; }
   .mine-cell.tree { font-size: 1.4rem; }
   .mine-cell.animal { font-size: 1.4rem; }
@@ -844,6 +907,7 @@ body::before {
   </div>
 
   <div id="learn" class="section active">
+    <h3 class="learn-section-title">😊 Feelings 情緒</h3>
     <div class="feelings-grid" id="feelingsGrid"></div>
     <div class="sentence-practice">
       <h3>🗣️ Practice Sentences 造句練習</h3>
@@ -854,6 +918,8 @@ body::before {
       </div>
       <div class="feeling-chips" id="feelingChips"></div>
     </div>
+    <h3 class="learn-section-title" style="margin-top:24px;">📖 Sight Words 常見字</h3>
+    <div class="sight-learn-grid" id="sightLearnGrid"></div>
   </div>
 
   <div id="match" class="section">
@@ -905,7 +971,7 @@ body::before {
       </div>
     </div>
     <div id="engineStatus" style="text-align:center;font-size:0.8rem;color:#B2BEC3;margin-top:12px;font-family:'Nunito',sans-serif;">🔍 偵測中...</div>
-    <div style="text-align:center;font-size:0.7rem;color:#B2BEC3;margin-top:8px;font-family:'Nunito',sans-serif;">v2.7.0</div>
+    <div style="text-align:center;font-size:0.7rem;color:#B2BEC3;margin-top:8px;font-family:'Nunito',sans-serif;">v2.8.0</div>
   </div>
 </div>
 
@@ -1625,6 +1691,27 @@ function initLearn() {
     });
     chips.appendChild(chip);
   });
+
+  // Sight words section
+  const slGrid = document.getElementById('sightLearnGrid');
+  slGrid.innerHTML = '';
+  sightWords.forEach((sw, i) => {
+    const card = document.createElement('div');
+    card.className = 'sight-learn-card';
+    card.style.borderBottom = `4px solid ${sightColors[i % sightColors.length]}`;
+    card.innerHTML = `
+      <span class="speaker-hint">🔊</span>
+      <div class="sl-word">${sw.word}</div>
+      <div class="sl-zh">${sw.zh}</div>
+      <div class="sl-sentence">${sw.sentence}</div>
+    `;
+    card.addEventListener('click', () => {
+      card.classList.add('speaking');
+      setTimeout(() => card.classList.remove('speaking'), 800);
+      speakWordThenSentence(sw.word, sw.sentence);
+    });
+    slGrid.appendChild(card);
+  });
 }
 
 function selectFeeling(word) {
@@ -2163,7 +2250,16 @@ function initMine() {
     mountain.appendChild(rowEl);
   });
 
-  area.appendChild(mountain);
+  const mountainScroll = document.createElement('div');
+  mountainScroll.className = 'mountain-scroll';
+  mountainScroll.appendChild(mountain);
+  const scrollHint = document.createElement('div');
+  scrollHint.className = 'mountain-scroll-hint';
+  mountainScroll.appendChild(scrollHint);
+  mountainScroll.addEventListener('scroll', () => {
+    if (mountainScroll.scrollLeft > 10) scrollHint.style.display = 'none';
+  }, { passive: true });
+  area.appendChild(mountainScroll);
 
   // Refresh button
   const refreshBtn = document.createElement('button');
