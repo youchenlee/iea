@@ -745,33 +745,33 @@ const blocks = [
 ];
 
 const pickaxes = [
-  { id: 'wood_pick',    name: '木鎬',   emoji: '⛏️', maxTier: 2, recipe: null, pattern: null },
-  { id: 'stone_pick',   name: '石鎬',   emoji: '⛏️', maxTier: 3,
+  { id: 'wood_pick',    name: '木鎬',   emoji: '⛏️', maxTier: 2, durability: Infinity, recipe: null, pattern: null },
+  { id: 'stone_pick',   name: '石鎬',   emoji: '⛏️', maxTier: 3, durability: 30,
     recipe: { stick: 2, stone: 3 },
     pattern: ['stone','stone','stone', null,'stick',null, null,'stick',null] },
-  { id: 'iron_pick',    name: '鐵鎬',   emoji: '⛏️', maxTier: 4,
+  { id: 'iron_pick',    name: '鐵鎬',   emoji: '⛏️', maxTier: 4, durability: 60,
     recipe: { stick: 2, iron: 3 },
     pattern: ['iron','iron','iron', null,'stick',null, null,'stick',null] },
-  { id: 'gold_pick',    name: '金鎬',   emoji: '🔱', maxTier: 4,
+  { id: 'gold_pick',    name: '金鎬',   emoji: '🔱', maxTier: 4, durability: 25,
     recipe: { stick: 2, gold: 3 },
     pattern: ['gold','gold','gold', null,'stick',null, null,'stick',null] },
-  { id: 'diamond_pick', name: '鑽石鎬', emoji: '⛏️', maxTier: 5,
+  { id: 'diamond_pick', name: '鑽石鎬', emoji: '⛏️', maxTier: 5, durability: 150,
     recipe: { stick: 2, diamond: 3 },
     pattern: ['diamond','diamond','diamond', null,'stick',null, null,'stick',null] },
 ];
 
 // Axe recipes (XX. / XS. / .S.)
 const axes = [
-  { id: 'stone_axe',   name: '石斧',   emoji: '🪓', woodBonus: 2,
+  { id: 'stone_axe',   name: '石斧',   emoji: '🪓', woodBonus: 2, durability: 30,
     recipe: { stick: 2, stone: 3 },
     pattern: ['stone','stone',null, 'stone','stick',null, null,'stick',null] },
-  { id: 'iron_axe',    name: '鐵斧',   emoji: '🪓', woodBonus: 3,
+  { id: 'iron_axe',    name: '鐵斧',   emoji: '🪓', woodBonus: 3, durability: 60,
     recipe: { stick: 2, iron: 3 },
     pattern: ['iron','iron',null, 'iron','stick',null, null,'stick',null] },
-  { id: 'gold_axe',    name: '金斧',   emoji: '🪓', woodBonus: 3,
+  { id: 'gold_axe',    name: '金斧',   emoji: '🪓', woodBonus: 3, durability: 25,
     recipe: { stick: 2, gold: 3 },
     pattern: ['gold','gold',null, 'gold','stick',null, null,'stick',null] },
-  { id: 'diamond_axe', name: '鑽石斧', emoji: '🪓', woodBonus: 4,
+  { id: 'diamond_axe', name: '鑽石斧', emoji: '🪓', woodBonus: 4, durability: 150,
     recipe: { stick: 2, diamond: 3 },
     pattern: ['diamond','diamond',null, 'diamond','stick',null, null,'stick',null] },
 ];
@@ -802,6 +802,7 @@ let speechSpeed = 'normal'; // 'slow' or 'normal'
 let gems = 0;
 let inventory = {};
 let houseProgress = 0;
+let toolDurability = {}; // { 'stone_pick': 28, ... } — remaining uses for active tool
 
 function getEffectivePickaxeLevel() {
   let best = 0;
@@ -820,8 +821,50 @@ function getEffectiveAxeBonus() {
   return best;
 }
 
+// Returns tool def or null. Sets initial durability if needed.
+function getActiveTool(toolList) {
+  for (let i = toolList.length - 1; i >= 0; i--) {
+    const t = toolList[i];
+    if (i === 0 && toolList === pickaxes) return t; // wood pick always available
+    if (getBlockCount(t.id) > 0) {
+      if (t.durability !== Infinity && !toolDurability[t.id]) {
+        toolDurability[t.id] = t.durability;
+      }
+      return t;
+    }
+  }
+  return toolList[0]; // fallback to first (wood pick)
+}
+
+// Use a tool: decrement durability, return break message or null
+function useTool(tool) {
+  if (!tool || tool.durability === Infinity) return null;
+  if (!toolDurability[tool.id]) toolDurability[tool.id] = tool.durability;
+  toolDurability[tool.id]--;
+  if (toolDurability[tool.id] <= 0) {
+    // Tool broke
+    inventory[tool.id] = (inventory[tool.id] || 1) - 1;
+    if (inventory[tool.id] <= 0) delete inventory[tool.id];
+    delete toolDurability[tool.id];
+    // If more of same tool, set durability for next one
+    if (getBlockCount(tool.id) > 0) {
+      toolDurability[tool.id] = tool.durability;
+    }
+    saveGame();
+    return tool.name;
+  }
+  saveGame();
+  return null;
+}
+
+function getToolDurabilityText(tool) {
+  if (!tool || tool.durability === Infinity) return '';
+  const cur = toolDurability[tool.id] || tool.durability;
+  return ` (${cur}/${tool.durability})`;
+}
+
 function saveGame() {
-  localStorage.setItem('mineGame', JSON.stringify({ gems, inventory, houseProgress, stars, streak, craftGrid }));
+  localStorage.setItem('mineGame', JSON.stringify({ gems, inventory, houseProgress, stars, streak, craftGrid, toolDurability }));
 }
 
 function loadGame() {
@@ -830,6 +873,7 @@ function loadGame() {
     if (!d) return;
     gems = d.gems || 0;
     inventory = d.inventory || {};
+    toolDurability = d.toolDurability || {};
     // Migration: convert old pickaxeLevel to inventory item
     if (d.pickaxeLevel > 0 && d.pickaxeLevel < pickaxes.length) {
       const oldPick = pickaxes[d.pickaxeLevel];
@@ -1435,16 +1479,21 @@ function initSightWords() {
 // ===== MINE =====
 // Mountain shape: each row = { width, tier } — triangle from peak to base
 const mountainShape = [
-  { width: 2, tier: 0 },  // tree tops (decorative)
-  { width: 4, tier: 1 },  // dirt/wood
-  { width: 6, tier: 1 },
-  { width: 8, tier: 2 },  // stone/coal
-  { width: 8, tier: 2 },
-  { width: 8, tier: 3 },  // iron/copper
-  { width: 8, tier: 3 },
-  { width: 8, tier: 4 },  // gold/emerald
-  { width: 8, tier: 4 },
-  { width: 8, tier: 5 },  // diamond/amethyst
+  { width: 2, tier: 0 },   // tree tops
+  { width: 4, tier: 0 },   // more trees
+  { width: 6, tier: 1 },   // dirt/wood
+  { width: 8, tier: 1 },
+  { width: 10, tier: 1 },
+  { width: 12, tier: 2 },  // stone/coal
+  { width: 12, tier: 2 },
+  { width: 12, tier: 2 },
+  { width: 12, tier: 3 },  // iron/copper
+  { width: 12, tier: 3 },
+  { width: 12, tier: 3 },
+  { width: 12, tier: 4 },  // gold/emerald
+  { width: 12, tier: 4 },
+  { width: 12, tier: 5 },  // diamond/amethyst
+  { width: 12, tier: 5 },
 ];
 
 let mineData = []; // 2D array: each cell = { block, mined, tier, el } or null
@@ -1502,9 +1551,11 @@ function initMine() {
   h3.textContent = '⛏️ 挖礦 Mine';
   const pickInfo = document.createElement('div');
   pickInfo.className = 'mine-pickaxe';
+  const pickDur = getToolDurabilityText(pick);
+  const activeAxe = getActiveTool(axes);
   const axeBonus = getEffectiveAxeBonus();
-  const axeLabel = axeBonus > 1 ? `  |  🪓 斧頭（砍樹 x${axeBonus}）` : '';
-  pickInfo.textContent = `⛏️ ${pick.name}（可挖第 ${pick.maxTier} 層）${axeLabel}`;
+  const axeLabel = axeBonus > 1 ? `  |  🪓 ${activeAxe.name}${getToolDurabilityText(activeAxe)}（砍樹 x${axeBonus}）` : '';
+  pickInfo.textContent = `⛏️ ${pick.name}${pickDur}（可挖第 ${pick.maxTier} 層）${axeLabel}`;
   const costInfo = document.createElement('div');
   costInfo.className = 'mine-cost';
   costInfo.textContent = '每格花費 1 ⚡ 體力';
@@ -1516,7 +1567,7 @@ function initMine() {
   // Mountain
   const mountain = document.createElement('div');
   mountain.className = 'mountain';
-  const maxWidth = 8;
+  const maxWidth = 12;
 
   mountainShape.forEach((rowDef, r) => {
     const rowEl = document.createElement('div');
@@ -1589,11 +1640,14 @@ function chopTree(cellData) {
   updateGemDisplay();
   cellData.mined = true;
   cellData.el.classList.add('mined');
+  const activeAxe = getActiveTool(axes);
   const woodCount = getEffectiveAxeBonus();
   addBlock('wood', woodCount);
+  const brokeName = useTool(activeAxe);
   const axeMsg = woodCount > 1 ? ` (🪓 斧頭加成 x${woodCount})` : '';
+  const breakMsg = brokeName ? ` ⚠️ ${brokeName} 壞掉了！` : '';
   document.getElementById('mineResult').textContent =
-    `🪵 砍到木頭 x${woodCount}！${axeMsg}（擁有 ${getBlockCount('wood')} 個）`;
+    `🪵 砍到木頭 x${woodCount}！${axeMsg}${breakMsg}（擁有 ${getBlockCount('wood')} 個）`;
   updateExposure();
   saveGame();
 }
@@ -1631,12 +1685,17 @@ function mineMountainCell(row, col, cellData) {
 
   addBlock(cellData.block.id);
 
+  const activePick = pickaxes[getEffectivePickaxeLevel()];
+  const brokeName = useTool(activePick);
+
   const b = cellData.block;
   const rarity = b.tier >= 4 ? ' ✨ 稀有！' : b.tier >= 3 ? ' 不錯！' : '';
+  const breakMsg = brokeName ? ` ⚠️ ${brokeName} 壞掉了！` : '';
   document.getElementById('mineResult').textContent =
-    `${b.emoji} 挖到 ${b.name}！${rarity}（擁有 ${getBlockCount(b.id)} 個）`;
+    `${b.emoji} 挖到 ${b.name}！${rarity}${breakMsg}（擁有 ${getBlockCount(b.id)} 個）`;
 
   if (b.tier >= 4) doConfetti();
+  if (brokeName) updateExposure(); // tier access may have changed
   updateExposure();
   updateMineRefreshBtn();
   saveGame();
@@ -2009,6 +2068,20 @@ function updateCraftUI() {
     countEl.className = 'inv-count';
     countEl.textContent = count;
     item.appendChild(countEl);
+    // Show durability bar for tools
+    if (toolDurability[b.id] && b.tier === 0) {
+      const toolDef = pickaxes.find(p => p.id === b.id) || axes.find(a => a.id === b.id);
+      if (toolDef && toolDef.durability !== Infinity) {
+        const pct = (toolDurability[b.id] / toolDef.durability) * 100;
+        const barColor = pct > 50 ? '#00B894' : pct > 20 ? '#FDCB6E' : '#FF6B6B';
+        const bar = document.createElement('div');
+        bar.style.cssText = `position:absolute;bottom:0;left:2px;right:2px;height:3px;border-radius:2px;background:rgba(0,0,0,0.2);`;
+        const fill = document.createElement('div');
+        fill.style.cssText = `height:100%;width:${pct}%;border-radius:2px;background:${barColor};transition:width 0.3s;`;
+        bar.appendChild(fill);
+        item.appendChild(bar);
+      }
+    }
     item.addEventListener('click', (e) => {
       e.stopPropagation();
       craftSelected = (craftSelected === b.id) ? null : b.id;
@@ -2027,6 +2100,10 @@ function doCraft() {
 
   if (match.type === 'pickaxe' || match.type === 'axe') {
     addBlock(match.item.id);
+    // Set durability for new tool if none active
+    if (!toolDurability[match.item.id]) {
+      toolDurability[match.item.id] = match.item.durability;
+    }
   } else if (match.type === 'item') {
     addBlock(match.item.outputId, match.item.outputCount);
   }
