@@ -328,6 +328,7 @@ body::before {
   <div class="score-bar">
     <div class="score-item" id="starBar"><span>⭐</span> <span id="stars">0</span> Stars</div>
     <div class="score-item" id="streakBar"><span>🔥</span> <span id="streak">0</span> Streak</div>
+    <div class="score-item" id="gemBar"><span>💎</span> <span id="gems">0</span> Gems</div>
   </div>
 
   <div class="speed-toggle">
@@ -341,6 +342,8 @@ body::before {
     <button class="nav-tab" data-tab="match">🎯 Match</button>
     <button class="nav-tab" data-tab="quiz">🧠 Quiz</button>
     <button class="nav-tab" data-tab="sight">👀 Sight Words</button>
+    <button class="nav-tab" data-tab="mine">⛏️ Mine</button>
+    <button class="nav-tab" data-tab="collection">📖 Collection</button>
   </div>
 
   <div id="learn" class="section active">
@@ -371,6 +374,14 @@ body::before {
 
   <div id="sight" class="section">
     <div class="sight-words-area" id="sightWordsArea"></div>
+  </div>
+
+  <div id="mine" class="section">
+    <div id="mineArea"></div>
+  </div>
+
+  <div id="collection" class="section">
+    <div id="collectionArea"></div>
   </div>
 </div>
 
@@ -663,6 +674,8 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
     if (tab.dataset.tab === 'match') initMatch();
     if (tab.dataset.tab === 'quiz') initQuiz();
     if (tab.dataset.tab === 'sight') initSightWords();
+    if (tab.dataset.tab === 'mine') initMine();
+    if (tab.dataset.tab === 'collection') initCollection();
   });
 });
 
