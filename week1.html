@@ -404,11 +404,99 @@ const sightWords = [
 ];
 const sightColors = ['#FF6B6B','#A29BFE','#FFD93D','#00B894','#FF85CA','#74B9FF','#E17055'];
 
+// ===== MINING DATA =====
+const blocks = [
+  { id: 'dirt',     name: '泥土',   emoji: '🟫', tier: 1, weight: 40 },
+  { id: 'wood',     name: '木頭',   emoji: '🪵', tier: 1, weight: 35 },
+  { id: 'stone',    name: '石頭',   emoji: '🪨', tier: 2, weight: 30 },
+  { id: 'coal',     name: '煤炭',   emoji: '⬛', tier: 2, weight: 25 },
+  { id: 'iron',     name: '鐵礦',   emoji: '⬜', tier: 3, weight: 18 },
+  { id: 'copper',   name: '銅礦',   emoji: '🟧', tier: 3, weight: 15 },
+  { id: 'gold',     name: '金礦',   emoji: '🟡', tier: 4, weight: 8 },
+  { id: 'emerald',  name: '綠寶石', emoji: '💚', tier: 4, weight: 5 },
+  { id: 'diamond',  name: '鑽石',   emoji: '💎', tier: 5, weight: 3 },
+  { id: 'amethyst', name: '紫水晶', emoji: '🟣', tier: 5, weight: 2 },
+];
+
+const pickaxes = [
+  { id: 'wood_pick',  name: '木鎬',  emoji: '🪓', maxTier: 2, recipe: null },
+  { id: 'stone_pick', name: '石鎬',  emoji: '⛏️', maxTier: 3, recipe: { wood: 3, stone: 2 } },
+  { id: 'iron_pick',  name: '鐵鎬',  emoji: '⛏️', maxTier: 4, recipe: { wood: 2, iron: 3 } },
+  { id: 'gold_pick',  name: '金鎬',  emoji: '🔱', maxTier: 5, recipe: { iron: 2, gold: 3 } },
+];
+
+const houseStages = [
+  { name: '地基',  needs: { stone: 6 },             emoji: '🧱' },
+  { name: '牆壁',  needs: { wood: 8 },              emoji: '🏗️' },
+  { name: '屋頂',  needs: { wood: 4, iron: 2 },     emoji: '🏠' },
+  { name: '裝飾',  needs: { gold: 1, emerald: 1 },  emoji: '🏡' },
+];
+
+const tierColors = ['#8B7355', '#A0A0A0', '#C0C0C0', '#FFD700', '#B9F2FF'];
+
 // ===== STATE =====
 let stars = 0, streak = 0, currentFeeling = 'happy';
 let matchSelected = null, matchedPairs = new Set();
 let quizQuestions = [], quizIndex = 0, quizScore = 0, quizAnswered = false;
 let speechSpeed = 'normal'; // 'slow' or 'normal'
+
+// ===== MINING STATE =====
+let gems = 0;
+let inventory = {};
+let pickaxeLevel = 0;
+let houseProgress = 0;
+
+function saveGame() {
+  localStorage.setItem('mineGame', JSON.stringify({ gems, inventory, pickaxeLevel, houseProgress, stars, streak }));
+}
+
+function loadGame() {
+  try {
+    const d = JSON.parse(localStorage.getItem('mineGame'));
+    if (!d) return;
+    gems = d.gems || 0;
+    inventory = d.inventory || {};
+    pickaxeLevel = d.pickaxeLevel || 0;
+    houseProgress = d.houseProgress || 0;
+    stars = d.stars || 0;
+    streak = d.streak || 0;
+    document.getElementById('stars').textContent = Math.floor(stars);
+    document.getElementById('streak').textContent = streak;
+    updateGemDisplay();
+  } catch (e) { console.warn('Failed to load save', e); }
+}
+
+function addGems(n) {
+  gems += n;
+  updateGemDisplay();
+  saveGame();
+}
+
+function updateGemDisplay() {
+  const el = document.getElementById('gems');
+  if (el) el.textContent = gems;
+  const bar = document.getElementById('gemBar');
+  if (bar) { bar.classList.remove('pop'); void bar.offsetWidth; bar.classList.add('pop'); }
+}
+
+function getBlockCount(id) { return inventory[id] || 0; }
+
+function addBlock(id, n) {
+  inventory[id] = (inventory[id] || 0) + (n || 1);
+  saveGame();
+}
+
+function removeBlocks(recipe) {
+  for (const [id, count] of Object.entries(recipe)) {
+    inventory[id] = (inventory[id] || 0) - count;
+    if (inventory[id] <= 0) delete inventory[id];
+  }
+  saveGame();
+}
+
+function hasBlocks(recipe) {
+  return Object.entries(recipe).every(([id, count]) => getBlockCount(id) >= count);
+}
 
 // ===== TTS ENGINE =====
 // Primary: SpeechSynthesis with smart voice selection
@@ -533,6 +621,7 @@ function addStars(n) {
   el.classList.remove('pop');
   void el.offsetWidth;
   el.classList.add('pop');
+  saveGame();
 }
 
 function bumpStreak() {
@@ -692,7 +781,7 @@ function matchClick(item) {
     const f = feelings.find(x => x.word === item.dataset.word);
     speak(item.dataset.word);
     document.getElementById('matchFeedback').textContent = `✅ ${f?.emoji} ${f?.word} = ${f?.zh}！`;
-    addStars(1); bumpStreak();
+    addStars(1); bumpStreak(); addGems(1);
     setTimeout(() => {
       prev.classList.add('matched'); prev.classList.remove('correct');
       item.classList.add('matched'); item.classList.remove('correct');
@@ -701,7 +790,7 @@ function matchClick(item) {
     if (matchedPairs.size >= 6) {
       setTimeout(() => {
         document.getElementById('matchFeedback').textContent = '🎉 全部配對完成！太棒了！';
-        addStars(3); doConfetti();
+        addStars(3); doConfetti(); addGems(2);
       }, 700);
     }
   } else {
@@ -740,7 +829,7 @@ function renderQuiz() {
       <div class="result-detail">${quizScore} / ${quizQuestions.length} 答對</div>
       <button class="speak-btn primary" onclick="initQuiz()">🔄 再來一次</button>
     </div>`;
-    if (pct >= 75) { addStars(5); doConfetti(); }
+    if (pct >= 75) { addStars(5); doConfetti(); addGems(3); }
     return;
   }
 
@@ -781,7 +870,7 @@ function renderQuiz() {
       const correct = btn.dataset.word === q.feeling.word;
       if (correct) {
         btn.classList.add('correct-answer');
-        quizScore++; addStars(1); bumpStreak();
+        quizScore++; addStars(1); bumpStreak(); addGems(1);
         speak('Great job!');
       } else {
         btn.classList.add('wrong-answer');
