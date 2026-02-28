@@ -364,6 +364,79 @@ body::before {
 .mine-refresh:hover { transform: translateY(-2px); }
 .mine-refresh:disabled { opacity: 0.4; pointer-events: none; }
 
+/* ===== COLLECTION ===== */
+.collection-tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; }
+.collection-tab {
+  padding: 8px 16px; border-radius: 50px; border: 2px solid #DFE6E9;
+  background: white; font-family: 'Fredoka', sans-serif; font-size: 0.9rem;
+  font-weight: 600; cursor: pointer; color: #636E72; transition: all 0.2s;
+}
+.collection-tab.active { border-color: var(--accent); background: #F0EDFF; color: var(--accent); }
+
+.encyclopedia-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+}
+.block-card {
+  background: white; border-radius: var(--radius); padding: 14px;
+  text-align: center; box-shadow: 0 2px 10px var(--shadow);
+  border: 3px solid #DFE6E9; transition: all 0.3s;
+}
+.block-card.owned { border-color: #00B894; }
+.block-card.undiscovered { opacity: 0.4; }
+.block-card .block-emoji { font-size: 2.2rem; margin-bottom: 6px; }
+.block-card .block-name { font-family: 'Fredoka', sans-serif; font-size: 1rem; font-weight: 600; }
+.block-card .block-count { font-size: 0.85rem; color: #636E72; margin-top: 2px; }
+.block-card .block-tier { font-size: 0.7rem; color: var(--accent); margin-top: 2px; }
+
+.craft-area { max-width: 500px; margin: 0 auto; }
+.craft-card {
+  background: white; border-radius: var(--radius); padding: 18px;
+  margin-bottom: 14px; box-shadow: 0 2px 10px var(--shadow);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.craft-info { flex: 1; }
+.craft-name { font-family: 'Fredoka', sans-serif; font-size: 1.1rem; font-weight: 600; }
+.craft-recipe { font-size: 0.85rem; color: #636E72; margin-top: 4px; }
+.craft-recipe .has { color: #00B894; }
+.craft-recipe .need { color: #FF6B6B; }
+.craft-btn {
+  padding: 10px 20px; border-radius: 50px; border: none;
+  background: linear-gradient(135deg, #00B894, #00CEC9);
+  color: white; font-family: 'Fredoka', sans-serif; font-size: 0.95rem; font-weight: 600;
+  cursor: pointer; transition: all 0.3s;
+}
+.craft-btn:hover { transform: scale(1.05); }
+.craft-btn:disabled { opacity: 0.4; pointer-events: none; background: #BDC3C7; }
+.craft-current { text-align: center; font-family: 'Fredoka', sans-serif; color: #636E72; margin-bottom: 16px; font-size: 1rem; }
+
+.house-area { text-align: center; max-width: 400px; margin: 0 auto; }
+.house-visual {
+  font-size: 1.2rem; line-height: 1.8;
+  background: white; border-radius: var(--radius); padding: 24px;
+  box-shadow: 0 2px 10px var(--shadow); margin-bottom: 16px;
+  min-height: 180px; display: flex; align-items: center; justify-content: center;
+  white-space: pre; font-family: 'Fredoka', sans-serif;
+}
+.house-stage {
+  background: white; border-radius: 14px; padding: 14px 18px;
+  margin-bottom: 10px; box-shadow: 0 2px 10px var(--shadow);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.house-stage.done { border-left: 4px solid #00B894; }
+.house-stage.current { border-left: 4px solid var(--accent); }
+.house-stage.locked { opacity: 0.5; }
+.house-stage-info { text-align: left; }
+.house-stage-name { font-family: 'Fredoka', sans-serif; font-weight: 600; }
+.house-stage-needs { font-size: 0.85rem; color: #636E72; margin-top: 2px; }
+.house-build-btn {
+  padding: 8px 18px; border-radius: 50px; border: none;
+  background: linear-gradient(135deg, #FFD93D, #FDCB6E); color: #2D3436;
+  font-family: 'Fredoka', sans-serif; font-size: 0.9rem; font-weight: 600;
+  cursor: pointer; transition: all 0.3s;
+}
+.house-build-btn:disabled { opacity: 0.4; pointer-events: none; }
+
 @media (max-width: 600px) {
   .header h1 { font-size: 1.8rem; }
   .feelings-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
@@ -1094,6 +1167,211 @@ function mineCell(cell, block) {
 function updateMineRefreshBtn() {
   const btn = document.getElementById('mineRefresh');
   if (btn) btn.disabled = gems < 1;
+}
+
+// ===== COLLECTION =====
+let collectionView = 'encyclopedia';
+
+function initCollection() {
+  const area = document.getElementById('collectionArea');
+  area.textContent = '';
+
+  // Sub-tabs
+  const tabs = document.createElement('div');
+  tabs.className = 'collection-tabs';
+  ['encyclopedia', 'craft', 'house'].forEach(view => {
+    const labels = { encyclopedia: '📖 圖鑑', craft: '🔨 合成', house: '🏠 蓋房子' };
+    const btn = document.createElement('button');
+    btn.className = 'collection-tab' + (collectionView === view ? ' active' : '');
+    btn.textContent = labels[view];
+    btn.addEventListener('click', () => { collectionView = view; initCollection(); });
+    tabs.appendChild(btn);
+  });
+  area.appendChild(tabs);
+
+  const content = document.createElement('div');
+  content.id = 'collectionContent';
+  area.appendChild(content);
+
+  if (collectionView === 'encyclopedia') renderEncyclopedia(content);
+  else if (collectionView === 'craft') renderCraft(content);
+  else renderHouse(content);
+}
+
+function renderEncyclopedia(c) {
+  const discovered = Object.keys(inventory).length;
+  const counter = document.createElement('div');
+  counter.style.cssText = 'text-align:center;margin-bottom:12px;font-family:Fredoka,sans-serif;color:#636E72';
+  counter.textContent = `已發現 ${discovered} / ${blocks.length} 種方塊`;
+  c.appendChild(counter);
+
+  const grid = document.createElement('div');
+  grid.className = 'encyclopedia-grid';
+  blocks.forEach(b => {
+    const count = getBlockCount(b.id);
+    const owned = count > 0;
+    const card = document.createElement('div');
+    card.className = 'block-card ' + (owned ? 'owned' : 'undiscovered');
+    card.style.borderBottomColor = tierColors[b.tier - 1];
+
+    const emoji = document.createElement('div');
+    emoji.className = 'block-emoji';
+    emoji.textContent = owned ? b.emoji : '❓';
+    const name = document.createElement('div');
+    name.className = 'block-name';
+    name.textContent = owned ? b.name : '???';
+    const cnt = document.createElement('div');
+    cnt.className = 'block-count';
+    cnt.textContent = owned ? `x${count}` : '未發現';
+    const tier = document.createElement('div');
+    tier.className = 'block-tier';
+    tier.textContent = '⭐'.repeat(b.tier);
+
+    card.appendChild(emoji);
+    card.appendChild(name);
+    card.appendChild(cnt);
+    card.appendChild(tier);
+    grid.appendChild(card);
+  });
+  c.appendChild(grid);
+}
+
+function renderCraft(c) {
+  const currentPick = pickaxes[pickaxeLevel];
+  const current = document.createElement('div');
+  current.className = 'craft-current';
+  current.textContent = `目前工具：${currentPick.emoji} ${currentPick.name}`;
+  c.appendChild(current);
+
+  const area = document.createElement('div');
+  area.className = 'craft-area';
+
+  pickaxes.forEach((pick, i) => {
+    if (i === 0) return;
+    const alreadyHave = pickaxeLevel >= i;
+    const canCraft = !alreadyHave && pickaxeLevel === i - 1 && hasBlocks(pick.recipe);
+
+    const card = document.createElement('div');
+    card.className = 'craft-card';
+
+    const info = document.createElement('div');
+    info.className = 'craft-info';
+    const nameEl = document.createElement('div');
+    nameEl.className = 'craft-name';
+    nameEl.textContent = `${pick.emoji} ${pick.name} ${alreadyHave ? '✅' : ''}`;
+    info.appendChild(nameEl);
+
+    const recipeEl = document.createElement('div');
+    recipeEl.className = 'craft-recipe';
+    if (alreadyHave) {
+      recipeEl.textContent = '已擁有';
+    } else {
+      Object.entries(pick.recipe).forEach(([id, count], idx) => {
+        const b = blocks.find(x => x.id === id);
+        const have = getBlockCount(id);
+        const span = document.createElement('span');
+        span.className = have >= count ? 'has' : 'need';
+        span.textContent = `${b.emoji} ${b.name} ${have}/${count}`;
+        if (idx > 0) recipeEl.appendChild(document.createTextNode(' + '));
+        recipeEl.appendChild(span);
+      });
+    }
+    info.appendChild(recipeEl);
+    card.appendChild(info);
+
+    if (!alreadyHave) {
+      const btn = document.createElement('button');
+      btn.className = 'craft-btn';
+      btn.textContent = '合成';
+      btn.disabled = !canCraft;
+      btn.addEventListener('click', () => {
+        removeBlocks(pick.recipe);
+        pickaxeLevel = i;
+        saveGame();
+        doConfetti();
+        initCollection();
+      });
+      card.appendChild(btn);
+    }
+
+    area.appendChild(card);
+  });
+  c.appendChild(area);
+}
+
+function getHouseArt() {
+  const arts = [
+    '🌳  🌿  🌳\n\n   空地\n\n🌿  🌳  🌿',
+    '🌳       🌳\n\n🧱🧱🧱🧱\n🧱           🧱\n🧱🧱🧱🧱',
+    '🌳       🌳\n\n🧱🪵🪵🧱\n🪵           🪵\n🧱🪵🪵🧱',
+    '     🔺\n   / 🪵 \\\n  / 🪵🪵 \\\n🧱🪵🪵🧱\n🪵  🚪  🪵\n🧱🪵🪵🧱',
+    '    ⭐\n     🔺\n   / 🪵 \\\n  / 🪵🪵 \\\n🧱🪵🪵🧱\n🪵  🚪  🪵\n🧱💚🟡🧱',
+  ];
+  return arts[houseProgress] || arts[arts.length - 1];
+}
+
+function renderHouse(c) {
+  const houseArea = document.createElement('div');
+  houseArea.className = 'house-area';
+
+  const visual = document.createElement('div');
+  visual.className = 'house-visual';
+  visual.textContent = getHouseArt();
+  houseArea.appendChild(visual);
+
+  const stagesEl = document.createElement('div');
+  houseStages.forEach((stage, i) => {
+    const done = i < houseProgress;
+    const isCurrent = i === houseProgress;
+    const canBuild = isCurrent && hasBlocks(stage.needs);
+
+    const el = document.createElement('div');
+    el.className = 'house-stage ' + (done ? 'done' : isCurrent ? 'current' : 'locked');
+
+    const info = document.createElement('div');
+    info.className = 'house-stage-info';
+    const nameEl = document.createElement('div');
+    nameEl.className = 'house-stage-name';
+    nameEl.textContent = `${stage.emoji} ${stage.name} ${done ? '✅' : ''}`;
+    info.appendChild(nameEl);
+
+    const needsEl = document.createElement('div');
+    needsEl.className = 'house-stage-needs';
+    if (done) {
+      needsEl.textContent = '完成';
+    } else {
+      Object.entries(stage.needs).forEach(([id, count], idx) => {
+        const b = blocks.find(x => x.id === id);
+        const have = getBlockCount(id);
+        const span = document.createElement('span');
+        span.className = have >= count ? 'has' : 'need';
+        span.textContent = `${b.emoji} ${have}/${count}`;
+        if (idx > 0) needsEl.appendChild(document.createTextNode('  '));
+        needsEl.appendChild(span);
+      });
+    }
+    info.appendChild(needsEl);
+    el.appendChild(info);
+
+    if (isCurrent) {
+      const btn = document.createElement('button');
+      btn.className = 'house-build-btn';
+      btn.textContent = '建造';
+      btn.disabled = !canBuild;
+      btn.addEventListener('click', () => {
+        removeBlocks(stage.needs);
+        houseProgress++;
+        saveGame();
+        doConfetti();
+        initCollection();
+      });
+      el.appendChild(btn);
+    }
+
+    stagesEl.appendChild(el);
+  });
+  houseArea.appendChild(stagesEl);
+  c.appendChild(houseArea);
 }
 
 // ===== INIT =====
