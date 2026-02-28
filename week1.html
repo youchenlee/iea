@@ -37,19 +37,21 @@ body::before {
   z-index: 0;
 }
 
-.app { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 16px; }
+.app { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 16px; padding-top: 40px; }
 
-.header { text-align: center; padding: 20px 0 10px; }
+.header {
+  position: fixed; top: 10px; left: 14px; z-index: 50;
+}
 .header h1 {
   font-family: 'Fredoka', sans-serif;
-  font-size: 2.4rem;
+  font-size: 1.2rem;
   font-weight: 700;
   background: linear-gradient(135deg, #FF6B6B, #A29BFE, #FFD93D);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-.header .subtitle { font-size: 1rem; color: #636E72; margin-top: 4px; font-weight: 600; }
+.header .subtitle { display: none; }
 
 .score-bar {
   position: fixed; top: 8px; right: 12px; z-index: 50;
@@ -581,8 +583,53 @@ body::before {
 }
 .house-build-btn:disabled { opacity: 0.4; pointer-events: none; }
 
+/* ===== SETTINGS MODAL ===== */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(45, 52, 54, 0.5);
+  z-index: 200;
+  justify-content: center;
+  align-items: center;
+}
+.modal-overlay.active {
+  display: flex;
+}
+.modal-content {
+  background: white;
+  border-radius: var(--radius);
+  padding: 24px;
+  width: 90%;
+  max-width: 360px;
+  box-shadow: 0 8px 32px rgba(45, 52, 54, 0.2);
+  animation: fadeIn 0.3s ease;
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+.modal-close {
+  background: none; border: none;
+  font-size: 1.3rem; cursor: pointer;
+  color: #B2BEC3; transition: color 0.2s;
+  padding: 4px 8px; line-height: 1;
+}
+.modal-close:hover { color: var(--text); }
+.settings-btn {
+  border: none; cursor: pointer;
+  font-size: 0.85rem;
+  transition: transform 0.2s;
+}
+.settings-btn:hover { transform: scale(1.15); }
+
 @media (max-width: 600px) {
-  .header h1 { font-size: 1.8rem; }
+  .header h1 { font-size: 1rem; }
   .feelings-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
   .feeling-card { padding: 14px 8px; }
   .feeling-card .emoji { font-size: 2.2rem; }
@@ -609,23 +656,14 @@ body::before {
   <div class="header">
     <h1>Feelings Fun! 🎭</h1>
     <div class="subtitle">學習表達情緒的英文 · Learn to express feelings</div>
-    <div style="font-size:0.7rem;color:#B2BEC3;margin-top:2px;font-family:'Nunito',sans-serif;">v2.4.0</div>
   </div>
 
   <div class="score-bar">
-    <div class="score-item" id="starBar"><span>⭐</span> <span id="stars">0</span> Stars</div>
-    <div class="score-item" id="streakBar"><span>🔥</span> <span id="streak">0</span> Streak</div>
-    <div class="score-item" id="gemBar"><span>⚡</span> <span id="gems">0</span> 體力</div>
+    <div class="score-item" id="starBar"><span>⭐</span> <span id="stars">0</span></div>
+    <div class="score-item" id="streakBar"><span>🔥</span> <span id="streak">0</span></div>
+    <div class="score-item" id="gemBar"><span>⚡</span> <span id="gems">0</span></div>
+    <button class="score-item settings-btn" id="settingsBtn">⚙️</button>
   </div>
-
-  <details style="text-align:center;margin-bottom:6px;">
-    <summary style="font-size:0.8rem;color:#B2BEC3;cursor:pointer;font-family:'Nunito',sans-serif;">⚙️ 設定</summary>
-    <div class="speed-toggle">
-      <button class="speed-btn" data-speed="slow" id="speedSlow">🐢 Slow</button>
-      <button class="speed-btn active" data-speed="normal" id="speedNormal">🐇 Normal</button>
-    </div>
-    <div id="engineStatus" style="text-align:center;font-size:0.8rem;color:#B2BEC3;margin-top:4px;font-family:'Nunito',sans-serif;">🔍 偵測中...</div>
-  </details>
 
   <div class="nav-groups">
     <div class="nav-group">
@@ -691,6 +729,21 @@ body::before {
 </div>
 
 <div class="confetti-box" id="confettiBox"></div>
+
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span>⚙️ 設定</span>
+      <button class="modal-close" id="settingsClose">✕</button>
+    </div>
+    <div class="speed-toggle">
+      <button class="speed-btn" data-speed="slow" id="speedSlow">🐢 Slow</button>
+      <button class="speed-btn active" data-speed="normal" id="speedNormal">🐇 Normal</button>
+    </div>
+    <div id="engineStatus" style="text-align:center;font-size:0.8rem;color:#B2BEC3;margin-top:8px;font-family:'Nunito',sans-serif;">🔍 偵測中...</div>
+    <div style="text-align:center;font-size:0.7rem;color:#B2BEC3;margin-top:12px;font-family:'Nunito',sans-serif;">v2.5.0</div>
+  </div>
+</div>
 
 <script>
 // ===== DATA =====
@@ -2196,6 +2249,16 @@ function renderHouse(c) {
 // ===== INIT =====
 loadGame();
 initLearn();
+
+// Settings modal
+const settingsModal = document.getElementById('settingsModal');
+const settingsBtn = document.getElementById('settingsBtn');
+const settingsClose = document.getElementById('settingsClose');
+settingsBtn.addEventListener('click', () => { settingsModal.classList.add('active'); });
+settingsClose.addEventListener('click', () => { settingsModal.classList.remove('active'); });
+settingsModal.addEventListener('click', (e) => {
+  if (e.target === settingsModal) settingsModal.classList.remove('active');
+});
 
 // Pre-warm: load voices so pickBestVoice works on first click
 if (window.speechSynthesis) {
