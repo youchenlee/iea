@@ -370,7 +370,7 @@ body::before {
   user-select: none;
 }
 .mine-cell:hover:not(.mined):not(.locked) { transform: scale(1.12); z-index: 2; box-shadow: 0 0 8px rgba(255,255,255,0.5); }
-.mine-cell:active:not(.mined):not(.locked) { transform: scale(0.9); }
+
 .mine-cell.unexposed { opacity: 0.85; cursor: default; }
 .mine-cell.unexposed:hover { transform: none; box-shadow: inset 0 -2px 4px rgba(0,0,0,0.2); }
 .mine-cell.mined {
@@ -651,6 +651,15 @@ body::before {
   .craft-result-slot { width: 52px; height: 52px; font-size: 1.6rem; }
   .craft-inv-item { width: 40px; height: 40px; font-size: 1rem; }
   .collection-tab { padding: 6px 12px; font-size: 0.8rem; }
+}
+.mine-progress {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+  background: rgba(0,0,0,0.2); border-radius: 0 0 4px 4px;
+  overflow: hidden;
+}
+.mine-progress-fill {
+  height: 100%; width: 0%; background: #00B894;
+  transition: none;
 }
 </style>
 </head>
@@ -1707,6 +1716,95 @@ function updateExposure() {
   }
 }
 
+let mineHoldRAF = null;
+let mineHoldTarget = null;
+let mineHoldStart = 0;
+
+function getMineHoldDuration(cellData) {
+  if (cellData.animal) {
+    const sword = getEffectiveSword();
+    return sword ? sword.holdTime : 2000;
+  }
+  if (cellData.tier === 0) {
+    return getEffectiveAxeBonus() > 1 ? 600 : 1000;
+  }
+  const pickLevel = getEffectivePickaxeLevel();
+  const pick = pickaxes[pickLevel];
+  if (cellData.tier > pick.maxTier) return Infinity;
+  const tierDiff = cellData.tier - pickLevel;
+  if (tierDiff <= 0) return 800;
+  return 800 + tierDiff * 600;
+}
+
+function startMineHold(cellData) {
+  if (cellData.mined) return;
+  const duration = getMineHoldDuration(cellData);
+  if (duration === Infinity) {
+    playLockedSfx();
+    document.getElementById('mineResult').textContent = '🔒 需要更好的鎬才能挖第 ' + cellData.tier + ' 層！';
+    return;
+  }
+
+  let bar = cellData.el.querySelector('.mine-progress');
+  if (!bar) {
+    bar = document.createElement('div');
+    bar.className = 'mine-progress';
+    const fill = document.createElement('div');
+    fill.className = 'mine-progress-fill';
+    bar.appendChild(fill);
+    cellData.el.appendChild(bar);
+  }
+  const fill = bar.querySelector('.mine-progress-fill');
+  fill.style.width = '0%';
+
+  mineHoldStart = Date.now();
+  mineHoldTarget = { cellData, duration, fill };
+
+  function updateProgress() {
+    if (!mineHoldTarget) return;
+    const elapsed = Date.now() - mineHoldStart;
+    const pct = Math.min(100, (elapsed / duration) * 100);
+    fill.style.width = pct + '%';
+    if (elapsed >= duration) {
+      completeMineHold();
+      return;
+    }
+    mineHoldRAF = requestAnimationFrame(updateProgress);
+  }
+  mineHoldRAF = requestAnimationFrame(updateProgress);
+}
+
+function completeMineHold() {
+  if (!mineHoldTarget) return;
+  const { cellData } = mineHoldTarget;
+  cancelMineHold(false);
+
+  if (cellData.animal) {
+    attackAnimal(cellData);
+  } else if (cellData.tier === 0) {
+    chopTree(cellData);
+  } else {
+    for (let r = 0; r < mineData.length; r++) {
+      for (let c = 0; c < mineData[r].length; c++) {
+        if (mineData[r][c] === cellData) {
+          mineMountainCell(r, c, cellData);
+          return;
+        }
+      }
+    }
+  }
+}
+
+function cancelMineHold(resetBar) {
+  if (resetBar === undefined) resetBar = true;
+  if (mineHoldRAF) cancelAnimationFrame(mineHoldRAF);
+  mineHoldRAF = null;
+  if (resetBar && mineHoldTarget) {
+    mineHoldTarget.fill.style.width = '0%';
+  }
+  mineHoldTarget = null;
+}
+
 function initMine() {
   const area = document.getElementById('mineArea');
   const pick = pickaxes[getEffectivePickaxeLevel()];
@@ -1763,7 +1861,6 @@ function initMine() {
           cellEl.classList.add('animal');
           cellEl.textContent = animal.emoji;
           const animalData = { tier: 0, mined: false, block: null, animal: animal, el: cellEl };
-          cellEl.addEventListener('click', () => attackAnimal(animalData));
           rowData.push(animalData);
         } else {
           // Choppable trees — gives wood
@@ -1771,15 +1868,26 @@ function initMine() {
           cellEl.textContent = Math.random() > 0.5 ? '🌳' : '🌲';
           const woodBlock = blocks.find(b => b.id === 'wood');
           const treeData = { tier: 0, mined: false, block: woodBlock, el: cellEl };
-          cellEl.addEventListener('click', () => chopTree(treeData));
           rowData.push(treeData);
         }
       } else {
         const block = rollBlockForTier(rowDef.tier);
         cellEl.classList.add('tier' + rowDef.tier);
         const cellData = { tier: rowDef.tier, mined: false, block, el: cellEl };
-        cellEl.addEventListener('click', () => mineMountainCell(r, c, cellData));
         rowData.push(cellData);
+      }
+
+      // Hold-to-mine events (touch + mouse)
+      const holdData = rowData[rowData.length - 1];
+      if (holdData) {
+        const startHold = (e) => { e.preventDefault(); startMineHold(holdData); };
+        const endHold = () => cancelMineHold();
+        cellEl.addEventListener('mousedown', startHold);
+        cellEl.addEventListener('mouseup', endHold);
+        cellEl.addEventListener('mouseleave', endHold);
+        cellEl.addEventListener('touchstart', startHold, { passive: false });
+        cellEl.addEventListener('touchend', endHold);
+        cellEl.addEventListener('touchcancel', endHold);
       }
 
       rowEl.appendChild(cellEl);
