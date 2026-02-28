@@ -1094,6 +1094,7 @@ function loadGame() {
     if (d.equipped) equipped = { helmet: null, chest: null, legs: null, boots: null, ...d.equipped };
     // Also mark any current inventory items as discovered
     Object.keys(inventory).forEach(id => discovered.add(id));
+    Object.values(equipped).forEach(id => { if (id) discovered.add(id); });
     // Migration: convert old pickaxeLevel to inventory item
     if (d.pickaxeLevel > 0 && d.pickaxeLevel < pickaxes.length) {
       const oldPick = pickaxes[d.pickaxeLevel];
@@ -1995,6 +1996,7 @@ function attackAnimal(cellData) {
   if (brokeName) msg += ' ⚠️ ' + brokeName + ' 壞掉了！';
 
   document.getElementById('mineResult').textContent = msg;
+  updateExposure();
   updateMineRefreshBtn();
   saveGame();
 }
@@ -2067,7 +2069,6 @@ function mineMountainCell(row, col, cellData) {
     `${b.emoji} 挖到 ${b.name}！${rarity}${breakMsg}（擁有 ${getBlockCount(b.id)} 個）`;
 
   if (b.tier >= 4) doConfetti();
-  if (brokeName) updateExposure(); // tier access may have changed
   updateExposure();
   updateMineRefreshBtn();
   saveGame();
