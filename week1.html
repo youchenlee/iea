@@ -322,7 +322,7 @@ body::before {
   <div class="header">
     <h1>Feelings Fun! 🎭</h1>
     <div class="subtitle">學習表達情緒的英文 · Learn to express feelings</div>
-    <div style="font-size:0.7rem;color:#B2BEC3;margin-top:2px;font-family:'Nunito',sans-serif;">v1.3.1</div>
+    <div style="font-size:0.7rem;color:#B2BEC3;margin-top:2px;font-family:'Nunito',sans-serif;">v1.3.2</div>
   </div>
 
   <div class="score-bar">
@@ -494,6 +494,30 @@ function _doSpeak(text, forceSpeed) {
 }
 
 // Fallback: SpeechSynthesis (in case Google TTS is blocked)
+// macOS has many novelty voices (Albert, Bad News, Bells, etc.) — filter those out
+const noveltyVoices = new Set([
+  'Albert','Bad News','Bahh','Bells','Boing','Bubbles','Cellos','Good News',
+  'Jester','Organ','Superstar','Trinoids','Whisper','Wobble','Zarvox',
+  'Ralph','Fred','Kathy','Junior','Princess'
+]);
+
+function pickBestVoice(voices) {
+  // Prefer high-quality en-US voices by name
+  const preferred = ['Samantha','Alex','Karen','Daniel','Moira','Tessa','Ava','Tom','Allison'];
+  for (const name of preferred) {
+    const v = voices.find(v => v.name.includes(name) && v.lang.startsWith('en'));
+    if (v) return v;
+  }
+  // Any en-US voice that isn't a novelty voice
+  const enUS = voices.filter(v => v.lang === 'en-US' && !noveltyVoices.has(v.name));
+  if (enUS.length) return enUS[0];
+  // Any English voice that isn't novelty
+  const en = voices.filter(v => v.lang.startsWith('en') && !noveltyVoices.has(v.name));
+  if (en.length) return en[0];
+  // Last resort
+  return voices.find(v => v.lang.startsWith('en')) || voices[0];
+}
+
 function speakFallback(text, slow) {
   const synth = window.speechSynthesis;
   if (!synth) {
@@ -505,8 +529,7 @@ function speakFallback(text, slow) {
   u.lang = 'en-US';
   u.rate = slow ? 0.6 : 0.85;
   u.pitch = 1.05;
-  const voices = synth.getVoices();
-  const pick = voices.find(v => v.lang === 'en-US') || voices[0];
+  const pick = pickBestVoice(synth.getVoices());
   if (pick) u.voice = pick;
   u.onstart = () => updateEngineDisplay('speech-synthesis', pick ? pick.name : 'default voice');
   u.onerror = (e) => updateEngineDisplay('error', e.error);
