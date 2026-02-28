@@ -316,6 +316,7 @@ body::before {
   margin-top: 6px;
 }
 .sight-confirm:hover { transform: scale(1.05); }
+.sight-confirm:disabled { cursor: not-allowed; }
 
 /* Speed toggle */
 .speed-toggle {
@@ -328,6 +329,19 @@ body::before {
   cursor: pointer; color: #636E72; transition: all 0.2s;
 }
 .speed-btn.active { border-color: var(--accent); background: #F0EDFF; color: var(--accent); }
+
+.settings-section { margin-bottom: 16px; }
+.settings-label {
+  font-family: 'Fredoka', sans-serif; font-size: 0.9rem;
+  font-weight: 600; color: var(--text); margin-bottom: 6px;
+}
+.settings-reset {
+  padding: 8px 20px; border-radius: 50px; border: 2px solid #FF6B6B;
+  background: white; color: #FF6B6B;
+  font-family: 'Fredoka', sans-serif; font-size: 0.85rem; font-weight: 600;
+  cursor: pointer; transition: all 0.3s;
+}
+.settings-reset:hover { background: #FF6B6B; color: white; }
 
 .confetti-box { position: fixed; inset: 0; pointer-events: none; z-index: 100; }
 .confetti-piece {
@@ -655,9 +669,10 @@ body::before {
 }
 .modal-close:hover { color: var(--text); }
 .settings-btn {
-  border: none; cursor: pointer;
-  font-size: 0.85rem;
-  transition: transform 0.2s;
+  cursor: pointer; border: none;
+  background: rgba(255,255,255,0.9);
+  min-width: 36px; min-height: 36px;
+  display: flex; align-items: center; justify-content: center;
 }
 .settings-btn:hover { transform: scale(1.15); }
 
@@ -823,12 +838,26 @@ body::before {
       <span>⚙️ 設定</span>
       <button class="modal-close" id="settingsClose">✕</button>
     </div>
-    <div class="speed-toggle">
-      <button class="speed-btn" data-speed="slow" id="speedSlow">🐢 Slow</button>
-      <button class="speed-btn active" data-speed="normal" id="speedNormal">🐇 Normal</button>
+    <div class="settings-section">
+      <div class="settings-label">🔊 語速 Speed</div>
+      <div class="speed-toggle">
+        <button class="speed-btn" data-speed="slow" id="speedSlow">🐢 Slow</button>
+        <button class="speed-btn active" data-speed="normal" id="speedNormal">🐇 Normal</button>
+      </div>
     </div>
-    <div id="engineStatus" style="text-align:center;font-size:0.8rem;color:#B2BEC3;margin-top:8px;font-family:'Nunito',sans-serif;">🔍 偵測中...</div>
-    <div style="text-align:center;font-size:0.7rem;color:#B2BEC3;margin-top:12px;font-family:'Nunito',sans-serif;">v2.5.0</div>
+    <div class="settings-section">
+      <div class="settings-label">🔇 靜音 Mute</div>
+      <div class="speed-toggle">
+        <button class="speed-btn" id="muteOff">🔊 開</button>
+        <button class="speed-btn active" id="muteOn">🔇 關</button>
+      </div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-label">🗑️ 重置進度</div>
+      <button class="settings-reset" id="resetProgress">重置所有資料</button>
+    </div>
+    <div id="engineStatus" style="text-align:center;font-size:0.8rem;color:#B2BEC3;margin-top:12px;font-family:'Nunito',sans-serif;">🔍 偵測中...</div>
+    <div style="text-align:center;font-size:0.7rem;color:#B2BEC3;margin-top:8px;font-family:'Nunito',sans-serif;">v2.5.0</div>
   </div>
 </div>
 
@@ -1034,6 +1063,7 @@ let stars = 0, streak = 0, currentFeeling = 'happy';
 let matchSelected = null, matchedPairs = new Set();
 let quizQuestions = [], quizIndex = 0, quizScore = 0, quizAnswered = false;
 let speechSpeed = 'normal'; // 'slow' or 'normal'
+let isMuted = false;
 
 // ===== MINING STATE =====
 let gems = 0;
@@ -1273,9 +1303,9 @@ function speakWordThenSentence(word, sentence) {
 }
 
 // ===== SPEED TOGGLE =====
-document.querySelectorAll('.speed-btn').forEach(btn => {
+document.querySelectorAll('.speed-btn[data-speed]').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.speed-btn[data-speed]').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     speechSpeed = btn.dataset.speed;
   });
@@ -1289,6 +1319,7 @@ function getAudioCtx() {
 }
 
 function playMineSfx(tier) {
+  if (isMuted) return;
   const ctx = getAudioCtx();
   if (ctx.state === 'suspended') ctx.resume();
 
@@ -1331,6 +1362,7 @@ function playMineSfx(tier) {
 }
 
 function playLockedSfx() {
+  if (isMuted) return;
   const ctx = getAudioCtx();
   if (ctx.state === 'suspended') ctx.resume();
   const osc = ctx.createOscillator();
@@ -1345,6 +1377,7 @@ function playLockedSfx() {
 }
 
 function playCraftSfx() {
+  if (isMuted) return;
   const ctx = getAudioCtx();
   if (ctx.state === 'suspended') ctx.resume();
   // Ascending arpeggio
@@ -1362,6 +1395,7 @@ function playCraftSfx() {
 }
 
 function playPlaceSfx() {
+  if (isMuted) return;
   const ctx = getAudioCtx();
   if (ctx.state === 'suspended') ctx.resume();
   const osc = ctx.createOscillator();
@@ -1685,6 +1719,20 @@ function initSightWords() {
     card.appendChild(info);
     card.appendChild(playIcon);
 
+    // Create confirm button immediately (disabled)
+    const btn = document.createElement('button');
+    btn.className = 'sight-confirm';
+    btn.textContent = '🎤 我跟著唸了！+⚡';
+    btn.disabled = true;
+    btn.style.opacity = '0.4';
+
+    if (sightEarned.has(sw.word)) {
+      playIcon.textContent = '✅';
+      card.classList.add('earned');
+    } else {
+      card.appendChild(btn);
+    }
+
     card.addEventListener('click', () => {
       if (sightEarned.has(sw.word)) {
         speakWordThenSentence(sw.word, sw.sentence);
@@ -1692,24 +1740,23 @@ function initSightWords() {
       }
       card.classList.add('speaking');
       speakWordThenSentence(sw.word, sw.sentence);
-      const existing = card.querySelector('.sight-confirm');
-      if (existing) existing.remove();
+      // Enable button after audio plays
       setTimeout(() => {
         card.classList.remove('speaking');
         if (sightEarned.has(sw.word)) return;
-        const btn = document.createElement('button');
-        btn.className = 'sight-confirm';
-        btn.textContent = '🎤 我跟著唸了！+⚡';
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          sightEarned.add(sw.word);
-          addGems(1);
-          btn.remove();
-          card.classList.add('earned');
-          playIcon.textContent = '✅';
-        });
-        card.appendChild(btn);
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.style.animation = 'fadeIn 0.3s ease';
       }, 2500);
+    });
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      sightEarned.add(sw.word);
+      addGems(1);
+      btn.remove();
+      card.classList.add('earned');
+      playIcon.textContent = '✅';
     });
     area.appendChild(card);
   });
@@ -2818,6 +2865,27 @@ settingsBtn.addEventListener('click', () => { settingsModal.classList.add('activ
 settingsClose.addEventListener('click', () => { settingsModal.classList.remove('active'); });
 settingsModal.addEventListener('click', (e) => {
   if (e.target === settingsModal) settingsModal.classList.remove('active');
+});
+
+// Mute toggle
+isMuted = localStorage.getItem('isMuted') === 'true';
+const muteOffBtn = document.getElementById('muteOff');
+const muteOnBtn = document.getElementById('muteOn');
+function updateMuteUI() {
+  muteOffBtn.classList.toggle('active', !isMuted);
+  muteOnBtn.classList.toggle('active', isMuted);
+}
+updateMuteUI();
+muteOffBtn.addEventListener('click', () => { isMuted = false; localStorage.setItem('isMuted', 'false'); updateMuteUI(); });
+muteOnBtn.addEventListener('click', () => { isMuted = true; localStorage.setItem('isMuted', 'true'); updateMuteUI(); });
+
+// Reset progress
+document.getElementById('resetProgress').addEventListener('click', () => {
+  if (confirm('確定要重置所有遊戲進度嗎？此操作無法復原！')) {
+    localStorage.removeItem('mineGame');
+    localStorage.removeItem('isMuted');
+    location.reload();
+  }
 });
 
 // Pre-warm: load voices so pickBestVoice works on first click
