@@ -335,14 +335,6 @@ body::before {
   font-family: 'Fredoka', sans-serif; font-size: 0.9rem;
   font-weight: 600; color: var(--text); margin-bottom: 6px;
 }
-.settings-reset {
-  padding: 8px 20px; border-radius: 50px; border: 2px solid #FF6B6B;
-  background: white; color: #FF6B6B;
-  font-family: 'Fredoka', sans-serif; font-size: 0.85rem; font-weight: 600;
-  cursor: pointer; transition: all 0.3s;
-}
-.settings-reset:hover { background: #FF6B6B; color: white; }
-
 .confetti-box { position: fixed; inset: 0; pointer-events: none; z-index: 100; }
 .confetti-piece {
   position: absolute; width: 10px; height: 10px; border-radius: 2px;
@@ -445,8 +437,47 @@ body::before {
 .mine-result {
   text-align: center; margin-top: 12px; padding: 10px;
   font-family: 'Fredoka', sans-serif; font-size: 1.05rem; font-weight: 600;
-  min-height: 44px;
+  min-height: 44px; transition: background 0.3s;
 }
+.mine-result.tool-broke {
+  background: #FFEAA7; border-radius: 12px;
+  animation: toolBrokeFlash 1.5s ease-out;
+}
+@keyframes toolBrokeFlash {
+  0%, 20% { background: #FF6B6B; color: white; transform: scale(1.05); }
+  100% { background: #FFEAA7; color: inherit; transform: scale(1); }
+}
+.tool-slots { display: flex; gap: 8px; justify-content: center; margin: 8px 0; }
+.tool-slot {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 6px 10px; border-radius: 10px; border: 2px solid #DFE6E9;
+  background: white; cursor: pointer; transition: all 0.15s;
+  font-family: 'Fredoka', sans-serif; position: relative; user-select: none;
+  min-width: 64px;
+}
+.tool-slot:hover { border-color: #6C5CE7; background: #F8F7FF; }
+.tool-slot:active { transform: scale(0.96); }
+.tool-slot-label { font-size: 0.65rem; color: #B2BEC3; }
+.tool-slot-emoji { font-size: 1.4rem; line-height: 1.2; }
+.tool-slot-name { font-size: 0.75rem; font-weight: 600; color: #2D3436; white-space: nowrap; }
+.tool-slot-dur { font-size: 0.6rem; color: #B2BEC3; }
+.tool-picker {
+  position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+  background: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+  border: 1px solid #DFE6E9; z-index: 20; min-width: 150px;
+  padding: 6px 0; animation: pickerIn 0.15s ease-out;
+}
+@keyframes pickerIn { from { opacity: 0; transform: translateX(-50%) translateY(-4px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+.tool-picker-option {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px; cursor: pointer; font-family: 'Fredoka', sans-serif; font-size: 0.85rem;
+  transition: background 0.1s;
+}
+.tool-picker-option:hover { background: #F0EFFF; }
+.tool-picker-option.selected { background: #E8E6FF; font-weight: 600; }
+.tool-picker-option .opt-emoji { font-size: 1.1rem; }
+.tool-picker-option .opt-info { font-size: 0.7rem; color: #B2BEC3; margin-left: auto; }
+.tool-picker-backdrop { position: fixed; inset: 0; z-index: 19; }
 .mine-refresh {
   display: block; margin: 10px auto 0;
   padding: 10px 28px; border-radius: 50px; border: none;
@@ -699,10 +730,21 @@ body::before {
   .craft-result-slot { width: 52px; height: 52px; font-size: 1.6rem; }
   .craft-inv-item { width: 44px; height: 44px; font-size: 1.1rem; }
   .collection-tab { padding: 6px 12px; font-size: 0.8rem; }
-  .character-display.small { display: none; }
+  .character-display.small { display: none !important; }
   .equip-slot { min-width: 160px; padding: 6px 10px; }
   .equip-inv-item { width: 40px; height: 40px; font-size: 1.2rem; }
   .modal-content { min-width: auto; width: 90vw; }
+}
+.mine-cell.mining {
+  transform: scale(1.9) translateY(-20px);
+  z-index: 10;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+}
+.mine-cell.tree.mining, .mine-cell.animal.mining {
+  background: rgba(255,255,255,0.85);
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.1);
 }
 .mine-progress {
   position: absolute; bottom: 0; left: 0; right: 0; height: 7px;
@@ -714,11 +756,22 @@ body::before {
   transition: none;
 }
 .character-display {
-  display: flex; flex-direction: column; align-items: center;
-  gap: 2px; margin: 16px auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 2px;
+  justify-items: center; align-items: center;
+  margin: 12px auto; width: fit-content;
 }
-.character-row { font-size: 2rem; line-height: 1.1; text-align: center; }
+.char-cell { font-size: 2.8rem; line-height: 1.2; text-align: center; min-width: 2.4em; padding: 4px 2px; border-radius: 10px; }
+.char-cell.clickable { cursor: pointer; transition: background 0.15s; }
+.char-cell.clickable:hover { background: rgba(108,92,231,0.08); }
+.char-cell.clickable:active { background: rgba(108,92,231,0.15); transform: scale(0.95); }
+.char-cell.empty-slot { border: 2px dashed #DFE6E9; border-radius: 8px; min-height: 1.2em; }
+.char-cell-label { font-size: 0.7rem; color: #636E72; font-family: 'Fredoka', sans-serif; }
 .character-display.small { margin: 0; }
+.character-display.small .char-cell { font-size: 1.2rem; min-width: 1.6em; padding: 1px; }
+.character-display.small .char-cell { font-size: 1.1rem; line-height: 1.2; min-width: 1.5em; }
+.character-display.small .char-cell-label { display: none; }
 .character-display.small .character-row { font-size: 1.2rem; }
 
 .equip-area { text-align: center; }
@@ -852,12 +905,8 @@ body::before {
         <button class="speed-btn active" id="muteOn">🔇 關</button>
       </div>
     </div>
-    <div class="settings-section">
-      <div class="settings-label">🗑️ 重置進度</div>
-      <button class="settings-reset" id="resetProgress">重置所有資料</button>
-    </div>
     <div id="engineStatus" style="text-align:center;font-size:0.8rem;color:#B2BEC3;margin-top:12px;font-family:'Nunito',sans-serif;">🔍 偵測中...</div>
-    <div style="text-align:center;font-size:0.7rem;color:#B2BEC3;margin-top:8px;font-family:'Nunito',sans-serif;">v2.5.0</div>
+    <div style="text-align:center;font-size:0.7rem;color:#B2BEC3;margin-top:8px;font-family:'Nunito',sans-serif;">v2.6.0</div>
   </div>
 </div>
 
@@ -868,14 +917,14 @@ const feelings = [
   { word: 'sad',     zh: '難過的', emoji: '😢', color: '#74B9FF' },
   { word: 'angry',   zh: '生氣的', emoji: '😠', color: '#FF6B6B' },
   { word: 'excited', zh: '興奮的', emoji: '🤩', color: '#FF85CA' },
-  { word: 'silly',   zh: '傻傻的', emoji: '🤪', color: '#A29BFE' },
+  { word: 'silly',   zh: '可笑的', emoji: '🤪', color: '#A29BFE' },
   { word: 'tired',   zh: '累的',   emoji: '😴', color: '#B2BEC3' },
   { word: 'scared',  zh: '害怕的', emoji: '😨', color: '#81ECEC' },
   { word: 'bored',   zh: '無聊的', emoji: '😑', color: '#FFEAA7' },
   { word: 'sick',    zh: '不舒服的', emoji: '🤒', color: '#55EFC4' },
   { word: 'proud',   zh: '驕傲的', emoji: '😎', color: '#FD79A8' },
   { word: 'brave',   zh: '勇敢的', emoji: '💪', color: '#E17055' },
-  { word: 'mad',     zh: '很生氣', emoji: '😤', color: '#D63031' },
+  { word: 'mad',     zh: '生氣的', emoji: '😤', color: '#D63031' },
 ];
 
 const sightWords = [
@@ -885,7 +934,17 @@ const sightWords = [
   { word: 'duck',  zh: '鴨子', sentence: 'Look at the duck!' },
   { word: 'each',  zh: '每一個', sentence: 'Give one to each child.' },
   { word: 'egg',   zh: '蛋', sentence: 'I eat an egg.' },
-  { word: 'every', zh: '每個', sentence: 'Every day is special.' },
+  { word: 'every',  zh: '每個', sentence: 'Every day is special.' },
+  { word: 'over',   zh: '在…上方', sentence: 'The bird flew over the house.' },
+  { word: 'new',    zh: '新的', sentence: 'I got a new book.' },
+  { word: 'sound',  zh: '聲音', sentence: 'What is that sound?' },
+  { word: 'take',   zh: '拿', sentence: 'Please take one.' },
+  { word: 'only',   zh: '只有', sentence: 'I have only one.' },
+  { word: 'little', zh: '小的', sentence: 'The little cat is cute.' },
+  { word: 'work',   zh: '工作', sentence: 'We work together.' },
+  { word: 'know',   zh: '知道', sentence: 'I know the answer.' },
+  { word: 'place',  zh: '地方', sentence: 'This is a nice place.' },
+  { word: 'years',  zh: '年', sentence: 'I am six years old.' },
 ];
 const sightColors = ['#FF6B6B','#A29BFE','#FFD93D','#00B894','#FF85CA','#74B9FF','#E17055'];
 
@@ -893,7 +952,7 @@ const sightColors = ['#FF6B6B','#A29BFE','#FFD93D','#00B894','#FF85CA','#74B9FF'
 const blocks = [
   { id: 'dirt',     name: '泥土',   emoji: '🟫', tier: 1, weight: 40 },
   { id: 'wood',     name: '木頭',   emoji: '🪵', tier: 1, weight: 35 },
-  { id: 'stick',    name: '木棍',   emoji: '🥢', tier: 0, weight: 0 },
+  { id: 'stick',    name: '木棍',   emoji: '🥢', tier: 1, weight: 10 },
   { id: 'stone',    name: '石頭',   emoji: '🪨', tier: 2, weight: 30 },
   { id: 'coal',     name: '煤炭',   emoji: '⬛', tier: 2, weight: 25 },
   { id: 'iron',     name: '鐵礦',   emoji: '⬜', tier: 3, weight: 18 },
@@ -909,14 +968,17 @@ const blocks = [
   { id: 'feather',      name: '羽毛',   emoji: '🪶', tier: 0, weight: 0 },
   { id: 'wool',         name: '羊毛',   emoji: '🧶', tier: 0, weight: 0 },
   // Tools (tier 0, weight 0 = never mined, only crafted)
+  { id: 'wood_pick',    name: '木鎬',   emoji: '⛏️', tier: 0, weight: 0 },
   { id: 'stone_pick',   name: '石鎬',   emoji: '⛏️', tier: 0, weight: 0 },
   { id: 'iron_pick',    name: '鐵鎬',   emoji: '⛏️', tier: 0, weight: 0 },
   { id: 'gold_pick',    name: '金鎬',   emoji: '🔱', tier: 0, weight: 0 },
   { id: 'diamond_pick', name: '鑽石鎬', emoji: '⛏️', tier: 0, weight: 0 },
+  { id: 'wood_axe',     name: '木斧',   emoji: '🪓', tier: 0, weight: 0 },
   { id: 'stone_axe',    name: '石斧',   emoji: '🪓', tier: 0, weight: 0 },
   { id: 'iron_axe',     name: '鐵斧',   emoji: '🪓', tier: 0, weight: 0 },
   { id: 'gold_axe',     name: '金斧',   emoji: '🪓', tier: 0, weight: 0 },
   { id: 'diamond_axe',  name: '鑽石斧', emoji: '🪓', tier: 0, weight: 0 },
+  { id: 'wood_sword',    name: '木劍',   emoji: '🗡️', tier: 0, weight: 0 },
   { id: 'stone_sword',   name: '石劍',   emoji: '🗡️', tier: 0, weight: 0 },
   { id: 'iron_sword',    name: '鐵劍',   emoji: '🗡️', tier: 0, weight: 0 },
   { id: 'gold_sword',    name: '金劍',   emoji: '🗡️', tier: 0, weight: 0 },
@@ -941,7 +1003,10 @@ const blocks = [
 ];
 
 const pickaxes = [
-  { id: 'wood_pick',    name: '木鎬',   emoji: '⛏️', maxTier: 2, durability: Infinity, recipe: null, pattern: null },
+  { id: 'hands',        name: '手',     emoji: '✋', maxTier: 0, durability: Infinity, recipe: null, pattern: null },
+  { id: 'wood_pick',    name: '木鎬',   emoji: '⛏️', maxTier: 2, durability: Infinity,
+    recipe: { wood: 3, stick: 2 },
+    pattern: ['wood','wood','wood', null,'stick',null, null,'stick',null] },
   { id: 'stone_pick',   name: '石鎬',   emoji: '⛏️', maxTier: 3, durability: 30,
     recipe: { stick: 2, stone: 3 },
     pattern: ['stone','stone','stone', null,'stick',null, null,'stick',null] },
@@ -958,6 +1023,9 @@ const pickaxes = [
 
 // Axe recipes (XX. / XS. / .S.)
 const axes = [
+  { id: 'wood_axe',    name: '木斧',   emoji: '🪓', woodBonus: 2, durability: Infinity,
+    recipe: { wood: 3, stick: 2 },
+    pattern: ['wood','wood',null, 'wood','stick',null, null,'stick',null] },
   { id: 'stone_axe',   name: '石斧',   emoji: '🪓', woodBonus: 2, durability: 30,
     recipe: { stick: 2, stone: 3 },
     pattern: ['stone','stone',null, 'stone','stick',null, null,'stick',null] },
@@ -980,7 +1048,10 @@ const animals = [
 ];
 
 const swords = [
-  { id: 'wood_sword',    name: '木劍',   emoji: '🗡️', holdTime: 1500, durability: Infinity, recipe: null, pattern: null },
+  { id: 'hands',          name: '手',     emoji: '✋', holdTime: 2500, durability: Infinity, recipe: null, pattern: null },
+  { id: 'wood_sword',    name: '木劍',   emoji: '🗡️', holdTime: 1500, durability: Infinity,
+    recipe: { wood: 2, stick: 1 },
+    pattern: [null,'wood',null, null,'wood',null, null,'stick',null] },
   { id: 'stone_sword',   name: '石劍',   emoji: '🗡️', holdTime: 1000, durability: 30,
     recipe: { stick: 1, stone: 2 },
     pattern: [null,'stone',null, null,'stone',null, null,'stick',null] },
@@ -1072,29 +1143,28 @@ let houseProgress = 0;
 let toolDurability = {}; // { 'stone_pick': 28, ... } — remaining uses for active tool
 let discovered = new Set(); // permanently tracks every item ID ever obtained
 let equipped = { helmet: null, chest: null, legs: null, boots: null };
+let selectedTools = { pickaxe: null, axe: null, sword: null }; // null = auto (best)
 
-function getEffectivePickaxeLevel() {
-  let best = 0;
-  pickaxes.forEach((pick, idx) => {
-    if (idx === 0) return;
-    if (getBlockCount(pick.id) > 0) best = Math.max(best, idx);
-  });
-  return best;
-}
-
-function getEffectiveAxeBonus() {
-  let best = 1;
-  axes.forEach(axe => {
-    if (getBlockCount(axe.id) > 0) best = Math.max(best, axe.woodBonus);
-  });
-  return best;
-}
-
-// Returns tool def or null. Sets initial durability if needed.
 function getActiveTool(toolList) {
+  const selKey = toolList === pickaxes ? 'pickaxe' : toolList === swords ? 'sword' : 'axe';
+  const selId = selectedTools[selKey];
+  // Explicit "none" for axes
+  if (selId === '__none__' && toolList === axes) return null;
+  // Check manual selection
+  if (selId && selId !== '__none__') {
+    const sel = toolList.find(t => t.id === selId);
+    if (sel && (sel.id === 'hands' || getBlockCount(sel.id) > 0)) {
+      if (sel.durability !== Infinity && toolDurability[sel.id] === undefined) {
+        toolDurability[sel.id] = sel.durability;
+      }
+      return sel;
+    }
+    selectedTools[selKey] = null; // selection no longer valid
+  }
+  // Auto: pick best available
   for (let i = toolList.length - 1; i >= 0; i--) {
     const t = toolList[i];
-    if (i === 0 && (toolList === pickaxes || toolList === swords)) return t; // wood pick/sword always available
+    if (i === 0 && (toolList === pickaxes || toolList === swords)) return t;
     if (getBlockCount(t.id) > 0) {
       if (t.durability !== Infinity && toolDurability[t.id] === undefined) {
         toolDurability[t.id] = t.durability;
@@ -1102,7 +1172,17 @@ function getActiveTool(toolList) {
       return t;
     }
   }
-  return (toolList === pickaxes || toolList === swords) ? toolList[0] : null; // null = no axe owned
+  return (toolList === pickaxes || toolList === swords) ? toolList[0] : null;
+}
+
+function getEffectivePickaxeLevel() {
+  const pick = getActiveTool(pickaxes);
+  return pickaxes.indexOf(pick);
+}
+
+function getEffectiveAxeBonus() {
+  const axe = getActiveTool(axes);
+  return axe ? axe.woodBonus : 1;
 }
 
 function getEffectiveSword() {
@@ -1142,7 +1222,7 @@ function getToolDurabilityText(tool) {
 }
 
 function saveGame() {
-  localStorage.setItem('mineGame', JSON.stringify({ gems, inventory, houseProgress, stars, streak, craftGrid, toolDurability, discovered: [...discovered], equipped }));
+  localStorage.setItem('mineGame', JSON.stringify({ gems, inventory, houseProgress, stars, streak, craftGrid, toolDurability, discovered: [...discovered], equipped, selectedTools }));
 }
 
 function loadGame() {
@@ -1154,12 +1234,13 @@ function loadGame() {
     toolDurability = d.toolDurability || {};
     if (d.discovered) discovered = new Set(d.discovered);
     if (d.equipped) equipped = { helmet: null, chest: null, legs: null, boots: null, ...d.equipped };
+    if (d.selectedTools) selectedTools = { pickaxe: null, axe: null, sword: null, ...d.selectedTools };
     // Also mark any current inventory items as discovered
     Object.keys(inventory).forEach(id => discovered.add(id));
     Object.values(equipped).forEach(id => { if (id) discovered.add(id); });
-    // Migration: convert old pickaxeLevel to inventory item
-    if (d.pickaxeLevel > 0 && d.pickaxeLevel < pickaxes.length) {
-      const oldPick = pickaxes[d.pickaxeLevel];
+    // Migration: convert old pickaxeLevel to inventory item (index shifted by +1 for hands entry)
+    if (d.pickaxeLevel > 0 && (d.pickaxeLevel + 1) < pickaxes.length) {
+      const oldPick = pickaxes[d.pickaxeLevel + 1];
       if (!inventory[oldPick.id]) inventory[oldPick.id] = 1;
     }
     houseProgress = d.houseProgress || 0;
@@ -1468,7 +1549,7 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
     if (tab.dataset.tab === 'match') { if (matchedPairs.size >= 6) initMatch(); }
     if (tab.dataset.tab === 'quiz') { if (quizIndex === 0 || quizIndex >= quizQuestions.length) initQuiz(); }
     if (tab.dataset.tab === 'sight') { if (!document.getElementById('sightWordsArea').children.length) initSightWords(); }
-    if (tab.dataset.tab === 'mine') initMine();
+    if (tab.dataset.tab === 'mine') { if (!mineData.length) initMine(); else refreshMineHeader(); }
     if (tab.dataset.tab === 'collection') initCollection();
   });
 });
@@ -1838,6 +1919,22 @@ function updateExposure() {
   }
 }
 
+function resetCellProgress(el) {
+  const fill = el.querySelector('.mine-progress-fill');
+  if (fill) fill.style.width = '0%';
+}
+
+function showMineResult(msg, toolBroke) {
+  const el = document.getElementById('mineResult');
+  el.textContent = msg;
+  el.classList.remove('tool-broke');
+  if (toolBroke) {
+    // Force reflow to restart animation
+    void el.offsetWidth;
+    el.classList.add('tool-broke');
+  }
+}
+
 let mineHoldRAF = null;
 let mineHoldTarget = null;
 let mineHoldStart = 0;
@@ -1848,7 +1945,9 @@ function getMineHoldDuration(cellData) {
     return sword ? sword.holdTime : 2000;
   }
   if (cellData.tier === 0) {
-    return getEffectiveAxeBonus() > 1 ? 600 : 1000;
+    const axe = getActiveTool(axes);
+    if (!axe) return 2000; // bare hands
+    return axe.woodBonus >= 3 ? 600 : 1000; // iron+ axe : wood/stone axe
   }
   const pickLevel = getEffectivePickaxeLevel();
   const pick = pickaxes[pickLevel];
@@ -1863,7 +1962,9 @@ function startMineHold(cellData) {
   const duration = getMineHoldDuration(cellData);
   if (duration === Infinity) {
     playLockedSfx();
-    document.getElementById('mineResult').textContent = '🔒 需要更好的鎬才能挖第 ' + cellData.tier + ' 層！';
+    const needed = pickaxes.find(p => p.maxTier >= cellData.tier && p.id !== 'hands');
+    const neededName = needed ? needed.name : '更好的鎬';
+    showMineResult('🔒 需要 ' + neededName + ' 以上才能挖第 ' + cellData.tier + ' 層！', false);
     return;
   }
 
@@ -1879,6 +1980,7 @@ function startMineHold(cellData) {
   const fill = bar.querySelector('.mine-progress-fill');
   fill.style.width = '0%';
 
+  cellData.el.classList.add('mining');
   mineHoldStart = Date.now();
   mineHoldTarget = { cellData, duration, fill };
 
@@ -1921,8 +2023,9 @@ function cancelMineHold(resetBar) {
   if (resetBar === undefined) resetBar = true;
   if (mineHoldRAF) cancelAnimationFrame(mineHoldRAF);
   mineHoldRAF = null;
-  if (resetBar && mineHoldTarget) {
-    mineHoldTarget.fill.style.width = '0%';
+  if (mineHoldTarget) {
+    mineHoldTarget.cellData.el.classList.remove('mining');
+    if (resetBar) mineHoldTarget.fill.style.width = '0%';
   }
   mineHoldTarget = null;
 }
@@ -1938,15 +2041,10 @@ function initMine() {
   header.className = 'mine-header';
   const h3 = document.createElement('h3');
   h3.textContent = '⛏️ 挖礦 Mine';
-  const pickInfo = document.createElement('div');
-  pickInfo.className = 'mine-pickaxe';
-  const pickDur = getToolDurabilityText(pick);
-  const activeAxe = getActiveTool(axes);
-  const axeBonus = getEffectiveAxeBonus();
-  const axeLabel = axeBonus > 1 ? `  |  🪓 ${activeAxe.name}${getToolDurabilityText(activeAxe)}（砍樹 x${axeBonus}）` : '';
-  const activeSword = getEffectiveSword();
-  const swordLabel = activeSword && activeSword.id !== 'wood_sword' ? '  |  🗡️ ' + activeSword.name + getToolDurabilityText(activeSword) : '';
-  pickInfo.textContent = `⛏️ ${pick.name}${pickDur}（可挖第 ${pick.maxTier} 層）${axeLabel}${swordLabel}`;
+  const toolChips = document.createElement('div');
+  toolChips.className = 'tool-slots';
+  toolChips.id = 'toolChips';
+  renderToolChips(toolChips);
   const costInfo = document.createElement('div');
   costInfo.className = 'mine-cost';
   costInfo.textContent = '每格花費 1 ⚡ 體力';
@@ -1954,10 +2052,16 @@ function initMine() {
   holdHint.className = 'mine-hold-hint';
   holdHint.textContent = '👆 按住不放來挖礦！Hold to mine!';
   header.appendChild(h3);
-  header.appendChild(pickInfo);
+  header.appendChild(toolChips);
   header.appendChild(costInfo);
   header.appendChild(holdHint);
   area.appendChild(header);
+
+  // Result (above mountain so it's visible on short screens)
+  const result = document.createElement('div');
+  result.className = 'mine-result';
+  result.id = 'mineResult';
+  area.appendChild(result);
 
   // Mountain
   const mountain = document.createElement('div');
@@ -2034,12 +2138,6 @@ function initMine() {
 
   area.appendChild(mineLayout);
 
-  // Result
-  const result = document.createElement('div');
-  result.className = 'mine-result';
-  result.id = 'mineResult';
-  area.appendChild(result);
-
   // Refresh button
   const refreshBtn = document.createElement('button');
   refreshBtn.className = 'mine-refresh';
@@ -2056,6 +2154,7 @@ function attackAnimal(cellData) {
   if (cellData.mined) return;
   if (gems < 1) {
     playLockedSfx();
+    resetCellProgress(cellData.el);
     document.getElementById('mineResult').textContent = '⚡ 體力不足！去答題補充吧！';
     return;
   }
@@ -2076,9 +2175,10 @@ function attackAnimal(cellData) {
     const b = blocks.find(x => x.id === drop.id);
     msg += ' ' + b.emoji + b.name + ' x' + count;
   });
-  if (brokeName) msg += ' ⚠️ ' + brokeName + ' 壞掉了！';
+  if (brokeName) msg += '\n💥 ' + brokeName + ' 壞掉了！';
 
-  document.getElementById('mineResult').textContent = msg;
+  showMineResult(msg, !!brokeName);
+  if (brokeName) refreshToolChips();
   updateExposure();
   updateMineRefreshBtn();
   saveGame();
@@ -2088,6 +2188,7 @@ function chopTree(cellData) {
   if (cellData.mined) return;
   if (gems < 1) {
     playLockedSfx();
+    resetCellProgress(cellData.el);
     document.getElementById('mineResult').textContent = '⚡ 體力不足！去答題補充吧！';
     return;
   }
@@ -2099,11 +2200,14 @@ function chopTree(cellData) {
   const activeAxe = getActiveTool(axes);
   const woodCount = getEffectiveAxeBonus();
   addBlock('wood', woodCount);
+  const stickDrop = Math.random() < 0.5 ? 1 : 0;
+  if (stickDrop) addBlock('stick', stickDrop);
   const brokeName = useTool(activeAxe);
   const axeMsg = woodCount > 1 ? ` (🪓 斧頭加成 x${woodCount})` : '';
-  const breakMsg = brokeName ? ` ⚠️ ${brokeName} 壞掉了！` : '';
-  document.getElementById('mineResult').textContent =
-    `🪵 砍到木頭 x${woodCount}！${axeMsg}${breakMsg}（擁有 ${getBlockCount('wood')} 個）`;
+  const stickMsg = stickDrop ? ` + 🥢 木棍 x${stickDrop}` : '';
+  const breakMsg = brokeName ? `\n💥 ${brokeName} 壞掉了！` : '';
+  showMineResult(`🪵 木頭 x${woodCount}${stickMsg}${axeMsg}${breakMsg}`, !!brokeName);
+  if (brokeName) refreshToolChips();
   updateExposure();
   updateMineRefreshBtn();
   saveGame();
@@ -2123,6 +2227,7 @@ function mineMountainCell(row, col, cellData) {
 
   if (gems < 1) {
     playLockedSfx();
+    resetCellProgress(cellData.el);
     document.getElementById('mineResult').textContent = '⚡ 體力不足！去答題補充吧！';
     return;
   }
@@ -2147,10 +2252,10 @@ function mineMountainCell(row, col, cellData) {
 
   const b = cellData.block;
   const rarity = b.tier >= 4 ? ' ✨ 稀有！' : b.tier >= 3 ? ' 不錯！' : '';
-  const breakMsg = brokeName ? ` ⚠️ ${brokeName} 壞掉了！` : '';
-  document.getElementById('mineResult').textContent =
-    `${b.emoji} 挖到 ${b.name}！${rarity}${breakMsg}（擁有 ${getBlockCount(b.id)} 個）`;
+  const breakMsg = brokeName ? `\n💥 ${brokeName} 壞掉了！` : '';
+  showMineResult(`${b.emoji} 挖到 ${b.name}！${rarity}${breakMsg}（擁有 ${getBlockCount(b.id)} 個）`, !!brokeName);
 
+  if (brokeName) refreshToolChips();
   if (b.tier >= 4) doConfetti();
   updateExposure();
   updateMineRefreshBtn();
@@ -2162,6 +2267,190 @@ function updateMineRefreshBtn() {
   if (btn) btn.disabled = gems < 1;
 }
 
+function renderToolChips(container) {
+  container.textContent = '';
+  const pick = getActiveTool(pickaxes);
+  const axe = getActiveTool(axes);
+  const sword = getEffectiveSword();
+
+  const slots = [
+    { category: '鎬', tool: pick, fallbackEmoji: '✋', fallbackName: '手', type: 'pickaxe' },
+    { category: '斧', tool: axe,  fallbackEmoji: '—',  fallbackName: '無', type: 'axe' },
+    { category: '劍', tool: sword, fallbackEmoji: '✋', fallbackName: '手', type: 'sword' },
+  ];
+
+  slots.forEach(s => {
+    const slot = document.createElement('div');
+    slot.className = 'tool-slot';
+    const label = document.createElement('div');
+    label.className = 'tool-slot-label';
+    label.textContent = s.category;
+    const emoji = document.createElement('div');
+    emoji.className = 'tool-slot-emoji';
+    emoji.textContent = s.tool ? s.tool.emoji : s.fallbackEmoji;
+    const name = document.createElement('div');
+    name.className = 'tool-slot-name';
+    name.textContent = s.tool && s.tool.id !== 'hands' ? s.tool.name : s.fallbackName;
+    slot.appendChild(label);
+    slot.appendChild(emoji);
+    slot.appendChild(name);
+    if (s.tool && s.tool.id !== 'hands' && s.tool.durability !== Infinity) {
+      const dur = document.createElement('div');
+      dur.className = 'tool-slot-dur';
+      dur.textContent = getToolDurabilityText(s.tool);
+      slot.appendChild(dur);
+    }
+    slot.addEventListener('click', (e) => { e.stopPropagation(); openToolPicker(slot, s.type); });
+    container.appendChild(slot);
+  });
+}
+
+function openToolPicker(chipEl, type) {
+  // Close any existing picker
+  closeToolPicker();
+
+  const toolList = type === 'pickaxe' ? pickaxes : type === 'axe' ? axes : swords;
+  const selKey = type;
+
+  // Build available tools
+  const options = [];
+  toolList.forEach(t => {
+    const isHands = t.id === 'hands';
+    const owned = isHands || getBlockCount(t.id) > 0;
+    if (!owned) return;
+    options.push(t);
+  });
+  // For axes, add "none" option
+  if (type === 'axe') {
+    options.unshift(null); // represents "no axe"
+  }
+
+  if (options.length <= 1 && type !== 'axe') return; // nothing to pick
+
+  // Backdrop
+  const backdrop = document.createElement('div');
+  backdrop.className = 'tool-picker-backdrop';
+  backdrop.addEventListener('click', closeToolPicker);
+  document.body.appendChild(backdrop);
+
+  // Picker
+  const picker = document.createElement('div');
+  picker.className = 'tool-picker';
+  picker.id = 'activeToolPicker';
+
+  const currentTool = getActiveTool(toolList);
+  const currentId = currentTool ? currentTool.id : null;
+
+  options.forEach(t => {
+    const opt = document.createElement('div');
+    opt.className = 'tool-picker-option';
+    if (t === null) {
+      opt.innerHTML = '<span class="opt-emoji">—</span> 不使用';
+      if (!currentTool) opt.classList.add('selected');
+      opt.addEventListener('click', () => {
+        selectedTools.axe = '__none__';
+        saveGame(); closeToolPicker(); refreshToolChips(); updateExposure();
+        if (collectionView === 'equip') initCollection();
+      });
+    } else {
+      const isHands = t.id === 'hands';
+      const dur = getToolDurabilityText(t);
+      const info = type === 'pickaxe' && !isHands ? '可挖第 ' + t.maxTier + ' 層' :
+                   type === 'axe' ? '砍樹 x' + t.woodBonus : '';
+      opt.innerHTML = `<span class="opt-emoji">${t.emoji}</span> ${isHands ? '手' : t.name}${info ? '<span class="opt-info">' + info + '</span>' : ''}${dur ? '<span class="opt-info">' + dur + '</span>' : ''}`;
+      if (t.id === currentId) opt.classList.add('selected');
+      opt.addEventListener('click', () => {
+        selectedTools[selKey] = t.id;
+        saveGame(); closeToolPicker(); refreshToolChips(); updateExposure();
+        if (collectionView === 'equip') initCollection();
+      });
+    }
+    picker.appendChild(opt);
+  });
+
+  chipEl.appendChild(picker);
+}
+
+function closeToolPicker() {
+  const picker = document.getElementById('activeToolPicker');
+  if (picker) picker.remove();
+  const backdrop = document.querySelector('.tool-picker-backdrop');
+  if (backdrop) backdrop.remove();
+}
+
+function refreshToolChips() {
+  const el = document.getElementById('toolChips');
+  if (el) renderToolChips(el);
+  const mc = document.getElementById('mineCharacter');
+  if (mc) renderCharacter(mc, 'small');
+}
+
+function openArmorPicker(cellEl, slot) {
+  closeToolPicker();
+  const slotNames = { helmet: '頭盔', chest: '盔甲', legs: '褲子', boots: '鞋子' };
+
+  // Build options: unequip + available armor for this slot
+  const options = [];
+  if (equipped[slot]) options.push({ id: '__unequip__', emoji: '❌', name: '脫下' });
+  blocks.forEach(b => {
+    if (!b.id.includes('_' + slot)) return;
+    const count = getBlockCount(b.id);
+    if (count <= 0 && b.id !== equipped[slot]) return;
+    options.push({ id: b.id, emoji: b.emoji, name: b.name, count, wearing: b.id === equipped[slot] });
+  });
+
+  if (options.length === 0) return; // nothing to do
+
+  const backdrop = document.createElement('div');
+  backdrop.className = 'tool-picker-backdrop';
+  backdrop.addEventListener('click', closeToolPicker);
+  document.body.appendChild(backdrop);
+
+  const picker = document.createElement('div');
+  picker.className = 'tool-picker';
+  picker.id = 'activeToolPicker';
+
+  // Title
+  const title = document.createElement('div');
+  title.style.cssText = 'padding:8px 14px 4px;font-family:Fredoka,sans-serif;font-size:0.75rem;color:#B2BEC3;';
+  title.textContent = slotNames[slot];
+  picker.appendChild(title);
+
+  options.forEach(o => {
+    const opt = document.createElement('div');
+    opt.className = 'tool-picker-option';
+    if (o.wearing) opt.classList.add('selected');
+    const countText = o.count ? ' x' + o.count : '';
+    opt.innerHTML = `<span class="opt-emoji">${o.emoji}</span> ${o.name}${countText}`;
+    opt.addEventListener('click', () => {
+      if (o.id === '__unequip__') {
+        addBlock(equipped[slot]);
+        equipped[slot] = null;
+      } else if (o.wearing) {
+        // Already wearing, unequip
+        addBlock(equipped[slot]);
+        equipped[slot] = null;
+      } else {
+        // Equip: return current to inventory, take new from inventory
+        if (equipped[slot]) addBlock(equipped[slot]);
+        inventory[o.id] = (inventory[o.id] || 1) - 1;
+        if (inventory[o.id] <= 0) delete inventory[o.id];
+        equipped[slot] = o.id;
+      }
+      saveGame(); closeToolPicker(); initCollection();
+    });
+    picker.appendChild(opt);
+  });
+
+  cellEl.appendChild(picker);
+}
+
+function refreshMineHeader() {
+  refreshToolChips();
+  updateExposure();
+  updateMineRefreshBtn();
+}
+
 // ===== COLLECTION =====
 let collectionView = 'encyclopedia';
 
@@ -2170,27 +2459,71 @@ function renderCharacter(container, size) {
   const display = document.createElement('div');
   display.className = 'character-display' + (size === 'small' ? ' small' : '');
 
-  const getEmoji = (slot, fallback) => {
-    if (!equipped[slot]) return fallback;
+  const getEquip = (slot, fallback) => {
+    if (!equipped[slot]) return { emoji: fallback, name: null };
     const b = blocks.find(x => x.id === equipped[slot]);
-    return b ? b.emoji : fallback;
+    return b ? { emoji: b.emoji, name: b.name } : { emoji: fallback, name: null };
   };
 
-  const rows = [getEmoji('helmet', '😊'), getEmoji('chest', '👕'), getEmoji('legs', '👖'), getEmoji('boots', '👟')];
-  rows.forEach(emoji => {
-    const row = document.createElement('div');
-    row.className = 'character-row';
-    row.textContent = emoji;
-    display.appendChild(row);
-  });
+  const pick = getActiveTool(pickaxes);
+  const sword = getEffectiveSword();
+  const emptyFallback = size === 'small' ? '·' : '';
+  const helmet = getEquip('helmet', size === 'small' ? '😊' : emptyFallback);
+  const chest = getEquip('chest', emptyFallback);
+  const legs = getEquip('legs', emptyFallback);
+  const boots = getEquip('boots', emptyFallback);
 
-  const pick = pickaxes[getEffectivePickaxeLevel()];
-  const toolRow = document.createElement('div');
-  toolRow.className = 'character-row';
-  toolRow.style.fontSize = size === 'small' ? '0.8rem' : '1.2rem';
-  toolRow.style.marginTop = '4px';
-  toolRow.textContent = pick.emoji;
-  display.appendChild(toolRow);
+  // Grid: 3 columns × 4 rows
+  //   _  頭  _
+  //  鎬  衣  劍
+  //   _  褲  _
+  //   _  鞋  _
+  const grid = [
+    { emoji: '',           label: '',                          action: null },
+    { emoji: helmet.emoji, label: helmet.name || '頭',        action: { type: 'armor', slot: 'helmet' } },
+    { emoji: '',           label: '',                          action: null },
+    { emoji: pick.emoji,   label: pick.id !== 'hands' ? pick.name : '手', action: { type: 'tool', toolType: 'pickaxe' } },
+    { emoji: chest.emoji,  label: chest.name || '衣',         action: { type: 'armor', slot: 'chest' } },
+    { emoji: sword.emoji,  label: sword.id !== 'hands' ? sword.name : '手', action: { type: 'tool', toolType: 'sword' } },
+    { emoji: '',           label: '',                          action: null },
+    { emoji: legs.emoji,   label: legs.name || '褲',          action: { type: 'armor', slot: 'legs' } },
+    { emoji: '',           label: '',                          action: null },
+    { emoji: '',           label: '',                          action: null },
+    { emoji: boots.emoji,  label: boots.name || '鞋',         action: { type: 'armor', slot: 'boots' } },
+    { emoji: '',           label: '',                          action: null },
+  ];
+
+  grid.forEach(cell => {
+    const el = document.createElement('div');
+    el.className = 'char-cell';
+    const hasContent = cell.emoji || cell.action;
+    if (hasContent) {
+      if (cell.emoji) {
+        el.textContent = cell.emoji;
+      } else if (cell.action) {
+        el.classList.add('empty-slot');
+      }
+      if (cell.label) {
+        const lbl = document.createElement('div');
+        lbl.className = 'char-cell-label';
+        lbl.textContent = cell.label;
+        el.appendChild(lbl);
+      }
+      if (cell.action && size !== 'small') {
+        el.classList.add('clickable');
+        el.style.position = 'relative';
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (cell.action.type === 'tool') {
+            openToolPicker(el, cell.action.toolType);
+          } else {
+            openArmorPicker(el, cell.action.slot);
+          }
+        });
+      }
+    }
+    display.appendChild(el);
+  });
 
   container.appendChild(display);
 }
@@ -2748,108 +3081,15 @@ function renderEquipment(c) {
   const area = document.createElement('div');
   area.className = 'equip-area';
 
+  const hint = document.createElement('div');
+  hint.style.cssText = 'text-align:center;font-family:Fredoka,sans-serif;font-size:0.8rem;color:#B2BEC3;margin-bottom:4px;';
+  hint.textContent = '👆 點擊部位可更換裝備與工具';
+  area.appendChild(hint);
+
   const charContainer = document.createElement('div');
   renderCharacter(charContainer, 'large');
   area.appendChild(charContainer);
 
-  const slotsEl = document.createElement('div');
-  slotsEl.className = 'equip-slots';
-  const slotLabels = { helmet: '🪖 頭盔', chest: '🦺 盔甲', legs: '👖 褲子', boots: '👢 鞋子' };
-
-  armorSlots.forEach(slot => {
-    const slotEl = document.createElement('div');
-    slotEl.className = 'equip-slot';
-
-    const label = document.createElement('div');
-    label.className = 'equip-slot-label';
-    label.textContent = slotLabels[slot];
-    slotEl.appendChild(label);
-
-    const itemEl = document.createElement('div');
-    itemEl.className = 'equip-slot-item';
-
-    if (equipped[slot]) {
-      const b = blocks.find(x => x.id === equipped[slot]);
-      itemEl.textContent = b ? b.emoji : '';
-      const nameEl = document.createElement('div');
-      nameEl.className = 'equip-slot-name';
-      nameEl.textContent = b ? b.name : '';
-      slotEl.appendChild(itemEl);
-      slotEl.appendChild(nameEl);
-      slotEl.addEventListener('click', () => {
-        addBlock(equipped[slot]);
-        equipped[slot] = null;
-        saveGame();
-        initCollection();
-      });
-    } else {
-      itemEl.textContent = '—';
-      const nameEl = document.createElement('div');
-      nameEl.className = 'equip-slot-name equip-slot-empty';
-      nameEl.textContent = '空';
-      slotEl.appendChild(itemEl);
-      slotEl.appendChild(nameEl);
-      slotEl.addEventListener('click', () => {
-        const available = blocks.filter(b => b.id.includes('_' + slot) && getBlockCount(b.id) > 0);
-        if (available.length === 0) return;
-        const best = available[available.length - 1];
-        inventory[best.id] = (inventory[best.id] || 1) - 1;
-        if (inventory[best.id] <= 0) delete inventory[best.id];
-        equipped[slot] = best.id;
-        saveGame();
-        initCollection();
-      });
-    }
-
-    slotsEl.appendChild(slotEl);
-  });
-  area.appendChild(slotsEl);
-
-  const invTitle = document.createElement('div');
-  invTitle.style.cssText = 'text-align:center;margin-top:16px;font-family:Fredoka,sans-serif;font-size:0.9rem;color:#636E72;';
-  invTitle.textContent = '📦 背包中的裝備（點擊穿上）';
-  area.appendChild(invTitle);
-
-  const invGrid = document.createElement('div');
-  invGrid.className = 'equip-inventory';
-  let hasEquipment = false;
-
-  blocks.forEach(b => {
-    if (!b.id.includes('_helmet') && !b.id.includes('_chest') && !b.id.includes('_legs') && !b.id.includes('_boots')) return;
-    const count = getBlockCount(b.id);
-    if (count <= 0) return;
-    hasEquipment = true;
-
-    const item = document.createElement('div');
-    item.className = 'equip-inv-item';
-    item.textContent = b.emoji;
-    item.title = b.name;
-
-    const countEl = document.createElement('span');
-    countEl.className = 'inv-count';
-    countEl.textContent = count;
-    item.appendChild(countEl);
-
-    const slot = b.id.includes('_helmet') ? 'helmet' : b.id.includes('_chest') ? 'chest' : b.id.includes('_legs') ? 'legs' : 'boots';
-    item.addEventListener('click', () => {
-      if (equipped[slot]) addBlock(equipped[slot]);
-      inventory[b.id] = (inventory[b.id] || 1) - 1;
-      if (inventory[b.id] <= 0) delete inventory[b.id];
-      equipped[slot] = b.id;
-      saveGame();
-      initCollection();
-    });
-
-    invGrid.appendChild(item);
-  });
-
-  if (!hasEquipment) {
-    const emptyMsg = document.createElement('div');
-    emptyMsg.style.cssText = 'color:#B2BEC3;font-size:0.85rem;padding:8px;';
-    emptyMsg.textContent = '還沒有裝備，去合成一些吧！';
-    invGrid.appendChild(emptyMsg);
-  }
-  area.appendChild(invGrid);
   c.appendChild(area);
 }
 
@@ -2878,15 +3118,6 @@ function updateMuteUI() {
 updateMuteUI();
 muteOffBtn.addEventListener('click', () => { isMuted = false; localStorage.setItem('isMuted', 'false'); updateMuteUI(); });
 muteOnBtn.addEventListener('click', () => { isMuted = true; localStorage.setItem('isMuted', 'true'); updateMuteUI(); });
-
-// Reset progress
-document.getElementById('resetProgress').addEventListener('click', () => {
-  if (confirm('確定要重置所有遊戲進度嗎？此操作無法復原！')) {
-    localStorage.removeItem('mineGame');
-    localStorage.removeItem('isMuted');
-    location.reload();
-  }
-});
 
 // Pre-warm: load voices so pickBestVoice works on first click
 if (window.speechSynthesis) {
