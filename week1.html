@@ -410,6 +410,9 @@ body::before {
 .mine-cell.tree { background: none; border: none; box-shadow: none; font-size: 1.5rem; cursor: pointer; }
 .mine-cell.tree:hover { transform: scale(1.15); }
 .mine-cell.tree.mined { background: none !important; border: none; box-shadow: none; opacity: 0; pointer-events: none; }
+.mine-cell.animal { background: none; border: none; box-shadow: none; font-size: 1.5rem; cursor: pointer; }
+.mine-cell.animal:hover { transform: scale(1.15); }
+.mine-cell.animal.mined { background: none !important; border: none; box-shadow: none; opacity: 0; pointer-events: none; }
 
 .mine-result {
   text-align: center; margin-top: 12px; padding: 10px;
@@ -642,6 +645,7 @@ body::before {
   .sentence-display { font-size: 1.2rem; }
   .mine-cell { width: 32px; height: 32px; font-size: 1.1rem; }
   .mine-cell.tree { font-size: 1.3rem; }
+  .mine-cell.animal { font-size: 1.3rem; }
   .encyclopedia-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
   .craft-slot { width: 44px; height: 44px; font-size: 1.3rem; }
   .craft-result-slot { width: 52px; height: 52px; font-size: 1.6rem; }
@@ -1720,7 +1724,9 @@ function initMine() {
   const activeAxe = getActiveTool(axes);
   const axeBonus = getEffectiveAxeBonus();
   const axeLabel = axeBonus > 1 ? `  |  🪓 ${activeAxe.name}${getToolDurabilityText(activeAxe)}（砍樹 x${axeBonus}）` : '';
-  pickInfo.textContent = `⛏️ ${pick.name}${pickDur}（可挖第 ${pick.maxTier} 層）${axeLabel}`;
+  const activeSword = getEffectiveSword();
+  const swordLabel = activeSword && activeSword.id !== 'wood_sword' ? '  |  🗡️ ' + activeSword.name + getToolDurabilityText(activeSword) : '';
+  pickInfo.textContent = `⛏️ ${pick.name}${pickDur}（可挖第 ${pick.maxTier} 層）${axeLabel}${swordLabel}`;
   const costInfo = document.createElement('div');
   costInfo.className = 'mine-cost';
   costInfo.textContent = '每格花費 1 ⚡ 體力';
@@ -1751,13 +1757,23 @@ function initMine() {
       cellEl.className = 'mine-cell';
 
       if (rowDef.tier === 0) {
-        // Choppable trees — gives wood
-        cellEl.classList.add('tree');
-        cellEl.textContent = Math.random() > 0.5 ? '🌳' : '🌲';
-        const woodBlock = blocks.find(b => b.id === 'wood');
-        const treeData = { tier: 0, mined: false, block: woodBlock, el: cellEl };
-        cellEl.addEventListener('click', () => chopTree(treeData));
-        rowData.push(treeData);
+        if (Math.random() < 0.35) {
+          // Animal
+          const animal = animals[Math.floor(Math.random() * animals.length)];
+          cellEl.classList.add('animal');
+          cellEl.textContent = animal.emoji;
+          const animalData = { tier: 0, mined: false, block: null, animal: animal, el: cellEl };
+          cellEl.addEventListener('click', () => attackAnimal(animalData));
+          rowData.push(animalData);
+        } else {
+          // Choppable trees — gives wood
+          cellEl.classList.add('tree');
+          cellEl.textContent = Math.random() > 0.5 ? '🌳' : '🌲';
+          const woodBlock = blocks.find(b => b.id === 'wood');
+          const treeData = { tier: 0, mined: false, block: woodBlock, el: cellEl };
+          cellEl.addEventListener('click', () => chopTree(treeData));
+          rowData.push(treeData);
+        }
       } else {
         const block = rollBlockForTier(rowDef.tier);
         cellEl.classList.add('tier' + rowDef.tier);
@@ -1791,6 +1807,37 @@ function initMine() {
 
   updateExposure();
   updateMineRefreshBtn();
+}
+
+function attackAnimal(cellData) {
+  if (cellData.mined) return;
+  if (gems < 1) {
+    playLockedSfx();
+    document.getElementById('mineResult').textContent = '⚡ 體力不足！去答題補充吧！';
+    return;
+  }
+  playMineSfx(1);
+  gems--;
+  updateGemDisplay();
+  cellData.mined = true;
+  cellData.el.classList.add('mined');
+
+  const animal = cellData.animal;
+  const activeSword = getEffectiveSword();
+  const brokeName = useTool(activeSword);
+
+  let msg = animal.emoji + ' 擊敗' + animal.name + '！獲得：';
+  animal.drops.forEach(drop => {
+    const count = drop.min + Math.floor(Math.random() * (drop.max - drop.min + 1));
+    addBlock(drop.id, count);
+    const b = blocks.find(x => x.id === drop.id);
+    msg += ' ' + b.emoji + b.name + ' x' + count;
+  });
+  if (brokeName) msg += ' ⚠️ ' + brokeName + ' 壞掉了！';
+
+  document.getElementById('mineResult').textContent = msg;
+  updateMineRefreshBtn();
+  saveGame();
 }
 
 function chopTree(cellData) {
