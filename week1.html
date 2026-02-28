@@ -2381,15 +2381,15 @@ function renderRecipeBook(c) {
     section.className = 'recipe-category';
 
     const header = document.createElement('div');
-    header.className = 'recipe-category-header' + (catIdx >= 3 ? ' collapsed' : '');
+    header.className = 'recipe-category-header';
     header.textContent = cat.name + ' (' + cat.recipes.length + ')';
-    // Start with tools expanded, armor collapsed
     let expanded = catIdx < 3;
     header.addEventListener('click', () => {
       expanded = !expanded;
       list.style.display = expanded ? 'flex' : 'none';
       header.classList.toggle('collapsed', !expanded);
     });
+    if (!expanded) header.classList.add('collapsed');
     section.appendChild(header);
 
     const list = document.createElement('div');
