@@ -8,18 +8,38 @@
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap');
 
 :root {
+  /* Palette */
   --bg: #FFF8E7;
   --text: #2D3436;
+  --text-secondary: #636E72;
+  --text-muted: #B2BEC3;
   --card-bg: #FFFFFF;
-  --shadow: rgba(45, 52, 54, 0.1);
-  --radius: 20px;
+  --surface: #F0F0F5;
+  --border: #DFE6E9;
   --accent: #A29BFE;
+  --accent-dark: #6C5CE7;
+  --success: #00B894;
+  --error: #FF6B6B;
+  --gold: #FFD93D;
+  --gold-dark: #FDCB6E;
+  /* Shadows */
+  --shadow: rgba(45, 52, 54, 0.1);
+  --shadow-sm: 0 2px 10px var(--shadow);
+  --shadow-md: 0 3px 15px var(--shadow);
+  --shadow-lg: 0 8px 25px var(--shadow);
+  /* Shape */
+  --radius: 20px;
+  --radius-sm: 14px;
+  --radius-pill: 50px;
+  /* Typography */
+  --font-display: 'Fredoka', sans-serif;
+  --font-body: 'Nunito', sans-serif;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  font-family: 'Nunito', sans-serif;
+  font-family: var(--font-body);
   background: var(--bg);
   min-height: 100vh;
   overflow-x: hidden;
@@ -47,10 +67,10 @@ body::before {
   backdrop-filter: blur(8px);
 }
 .header h1 {
-  font-family: 'Fredoka', sans-serif;
+  font-family: var(--font-display);
   font-size: 1.2rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #FF6B6B, #A29BFE, #FFD93D);
+  background: linear-gradient(135deg, #FF6B6B, #A29BFE, #E17055);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -86,10 +106,10 @@ body::before {
 .nav-groups { display: flex; gap: 6px; justify-content: center; margin: 16px 0; flex-wrap: wrap; }
 .nav-group {
   display: flex; align-items: center; gap: 4px;
-  background: #F0F0F5; border-radius: 50px; padding: 4px;
+  background: var(--surface); border-radius: 50px; padding: 4px;
 }
 .nav-group-label {
-  font-size: 0.8rem; color: #999; font-family: 'Fredoka', sans-serif;
+  font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-display);
   font-weight: 600; padding: 0 6px; white-space: nowrap;
 }
 .nav-tab {
@@ -97,12 +117,12 @@ body::before {
   border-radius: 50px;
   border: none;
   background: transparent;
-  font-family: 'Fredoka', sans-serif;
+  font-family: var(--font-display);
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
-  color: #636E72;
+  color: var(--text-secondary);
   white-space: nowrap;
 }
 .nav-tab:hover { background: rgba(255,255,255,0.7); }
@@ -115,6 +135,14 @@ body::before {
 
 .section { display: none; animation: fadeIn 0.4s ease; }
 .section.active { display: block; }
+.section-title {
+  font-family: var(--font-display); font-size: 1.2rem; font-weight: 600;
+  color: var(--text); text-align: center; margin-bottom: 12px;
+}
+.app-footer {
+  text-align: center; font-size: 0.7rem; color: var(--text-muted);
+  padding: 24px 16px 12px; line-height: 1.6;
+}
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 
 /* ===== LEARN ===== */
@@ -131,15 +159,15 @@ body::before {
   text-align: center;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 3px 15px var(--shadow);
+  box-shadow: var(--shadow-md);
   border: 3px solid transparent;
   position: relative;
 }
-.feeling-card:hover { transform: translateY(-6px) scale(1.03); box-shadow: 0 8px 25px var(--shadow); }
+.feeling-card:hover { transform: translateY(-6px) scale(1.03); box-shadow: var(--shadow-lg); }
 .feeling-card:active { transform: scale(0.95); }
 .feeling-card .emoji { font-size: 2.8rem; margin-bottom: 8px; display: block; }
-.feeling-card .word { font-family: 'Fredoka', sans-serif; font-size: 1.15rem; font-weight: 600; color: var(--text); }
-.feeling-card .chinese { font-size: 0.85rem; color: #636E72; margin-top: 2px; }
+.feeling-card .word { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; color: var(--text); }
+.feeling-card .chinese { font-size: 0.85rem; color: var(--text-secondary); margin-top: 2px; }
 .feeling-card .speaker-hint {
   position: absolute; top: 8px; right: 8px;
   font-size: 1rem; opacity: 0.3; transition: opacity 0.2s;
@@ -150,7 +178,7 @@ body::before {
   animation: speakRing 0.6s ease;
 }
 @keyframes speakRing {
-  0%, 100% { box-shadow: 0 3px 15px var(--shadow); }
+  0%, 100% { box-shadow: var(--shadow-md); }
   50% { box-shadow: 0 0 0 6px rgba(162,155,254,0.3), 0 3px 15px var(--shadow); }
 }
 
@@ -159,13 +187,13 @@ body::before {
   border-radius: var(--radius);
   padding: 24px;
   margin-top: 20px;
-  box-shadow: 0 3px 15px var(--shadow);
+  box-shadow: var(--shadow-md);
   text-align: center;
 }
-.sentence-practice h3 { font-family: 'Fredoka', sans-serif; font-size: 1.2rem; color: var(--text); margin-bottom: 14px; }
+.sentence-practice h3 { font-family: var(--font-display); font-size: 1.2rem; color: var(--text); margin-bottom: 14px; }
 .sentence-display {
   font-size: 1.6rem;
-  font-family: 'Fredoka', sans-serif;
+  font-family: var(--font-display);
   font-weight: 600;
   color: #2D3436;
   padding: 14px;
@@ -183,7 +211,7 @@ body::before {
 .sentence-display .hl { color: var(--accent); font-weight: 700; }
 
 .learn-section-title {
-  font-family: 'Fredoka', sans-serif; font-size: 1.1rem; color: var(--text);
+  font-family: var(--font-display); font-size: 1.1rem; color: var(--text);
   margin: 10px 0 4px 4px;
 }
 .sight-learn-grid {
@@ -198,10 +226,10 @@ body::before {
   text-align: center;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 3px 15px var(--shadow);
+  box-shadow: var(--shadow-md);
   position: relative;
 }
-.sight-learn-card:hover { transform: translateY(-6px) scale(1.03); box-shadow: 0 8px 25px var(--shadow); }
+.sight-learn-card:hover { transform: translateY(-6px) scale(1.03); box-shadow: var(--shadow-lg); }
 .sight-learn-card:active { transform: scale(0.95); }
 .sight-learn-card .speaker-hint {
   position: absolute; top: 8px; right: 8px;
@@ -213,13 +241,13 @@ body::before {
   animation: speakRing 0.6s ease;
 }
 .sight-learn-card .sl-word {
-  font-family: 'Fredoka', sans-serif; font-size: 1.3rem; font-weight: 700; color: var(--text);
+  font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; color: var(--text);
 }
 .sight-learn-card .sl-zh {
-  font-size: 0.85rem; color: #636E72; margin-top: 2px;
+  font-size: 0.85rem; color: var(--text-secondary); margin-top: 2px;
 }
 .sight-learn-card .sl-sentence {
-  font-size: 0.75rem; color: #999; margin-top: 6px; font-style: italic;
+  font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; font-style: italic;
 }
 
 .btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
@@ -227,7 +255,7 @@ body::before {
   padding: 12px 28px;
   border-radius: 50px;
   border: none;
-  font-family: 'Fredoka', sans-serif;
+  font-family: var(--font-display);
   font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
@@ -239,12 +267,12 @@ body::before {
 .speak-btn:hover { transform: translateY(-2px); }
 .speak-btn:active { transform: scale(0.95); }
 .speak-btn.primary {
-  background: linear-gradient(135deg, #A29BFE, #6C5CE7);
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
   color: white;
   box-shadow: 0 4px 15px rgba(108,92,231,0.3);
 }
 .speak-btn.secondary {
-  background: linear-gradient(135deg, #FFD93D, #FDCB6E);
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
   color: #2D3436;
   box-shadow: 0 4px 15px rgba(253,203,110,0.3);
 }
@@ -255,9 +283,9 @@ body::before {
 .feeling-chip {
   padding: 8px 16px;
   border-radius: 50px;
-  border: 2px solid #DFE6E9;
+  border: 2px solid var(--border);
   background: white;
-  font-family: 'Fredoka', sans-serif;
+  font-family: var(--font-display);
   font-size: 0.95rem;
   font-weight: 500;
   cursor: pointer;
@@ -269,23 +297,24 @@ body::before {
 /* ===== MATCH ===== */
 .match-feedback {
   text-align: center; padding: 16px;
-  font-family: 'Fredoka', sans-serif; font-size: 1.3rem; font-weight: 600;
+  font-family: var(--font-display); font-size: 1.3rem; font-weight: 600;
   min-height: 56px; display: flex; align-items: center; justify-content: center;
 }
 .match-game { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
-.match-column h3 { font-family: 'Fredoka', sans-serif; text-align: center; margin-bottom: 12px; color: #636E72; font-size: 1rem; }
+.match-column h3 { font-family: var(--font-display); text-align: center; margin-bottom: 12px; color: var(--text-secondary); font-size: 1rem; }
 .match-item {
-  padding: 14px 18px; border-radius: 14px; margin-bottom: 10px;
+  padding: 0 18px; height: 52px; border-radius: 14px; margin-bottom: 10px;
   cursor: pointer; transition: all 0.3s;
-  font-family: 'Fredoka', sans-serif; font-size: 1.1rem; font-weight: 600;
+  font-family: var(--font-display); font-size: 1.1rem; font-weight: 600;
   text-align: center; user-select: none;
-  background: white; border: 3px solid #DFE6E9; box-shadow: 0 2px 10px var(--shadow);
+  background: white; border: 3px solid var(--border); box-shadow: var(--shadow-sm);
+  display: flex; align-items: center; justify-content: center;
 }
 .match-item.emoji-item { font-size: 2rem; }
 .match-item:hover { transform: scale(1.05); }
 .match-item.selected { border-color: var(--accent); background: #F0EDFF; box-shadow: 0 4px 16px rgba(162,155,254,0.3); }
-.match-item.correct { border-color: #00B894; background: #E8FFF5; animation: correctBounce 0.5s ease; }
-.match-item.wrong { border-color: #FF6B6B; background: #FFE8E8; animation: shake 0.4s ease; }
+.match-item.correct { border-color: var(--success); background: #E8FFF5; animation: correctBounce 0.5s ease; }
+.match-item.wrong { border-color: var(--error); background: #FFE8E8; animation: shake 0.4s ease; }
 .match-item.matched { opacity: 0.35; pointer-events: none; transform: scale(0.95); }
 @keyframes correctBounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
 @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
@@ -293,9 +322,9 @@ body::before {
 .reset-btn {
   display: block; margin: 16px auto 0;
   padding: 12px 32px; border-radius: 50px; border: none;
-  background: linear-gradient(135deg, #FFD93D, #FDCB6E);
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
   color: #2D3436;
-  font-family: 'Fredoka', sans-serif; font-size: 1.05rem; font-weight: 600;
+  font-family: var(--font-display); font-size: 1.05rem; font-weight: 600;
   cursor: pointer; transition: all 0.3s;
   box-shadow: 0 4px 15px rgba(253,203,110,0.3);
 }
@@ -304,54 +333,54 @@ body::before {
 /* ===== QUIZ ===== */
 .quiz-container {
   background: white; border-radius: var(--radius); padding: 30px;
-  box-shadow: 0 3px 15px var(--shadow); text-align: center;
+  box-shadow: var(--shadow-md); text-align: center;
 }
 .quiz-progress { display: flex; gap: 6px; justify-content: center; margin-bottom: 20px; }
-.quiz-dot { width: 12px; height: 12px; border-radius: 50%; background: #DFE6E9; transition: all 0.3s; }
-.quiz-dot.done { background: #00B894; }
+.quiz-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--border); transition: all 0.3s; }
+.quiz-dot.done { background: var(--success); }
 .quiz-dot.current { background: var(--accent); transform: scale(1.3); }
-.quiz-dot.wrong-dot { background: #FF6B6B; }
+.quiz-dot.wrong-dot { background: var(--error); }
 .quiz-prompt { font-size: 3.5rem; margin: 20px 0; }
-.quiz-question { font-family: 'Fredoka', sans-serif; font-size: 1.3rem; color: #636E72; margin-bottom: 20px; }
+.quiz-question { font-family: var(--font-display); font-size: 1.3rem; color: var(--text-secondary); margin-bottom: 20px; }
 .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 500px; margin: 0 auto; }
 .quiz-option {
-  padding: 16px; border-radius: 14px; border: 3px solid #DFE6E9;
-  background: white; font-family: 'Fredoka', sans-serif; font-size: 1.15rem; font-weight: 600;
+  padding: 16px; border-radius: 14px; border: 3px solid var(--border);
+  background: white; font-family: var(--font-display); font-size: 1.15rem; font-weight: 600;
   cursor: pointer; transition: all 0.3s;
 }
 .quiz-option:hover { border-color: var(--accent); transform: translateY(-2px); }
-.quiz-option.correct-answer { border-color: #00B894; background: #E8FFF5; }
-.quiz-option.wrong-answer { border-color: #FF6B6B; background: #FFE8E8; }
+.quiz-option.correct-answer { border-color: var(--success); background: #E8FFF5; }
+.quiz-option.wrong-answer { border-color: var(--error); background: #FFE8E8; }
 
 .quiz-result { padding: 30px; text-align: center; }
 .quiz-result .big-emoji { font-size: 4rem; margin-bottom: 16px; }
-.quiz-result .result-text { font-family: 'Fredoka', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 8px; }
-.quiz-result .result-detail { font-size: 1.1rem; color: #636E72; margin-bottom: 20px; }
+.quiz-result .result-text { font-family: var(--font-display); font-size: 1.6rem; font-weight: 700; margin-bottom: 8px; }
+.quiz-result .result-detail { font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 20px; }
 
 /* ===== SIGHT WORDS ===== */
 .sight-words-area { display: flex; flex-direction: column; gap: 14px; }
 .sight-word-card {
   background: white; border-radius: var(--radius); padding: 20px 24px;
   display: flex; align-items: center; justify-content: space-between;
-  box-shadow: 0 3px 15px var(--shadow); cursor: pointer; transition: all 0.3s;
+  box-shadow: var(--shadow-md); cursor: pointer; transition: all 0.3s;
 }
 .sight-word-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px var(--shadow); }
 .sight-word-card:active { transform: scale(0.97); }
-.sight-word-text { font-family: 'Fredoka', sans-serif; font-size: 2rem; font-weight: 700; color: var(--text); }
-.sight-word-chinese { font-size: 1rem; color: #636E72; margin-top: 2px; }
+.sight-word-text { font-family: var(--font-display); font-size: 2rem; font-weight: 700; color: var(--text); }
+.sight-word-chinese { font-size: 1rem; color: var(--text-secondary); margin-top: 2px; }
 .sight-word-card .play-icon {
   width: 48px; height: 48px; border-radius: 50%;
-  background: linear-gradient(135deg, #A29BFE, #6C5CE7);
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
   display: flex; align-items: center; justify-content: center;
   color: white; font-size: 1.3rem; flex-shrink: 0;
 }
 .sight-word-card.speaking { border-left: 5px solid var(--accent); }
 .sight-word-card.earned { opacity: 0.6; }
-.sight-word-card.earned .play-icon { background: #00B894; }
+.sight-word-card.earned .play-icon { background: var(--success); }
 .sight-confirm {
   padding: 6px 14px; border-radius: 50px; border: none;
-  background: linear-gradient(135deg, #FFD93D, #FDCB6E); color: #2D3436;
-  font-family: 'Fredoka', sans-serif; font-size: 0.85rem; font-weight: 600;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #2D3436;
+  font-family: var(--font-display); font-size: 0.85rem; font-weight: 600;
   cursor: pointer; transition: all 0.3s; animation: fadeIn 0.3s ease;
   margin-top: 6px;
 }
@@ -364,15 +393,15 @@ body::before {
 }
 .speed-btn {
   padding: 6px 14px; border-radius: 50px;
-  border: 2px solid #DFE6E9; background: white;
-  font-family: 'Fredoka', sans-serif; font-size: 0.85rem; font-weight: 600;
-  cursor: pointer; color: #636E72; transition: all 0.2s;
+  border: 2px solid var(--border); background: white;
+  font-family: var(--font-display); font-size: 0.85rem; font-weight: 600;
+  cursor: pointer; color: var(--text-secondary); transition: all 0.2s;
 }
 .speed-btn.active { border-color: var(--accent); background: #F0EDFF; color: var(--accent); }
 
 .settings-section { margin-bottom: 16px; }
 .settings-label {
-  font-family: 'Fredoka', sans-serif; font-size: 0.9rem;
+  font-family: var(--font-display); font-size: 0.9rem;
   font-weight: 600; color: var(--text); margin-bottom: 6px;
 }
 .confetti-box { position: fixed; inset: 0; pointer-events: none; z-index: 100; }
@@ -387,18 +416,8 @@ body::before {
 
 /* ===== MINE ===== */
 .mine-header { text-align: center; margin-bottom: 12px; }
-.mine-header h3 { font-family: 'Fredoka', sans-serif; font-size: 1.3rem; color: var(--text); }
-.mine-pickaxe { font-size: 1rem; color: #636E72; margin-top: 4px; }
-.mine-cost { font-size: 0.9rem; color: var(--accent); margin-top: 2px; }
-.mine-hold-hint {
-  font-size: 0.85rem; color: #A29BFE; margin-top: 4px;
-  font-family: 'Fredoka', sans-serif; font-weight: 600;
-  animation: holdHintPulse 2s ease-in-out infinite;
-}
-@keyframes holdHintPulse {
-  0%, 100% { opacity: 0.7; }
-  50% { opacity: 1; }
-}
+.mine-header h3 { font-family: var(--font-display); font-size: 1.3rem; color: var(--text); }
+.mine-pickaxe { font-size: 1rem; color: var(--text-secondary); margin-top: 4px; }
 
 .mountain-scroll {
   overflow-x: auto;
@@ -426,7 +445,7 @@ body::before {
 .mountain-arrow {
   flex-shrink: 0; width: 36px; height: 60px;
   border: none; border-radius: 10px;
-  background: rgba(0,0,0,0.08); color: #636E72;
+  background: rgba(0,0,0,0.08); color: var(--text-secondary);
   font-size: 1.1rem; cursor: pointer;
   transition: all 0.2s;
 }
@@ -511,7 +530,7 @@ body::before {
 
 .mine-result {
   text-align: center; margin-top: 12px; padding: 10px;
-  font-family: 'Fredoka', sans-serif; font-size: 1.05rem; font-weight: 600;
+  font-family: var(--font-display); font-size: 1.05rem; font-weight: 600;
   min-height: 44px; transition: background 0.3s;
 }
 .mine-result.tool-broke {
@@ -519,83 +538,75 @@ body::before {
   animation: toolBrokeFlash 1.5s ease-out;
 }
 @keyframes toolBrokeFlash {
-  0%, 20% { background: #FF6B6B; color: white; transform: scale(1.05); }
+  0%, 20% { background: var(--error); color: white; transform: scale(1.05); }
   100% { background: #FFEAA7; color: inherit; transform: scale(1); }
 }
 .tool-slots { display: flex; gap: 8px; justify-content: center; margin: 8px 0; }
 .tool-slot {
   display: flex; flex-direction: column; align-items: center; gap: 2px;
-  padding: 6px 10px; border-radius: 10px; border: 2px solid #DFE6E9;
+  padding: 6px 10px; border-radius: 10px; border: 2px solid var(--border);
   background: white; cursor: pointer; transition: all 0.15s;
-  font-family: 'Fredoka', sans-serif; position: relative; user-select: none;
+  font-family: var(--font-display); position: relative; user-select: none;
   min-width: 64px;
 }
-.tool-slot:hover { border-color: #6C5CE7; background: #F8F7FF; }
+.tool-slot:hover { border-color: var(--accent-dark); background: #F8F7FF; }
 .tool-slot:active { transform: scale(0.96); }
-.tool-slot-label { font-size: 0.65rem; color: #B2BEC3; }
+.tool-slot-label { font-size: 0.65rem; color: var(--text-muted); }
 .tool-slot-emoji { font-size: 1.4rem; line-height: 1.2; }
 .tool-slot-name { font-size: 0.75rem; font-weight: 600; color: #2D3436; white-space: nowrap; }
-.tool-slot-dur { font-size: 0.6rem; color: #B2BEC3; }
+.tool-slot-dur { font-size: 0.6rem; color: var(--text-muted); }
 .tool-picker {
   background: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.18);
-  border: 1px solid #DFE6E9; z-index: 20; min-width: 150px;
+  border: 1px solid var(--border); z-index: 20; min-width: 150px;
   padding: 6px 0; animation: pickerIn 0.15s ease-out;
 }
 @keyframes pickerIn { from { opacity: 0; transform: translateX(-50%) translateY(-4px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
 .tool-picker-option {
   display: flex; align-items: center; gap: 8px;
-  padding: 8px 14px; cursor: pointer; font-family: 'Fredoka', sans-serif; font-size: 0.85rem;
+  padding: 8px 14px; cursor: pointer; font-family: var(--font-display); font-size: 0.85rem;
   transition: background 0.1s;
 }
 .tool-picker-option:hover { background: #F0EFFF; }
 .tool-picker-option.selected { background: #E8E6FF; font-weight: 600; }
 .tool-picker-option .opt-emoji { font-size: 1.1rem; }
-.tool-picker-option .opt-info { font-size: 0.7rem; color: #B2BEC3; margin-left: auto; }
+.tool-picker-option .opt-info { font-size: 0.7rem; color: var(--text-muted); margin-left: auto; }
 .tool-picker-backdrop { position: fixed; inset: 0; z-index: 19; }
 .mine-refresh {
   display: block; margin: 10px auto 0;
   padding: 10px 28px; border-radius: 50px; border: none;
-  background: linear-gradient(135deg, #A29BFE, #6C5CE7);
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
   color: white;
-  font-family: 'Fredoka', sans-serif; font-size: 1rem; font-weight: 600;
+  font-family: var(--font-display); font-size: 1rem; font-weight: 600;
   cursor: pointer; transition: all 0.3s;
   box-shadow: 0 4px 15px rgba(108,92,231,0.3);
 }
 .mine-refresh:hover { transform: translateY(-2px); }
 .mine-refresh:disabled { opacity: 0.4; pointer-events: none; }
 
-/* ===== COLLECTION ===== */
-.collection-tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; }
-.collection-tab {
-  padding: 8px 16px; border-radius: 50px; border: 2px solid #DFE6E9;
-  background: white; font-family: 'Fredoka', sans-serif; font-size: 0.9rem;
-  font-weight: 600; cursor: pointer; color: #636E72; transition: all 0.2s;
-}
-.collection-tab.active { border-color: var(--accent); background: #F0EDFF; color: var(--accent); }
-
+/* ===== ENCYCLOPEDIA ===== */
 .encyclopedia-grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
   gap: 12px;
 }
 .block-card {
   background: white; border-radius: var(--radius); padding: 14px;
-  text-align: center; box-shadow: 0 2px 10px var(--shadow);
-  border: 3px solid #DFE6E9; transition: all 0.3s;
+  text-align: center; box-shadow: var(--shadow-sm);
+  border: 3px solid var(--border); transition: all 0.3s;
 }
-.block-card.owned { border-color: #00B894; }
+.block-card.owned { border-color: var(--success); }
 .block-card.undiscovered { opacity: 0.4; }
 .block-card .block-emoji { font-size: 2.2rem; margin-bottom: 6px; }
-.block-card .block-name { font-family: 'Fredoka', sans-serif; font-size: 1rem; font-weight: 600; }
-.block-card .block-count { font-size: 0.85rem; color: #636E72; margin-top: 2px; }
+.block-card .block-name { font-family: var(--font-display); font-size: 1rem; font-weight: 600; }
+.block-card .block-count { font-size: 0.85rem; color: var(--text-secondary); margin-top: 2px; }
 .block-card .block-tier { font-size: 0.7rem; color: var(--accent); margin-top: 2px; }
 
 .craft-area { max-width: 500px; margin: 0 auto; }
-.craft-current { text-align: center; font-family: 'Fredoka', sans-serif; color: #636E72; margin-bottom: 12px; font-size: 1rem; }
+.craft-current { text-align: center; font-family: var(--font-display); color: var(--text-secondary); margin-bottom: 12px; font-size: 1rem; }
 .craft-guide {
-  text-align: center; font-family: 'Fredoka', sans-serif;
-  font-size: 0.85rem; color: #636E72; margin-bottom: 12px;
+  text-align: center; font-family: var(--font-display);
+  font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;
   background: #F0FFF8; padding: 8px 16px; border-radius: 50px;
-  border: 1px dashed #00B894;
+  border: 1px dashed var(--success);
 }
 
 .craft-table {
@@ -617,7 +628,7 @@ body::before {
 .craft-slot:hover { background: #B8976A; transform: scale(1.05); }
 .craft-slot.filled { background: #C4A97D; border-color: #8B6F47; }
 
-.craft-arrow { font-size: 1.8rem; color: #636E72; }
+.craft-arrow { font-size: 1.8rem; color: var(--text-secondary); }
 
 .craft-result-slot {
   width: 64px; height: 64px; border-radius: 8px;
@@ -627,27 +638,27 @@ body::before {
   box-shadow: inset 0 -2px 4px rgba(0,0,0,0.15);
 }
 .craft-result-slot.matched {
-  border-color: #00B894; background: #C4A97D;
+  border-color: var(--success); background: #C4A97D;
   animation: correctBounce 0.5s ease;
 }
 
 .craft-actions { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; }
 .craft-btn {
   padding: 10px 24px; border-radius: 50px; border: none;
-  font-family: 'Fredoka', sans-serif; font-size: 1rem; font-weight: 600;
+  font-family: var(--font-display); font-size: 1rem; font-weight: 600;
   cursor: pointer; transition: all 0.3s;
 }
 .craft-btn:hover { transform: translateY(-2px); }
 .craft-btn:disabled { opacity: 0.4; pointer-events: none; }
-.craft-btn.primary { background: linear-gradient(135deg, #00B894, #00CEC9); color: white; box-shadow: 0 4px 15px rgba(0,184,148,0.3); }
-.craft-btn.secondary { background: linear-gradient(135deg, #DFE6E9, #BDC3C7); color: #2D3436; }
+.craft-btn.primary { background: linear-gradient(135deg, var(--success), #00CEC9); color: white; box-shadow: 0 4px 15px rgba(0,184,148,0.3); }
+.craft-btn.secondary { background: linear-gradient(135deg, var(--border), #BDC3C7); color: #2D3436; }
 
 .craft-inventory {
   background: #8B6F47; border-radius: 12px; padding: 10px;
   box-shadow: inset 0 2px 6px rgba(0,0,0,0.3), 0 3px 10px var(--shadow);
 }
 .craft-inv-title {
-  font-family: 'Fredoka', sans-serif; font-size: 0.9rem;
+  font-family: var(--font-display); font-size: 0.9rem;
   color: #FFFFFF; margin-bottom: 8px; text-align: center;
 }
 .craft-inv-grid {
@@ -670,17 +681,17 @@ body::before {
 
 .recipe-book { margin-top: 20px; }
 .recipe-book-title {
-  font-family: 'Fredoka', sans-serif; font-size: 1.1rem; font-weight: 600;
+  font-family: var(--font-display); font-size: 1.1rem; font-weight: 600;
   color: var(--text); text-align: center; margin-bottom: 12px;
 }
 .recipe-list { display: flex; flex-direction: column; gap: 10px; }
 .recipe-card {
   background: white; border-radius: 14px; padding: 12px 16px;
-  box-shadow: 0 2px 10px var(--shadow); display: flex; align-items: center; gap: 12px;
-  border: 2px solid #DFE6E9; transition: all 0.2s;
+  box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 12px;
+  border: 2px solid var(--border); transition: all 0.2s;
 }
-.recipe-card.craftable { border-color: #00B894; background: #F0FFF8; }
-.recipe-card.crafted { border-color: #B2BEC3; opacity: 0.5; }
+.recipe-card.craftable { border-color: var(--success); background: #F0FFF8; }
+.recipe-card.crafted { border-color: var(--text-muted); opacity: 0.5; }
 .recipe-mini-grid {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
   background: #8B6F47; padding: 4px; border-radius: 6px; flex-shrink: 0;
@@ -690,18 +701,18 @@ body::before {
   background: #A0855C; display: flex; align-items: center; justify-content: center;
   font-size: 0.9rem;
 }
-.recipe-arrow { color: #636E72; font-size: 1.2rem; flex-shrink: 0; }
+.recipe-arrow { color: var(--text-secondary); font-size: 1.2rem; flex-shrink: 0; }
 .recipe-result { font-size: 1.4rem; flex-shrink: 0; }
 .recipe-info { flex: 1; }
-.recipe-name { font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 0.95rem; }
-.recipe-needs { font-size: 0.8rem; color: #636E72; margin-top: 2px; }
-.recipe-needs .has { color: #00B894; }
-.recipe-needs .need { color: #FF6B6B; }
+.recipe-name { font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; }
+.recipe-needs { font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px; }
+.recipe-needs .has { color: var(--success); }
+.recipe-needs .need { color: var(--error); }
 .recipe-category { margin-bottom: 12px; }
 .recipe-category-header {
-  font-family: 'Fredoka', sans-serif; font-size: 1rem; font-weight: 600;
+  font-family: var(--font-display); font-size: 1rem; font-weight: 600;
   color: var(--text); padding: 8px 12px; cursor: pointer;
-  background: #F0F0F5; border-radius: 10px; margin-bottom: 8px;
+  background: var(--surface); border-radius: 10px; margin-bottom: 8px;
   transition: all 0.2s; user-select: none;
 }
 .recipe-category-header:hover { background: #E0E0E8; }
@@ -712,25 +723,25 @@ body::before {
 .house-visual {
   font-size: 1.2rem; line-height: 1.8;
   background: white; border-radius: var(--radius); padding: 24px;
-  box-shadow: 0 2px 10px var(--shadow); margin-bottom: 16px;
+  box-shadow: var(--shadow-sm); margin-bottom: 16px;
   min-height: 180px; display: flex; align-items: center; justify-content: center;
-  white-space: pre; font-family: 'Fredoka', sans-serif;
+  white-space: pre; font-family: var(--font-display);
 }
 .house-stage {
   background: white; border-radius: 14px; padding: 14px 18px;
-  margin-bottom: 10px; box-shadow: 0 2px 10px var(--shadow);
+  margin-bottom: 10px; box-shadow: var(--shadow-sm);
   display: flex; align-items: center; justify-content: space-between;
 }
-.house-stage.done { border-left: 4px solid #00B894; }
+.house-stage.done { border-left: 4px solid var(--success); }
 .house-stage.current { border-left: 4px solid var(--accent); }
 .house-stage.locked { opacity: 0.5; }
 .house-stage-info { text-align: left; }
-.house-stage-name { font-family: 'Fredoka', sans-serif; font-weight: 600; }
-.house-stage-needs { font-size: 0.85rem; color: #636E72; margin-top: 2px; }
+.house-stage-name { font-family: var(--font-display); font-weight: 600; }
+.house-stage-needs { font-size: 0.85rem; color: var(--text-secondary); margin-top: 2px; }
 .house-build-btn {
   padding: 8px 18px; border-radius: 50px; border: none;
-  background: linear-gradient(135deg, #FFD93D, #FDCB6E); color: #2D3436;
-  font-family: 'Fredoka', sans-serif; font-size: 0.9rem; font-weight: 600;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #2D3436;
+  font-family: var(--font-display); font-size: 0.9rem; font-weight: 600;
   cursor: pointer; transition: all 0.3s;
 }
 .house-build-btn:disabled { opacity: 0.4; pointer-events: none; }
@@ -760,7 +771,7 @@ body::before {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-family: 'Fredoka', sans-serif;
+  font-family: var(--font-display);
   font-size: 1.2rem;
   font-weight: 600;
   color: var(--text);
@@ -769,7 +780,7 @@ body::before {
 .modal-close {
   background: none; border: none;
   font-size: 1.3rem; cursor: pointer;
-  color: #B2BEC3; transition: color 0.2s;
+  color: var(--text-muted); transition: color 0.2s;
   padding: 4px 8px; line-height: 1;
 }
 .modal-close:hover { color: var(--text); }
@@ -807,7 +818,6 @@ body::before {
   .craft-slot { width: 44px; height: 44px; font-size: 1.3rem; }
   .craft-result-slot { width: 52px; height: 52px; font-size: 1.6rem; }
   .craft-inv-item { width: 44px; height: 44px; font-size: 1.1rem; }
-  .collection-tab { padding: 6px 12px; font-size: 0.8rem; }
   .character-display.small { display: none !important; }
   .equip-slot { min-width: 160px; padding: 6px 10px; }
   .equip-inv-item { width: 40px; height: 40px; font-size: 1.2rem; }
@@ -830,7 +840,7 @@ body::before {
   overflow: hidden;
 }
 .mine-progress-fill {
-  height: 100%; width: 0%; background: #00B894;
+  height: 100%; width: 0%; background: var(--success);
   transition: none;
 }
 .character-display {
@@ -844,8 +854,8 @@ body::before {
 .char-cell.clickable { cursor: pointer; transition: background 0.15s; }
 .char-cell.clickable:hover { background: rgba(108,92,231,0.08); }
 .char-cell.clickable:active { background: rgba(108,92,231,0.15); transform: scale(0.95); }
-.char-cell.empty-slot { border: 2px dashed #DFE6E9; border-radius: 8px; min-height: 1.2em; }
-.char-cell-label { font-size: 0.7rem; color: #636E72; font-family: 'Fredoka', sans-serif; }
+.char-cell.empty-slot { border: 2px dashed var(--border); border-radius: 8px; min-height: 1.2em; }
+.char-cell-label { font-size: 0.7rem; color: var(--text-secondary); font-family: var(--font-display); }
 .character-display.small { margin: 0; }
 .character-display.small .char-cell { font-size: 1.2rem; min-width: 1.6em; padding: 1px; }
 .character-display.small .char-cell { font-size: 1.1rem; line-height: 1.2; min-width: 1.5em; }
@@ -860,36 +870,85 @@ body::before {
 .equip-slot {
   display: flex; align-items: center; gap: 12px;
   background: white; padding: 8px 16px; border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(45, 52, 54, 0.1); min-width: 200px;
+  box-shadow: var(--shadow-sm); min-width: 200px;
   cursor: pointer; transition: all 0.2s;
 }
-.equip-slot:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(45, 52, 54, 0.1); }
-.equip-slot-label { font-size: 0.8rem; color: #636E72; font-family: 'Fredoka', sans-serif; min-width: 50px; }
+.equip-slot:hover { transform: scale(1.02); box-shadow: var(--shadow-md); }
+.equip-slot-label { font-size: 0.8rem; color: var(--text-secondary); font-family: var(--font-display); min-width: 50px; }
 .equip-slot-item { font-size: 1.3rem; }
-.equip-slot-name { font-family: 'Fredoka', sans-serif; font-size: 0.9rem; }
-.equip-slot-empty { color: #B2BEC3; font-style: italic; }
+.equip-slot-name { font-family: var(--font-display); font-size: 0.9rem; }
+.equip-slot-empty { color: var(--text-muted); font-style: italic; }
 
 .equip-inventory {
   display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
   margin-top: 16px; padding: 12px;
-  background: #F0F0F5; border-radius: 12px;
+  background: var(--surface); border-radius: 12px;
 }
 .equip-inv-item {
   width: 48px; height: 48px;
   display: flex; align-items: center; justify-content: center;
   font-size: 1.5rem; background: white; border-radius: 8px;
   cursor: pointer; transition: all 0.2s; position: relative;
-  box-shadow: 0 1px 4px rgba(45, 52, 54, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 .equip-inv-item:hover { transform: scale(1.1); }
+/* Furnace */
+.furnace-ui {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 16px; background: var(--card-bg); border-radius: var(--radius);
+  box-shadow: var(--shadow-md); margin-bottom: 12px; flex-wrap: wrap;
+}
+.furnace-slot-section { text-align: center; }
+.furnace-slot-label {
+  font-family: var(--font-body); font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 4px;
+}
+.furnace-slot {
+  width: 56px; height: 56px; background: var(--surface); border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem; border: 2px dashed var(--border);
+}
+.furnace-symbol {
+  font-size: 1.5rem; color: var(--text-secondary); padding: 0 4px;
+}
+.furnace-status {
+  text-align: center; font-family: var(--font-body); font-size: 0.9rem;
+  color: #2D3436; min-height: 1.4em; margin: 8px 0;
+}
+.furnace-recipes {
+  background: var(--card-bg); border-radius: var(--radius); padding: 12px;
+  box-shadow: var(--shadow); margin-top: 12px;
+}
+.furnace-recipes-title {
+  font-family: var(--font-display); font-weight: 600; font-size: 1rem;
+  margin-bottom: 8px; color: #2D3436;
+}
+.furnace-recipe-row {
+  display: flex; align-items: center; gap: 8px; padding: 8px 12px;
+  border-radius: 10px; font-family: var(--font-body); font-size: 0.85rem;
+  color: var(--text-muted); transition: all 0.2s;
+}
+.furnace-recipe-row.available {
+  color: #2D3436; cursor: pointer; background: rgba(0,184,148,0.06);
+}
+.furnace-recipe-row.available:hover { background: rgba(0,184,148,0.15); }
+.furnace-recipe-row.selected {
+  background: rgba(0,184,148,0.2); outline: 2px solid var(--success); outline-offset: -2px;
+}
+.furnace-eat-section {
+  background: var(--card-bg); border-radius: var(--radius); padding: 12px;
+  box-shadow: var(--shadow); margin-top: 12px;
+}
+.furnace-eat-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 0; font-family: var(--font-body);
+}
 </style>
 </head>
 <body>
 
 <div class="app">
   <div class="header">
-    <h1>Feelings Fun! 🎭</h1>
-    <div class="subtitle">學習表達情緒的英文 · Learn to express feelings</div>
+    <h1>Feelings Fun! 🎭 <span style="font-size:0.45em;font-weight:400;color:#636E72;vertical-align:middle;">Week 1 · v3.0.0</span></h1>
     <div class="score-bar">
       <div class="score-item" id="starBar"><span>⭐</span> <span id="stars">0</span></div>
       <div class="score-item" id="streakBar"><span>🔥</span> <span id="streak">0</span></div>
@@ -900,13 +959,13 @@ body::before {
 
   <div class="nav-groups">
     <div class="nav-group">
-      <div class="nav-group-label">📚 學習</div>
+      <div class="nav-group-label">學習</div>
       <div class="nav-group-tabs">
         <button class="nav-tab active" data-tab="learn">📖 Learn</button>
       </div>
     </div>
     <div class="nav-group">
-      <div class="nav-group-label">🏆 挑戰</div>
+      <div class="nav-group-label">挑戰</div>
       <div class="nav-group-tabs">
         <button class="nav-tab" data-tab="sight">👀 Sight <span class="stamina-hint">+⚡</span></button>
         <button class="nav-tab" data-tab="match">🎯 Match <span class="stamina-hint">+⚡</span></button>
@@ -914,12 +973,14 @@ body::before {
       </div>
     </div>
     <div class="nav-group">
-      <div class="nav-group-label">⛏️ 遊戲</div>
+      <div class="nav-group-label">遊戲</div>
       <div class="nav-group-tabs">
         <button class="nav-tab" data-tab="mine">⛏️ Mine</button>
         <button class="nav-tab" data-tab="craft">🔨 合成</button>
+        <button class="nav-tab" data-tab="furnace">🔥 熔爐</button>
         <button class="nav-tab" data-tab="equip">👤 裝備</button>
-        <button class="nav-tab" data-tab="collection">📦 收藏</button>
+        <button class="nav-tab" data-tab="encyclopedia">📖 圖鑑</button>
+        <button class="nav-tab" data-tab="house">🏠 房子</button>
       </div>
     </div>
   </div>
@@ -965,13 +1026,25 @@ body::before {
     <div id="craftArea"></div>
   </div>
 
+  <div id="furnace" class="section">
+    <div id="furnaceArea"></div>
+  </div>
+
   <div id="equip" class="section">
     <div id="equipArea"></div>
   </div>
 
-  <div id="collection" class="section">
-    <div id="collectionArea"></div>
+  <div id="encyclopedia" class="section">
+    <div id="encyclopediaArea"></div>
   </div>
+
+  <div id="house" class="section">
+    <div id="houseArea"></div>
+  </div>
+
+  <footer class="app-footer">
+    感謝 iEA 美語學院的優良教材，本站為學生家長參考教材內容自製的輔助學習工具。
+  </footer>
 </div>
 
 <div class="confetti-box" id="confettiBox"></div>
@@ -997,7 +1070,7 @@ body::before {
       </div>
     </div>
     <div id="engineStatus" style="text-align:center;font-size:0.8rem;color:#B2BEC3;margin-top:12px;font-family:'Nunito',sans-serif;">🔍 偵測中...</div>
-    <div style="text-align:center;font-size:0.7rem;color:#B2BEC3;margin-top:8px;font-family:'Nunito',sans-serif;">v2.8.0</div>
+    <div style="text-align:center;font-size:0.7rem;color:#B2BEC3;margin-top:8px;font-family:'Nunito',sans-serif;">v3.0.0</div>
   </div>
 </div>
 
@@ -1061,6 +1134,15 @@ const blocks = [
   { id: 'chicken_meat', name: '雞肉',   emoji: '🍗', tier: 0, weight: 0 },
   { id: 'feather',      name: '羽毛',   emoji: '🪶', tier: 0, weight: 0 },
   { id: 'wool',         name: '羊毛',   emoji: '🧶', tier: 0, weight: 0 },
+  // Smelted / cooked items (tier 0, weight 0 = furnace output only)
+  { id: 'iron_ingot',   name: '鐵錠',   emoji: '🔩', tier: 0, weight: 0 },
+  { id: 'gold_ingot',   name: '金錠',   emoji: '🪙', tier: 0, weight: 0 },
+  { id: 'copper_ingot', name: '銅錠',   emoji: '🟠', tier: 0, weight: 0 },
+  { id: 'cooked_pork',    name: '烤豬排', emoji: '🥩', tier: 0, weight: 0 },
+  { id: 'cooked_chicken', name: '烤雞肉', emoji: '🍗', tier: 0, weight: 0 },
+  // Craftable utility items
+  { id: 'furnace', name: '熔爐', emoji: '🔥', tier: 0, weight: 0 },
+  { id: 'bed',     name: '床',   emoji: '🛏️', tier: 0, weight: 0 },
   // Tools (tier 0, weight 0 = never mined, only crafted)
   { id: 'wood_pick',    name: '木鎬',   emoji: '⛏️', tier: 0, weight: 0 },
   { id: 'stone_pick',   name: '石鎬',   emoji: '⛏️', tier: 0, weight: 0 },
@@ -1105,11 +1187,11 @@ const pickaxes = [
     recipe: { stick: 2, stone: 3 },
     pattern: ['stone','stone','stone', null,'stick',null, null,'stick',null] },
   { id: 'iron_pick',    name: '鐵鎬',   emoji: '⛏️', maxTier: 5, durability: 60,
-    recipe: { stick: 2, iron: 3 },
-    pattern: ['iron','iron','iron', null,'stick',null, null,'stick',null] },
+    recipe: { stick: 2, iron_ingot: 3 },
+    pattern: ['iron_ingot','iron_ingot','iron_ingot', null,'stick',null, null,'stick',null] },
   { id: 'gold_pick',    name: '金鎬',   emoji: '🔱', maxTier: 4, durability: 25,
-    recipe: { stick: 2, gold: 3 },
-    pattern: ['gold','gold','gold', null,'stick',null, null,'stick',null] },
+    recipe: { stick: 2, gold_ingot: 3 },
+    pattern: ['gold_ingot','gold_ingot','gold_ingot', null,'stick',null, null,'stick',null] },
   { id: 'diamond_pick', name: '鑽石鎬', emoji: '⛏️', maxTier: 5, durability: 150,
     recipe: { stick: 2, diamond: 3 },
     pattern: ['diamond','diamond','diamond', null,'stick',null, null,'stick',null] },
@@ -1124,11 +1206,11 @@ const axes = [
     recipe: { stick: 2, stone: 3 },
     pattern: ['stone','stone',null, 'stone','stick',null, null,'stick',null] },
   { id: 'iron_axe',    name: '鐵斧',   emoji: '🪓', woodBonus: 3, durability: 60,
-    recipe: { stick: 2, iron: 3 },
-    pattern: ['iron','iron',null, 'iron','stick',null, null,'stick',null] },
+    recipe: { stick: 2, iron_ingot: 3 },
+    pattern: ['iron_ingot','iron_ingot',null, 'iron_ingot','stick',null, null,'stick',null] },
   { id: 'gold_axe',    name: '金斧',   emoji: '🪓', woodBonus: 3, durability: 25,
-    recipe: { stick: 2, gold: 3 },
-    pattern: ['gold','gold',null, 'gold','stick',null, null,'stick',null] },
+    recipe: { stick: 2, gold_ingot: 3 },
+    pattern: ['gold_ingot','gold_ingot',null, 'gold_ingot','stick',null, null,'stick',null] },
   { id: 'diamond_axe', name: '鑽石斧', emoji: '🪓', woodBonus: 4, durability: 150,
     recipe: { stick: 2, diamond: 3 },
     pattern: ['diamond','diamond',null, 'diamond','stick',null, null,'stick',null] },
@@ -1150,11 +1232,11 @@ const swords = [
     recipe: { stick: 1, stone: 2 },
     pattern: [null,'stone',null, null,'stone',null, null,'stick',null] },
   { id: 'iron_sword',    name: '鐵劍',   emoji: '🗡️', holdTime: 700, durability: 60,
-    recipe: { stick: 1, iron: 2 },
-    pattern: [null,'iron',null, null,'iron',null, null,'stick',null] },
+    recipe: { stick: 1, iron_ingot: 2 },
+    pattern: [null,'iron_ingot',null, null,'iron_ingot',null, null,'stick',null] },
   { id: 'gold_sword',    name: '金劍',   emoji: '🗡️', holdTime: 700, durability: 25,
-    recipe: { stick: 1, gold: 2 },
-    pattern: [null,'gold',null, null,'gold',null, null,'stick',null] },
+    recipe: { stick: 1, gold_ingot: 2 },
+    pattern: [null,'gold_ingot',null, null,'gold_ingot',null, null,'stick',null] },
   { id: 'diamond_sword', name: '鑽石劍', emoji: '🗡️', holdTime: 400, durability: 150,
     recipe: { stick: 1, diamond: 2 },
     pattern: [null,'diamond',null, null,'diamond',null, null,'stick',null] },
@@ -1172,37 +1254,37 @@ const armorRecipes = [
   // Helmets: XXX / X_X / ___
   { outputId: 'leather_helmet', material: 'leather', slot: 'helmet', recipe: { leather: 5 },
     pattern: ['leather','leather','leather', 'leather',null,'leather', null,null,null] },
-  { outputId: 'iron_helmet', material: 'iron', slot: 'helmet', recipe: { iron: 5 },
-    pattern: ['iron','iron','iron', 'iron',null,'iron', null,null,null] },
-  { outputId: 'gold_helmet', material: 'gold', slot: 'helmet', recipe: { gold: 5 },
-    pattern: ['gold','gold','gold', 'gold',null,'gold', null,null,null] },
+  { outputId: 'iron_helmet', material: 'iron', slot: 'helmet', recipe: { iron_ingot: 5 },
+    pattern: ['iron_ingot','iron_ingot','iron_ingot', 'iron_ingot',null,'iron_ingot', null,null,null] },
+  { outputId: 'gold_helmet', material: 'gold', slot: 'helmet', recipe: { gold_ingot: 5 },
+    pattern: ['gold_ingot','gold_ingot','gold_ingot', 'gold_ingot',null,'gold_ingot', null,null,null] },
   { outputId: 'diamond_helmet', material: 'diamond', slot: 'helmet', recipe: { diamond: 5 },
     pattern: ['diamond','diamond','diamond', 'diamond',null,'diamond', null,null,null] },
   // Chestplates: X_X / XXX / XXX
   { outputId: 'leather_chest', material: 'leather', slot: 'chest', recipe: { leather: 8 },
     pattern: ['leather',null,'leather', 'leather','leather','leather', 'leather','leather','leather'] },
-  { outputId: 'iron_chest', material: 'iron', slot: 'chest', recipe: { iron: 8 },
-    pattern: ['iron',null,'iron', 'iron','iron','iron', 'iron','iron','iron'] },
-  { outputId: 'gold_chest', material: 'gold', slot: 'chest', recipe: { gold: 8 },
-    pattern: ['gold',null,'gold', 'gold','gold','gold', 'gold','gold','gold'] },
+  { outputId: 'iron_chest', material: 'iron', slot: 'chest', recipe: { iron_ingot: 8 },
+    pattern: ['iron_ingot',null,'iron_ingot', 'iron_ingot','iron_ingot','iron_ingot', 'iron_ingot','iron_ingot','iron_ingot'] },
+  { outputId: 'gold_chest', material: 'gold', slot: 'chest', recipe: { gold_ingot: 8 },
+    pattern: ['gold_ingot',null,'gold_ingot', 'gold_ingot','gold_ingot','gold_ingot', 'gold_ingot','gold_ingot','gold_ingot'] },
   { outputId: 'diamond_chest', material: 'diamond', slot: 'chest', recipe: { diamond: 8 },
     pattern: ['diamond',null,'diamond', 'diamond','diamond','diamond', 'diamond','diamond','diamond'] },
   // Leggings: XXX / X_X / X_X
   { outputId: 'leather_legs', material: 'leather', slot: 'legs', recipe: { leather: 7 },
     pattern: ['leather','leather','leather', 'leather',null,'leather', 'leather',null,'leather'] },
-  { outputId: 'iron_legs', material: 'iron', slot: 'legs', recipe: { iron: 7 },
-    pattern: ['iron','iron','iron', 'iron',null,'iron', 'iron',null,'iron'] },
-  { outputId: 'gold_legs', material: 'gold', slot: 'legs', recipe: { gold: 7 },
-    pattern: ['gold','gold','gold', 'gold',null,'gold', 'gold',null,'gold'] },
+  { outputId: 'iron_legs', material: 'iron', slot: 'legs', recipe: { iron_ingot: 7 },
+    pattern: ['iron_ingot','iron_ingot','iron_ingot', 'iron_ingot',null,'iron_ingot', 'iron_ingot',null,'iron_ingot'] },
+  { outputId: 'gold_legs', material: 'gold', slot: 'legs', recipe: { gold_ingot: 7 },
+    pattern: ['gold_ingot','gold_ingot','gold_ingot', 'gold_ingot',null,'gold_ingot', 'gold_ingot',null,'gold_ingot'] },
   { outputId: 'diamond_legs', material: 'diamond', slot: 'legs', recipe: { diamond: 7 },
     pattern: ['diamond','diamond','diamond', 'diamond',null,'diamond', 'diamond',null,'diamond'] },
   // Boots: ___ / X_X / X_X
   { outputId: 'leather_boots', material: 'leather', slot: 'boots', recipe: { leather: 4 },
     pattern: [null,null,null, 'leather',null,'leather', 'leather',null,'leather'] },
-  { outputId: 'iron_boots', material: 'iron', slot: 'boots', recipe: { iron: 4 },
-    pattern: [null,null,null, 'iron',null,'iron', 'iron',null,'iron'] },
-  { outputId: 'gold_boots', material: 'gold', slot: 'boots', recipe: { gold: 4 },
-    pattern: [null,null,null, 'gold',null,'gold', 'gold',null,'gold'] },
+  { outputId: 'iron_boots', material: 'iron', slot: 'boots', recipe: { iron_ingot: 4 },
+    pattern: [null,null,null, 'iron_ingot',null,'iron_ingot', 'iron_ingot',null,'iron_ingot'] },
+  { outputId: 'gold_boots', material: 'gold', slot: 'boots', recipe: { gold_ingot: 4 },
+    pattern: [null,null,null, 'gold_ingot',null,'gold_ingot', 'gold_ingot',null,'gold_ingot'] },
   { outputId: 'diamond_boots', material: 'diamond', slot: 'boots', recipe: { diamond: 4 },
     pattern: [null,null,null, 'diamond',null,'diamond', 'diamond',null,'diamond'] },
 ];
@@ -1212,13 +1294,34 @@ const armorRecipes = [
 const craftRecipes = [
   { id: 'wood_to_sticks', name: '木棍', emoji: '🥢', outputId: 'stick', outputCount: 4,
     needs: { wood: 1 }, shapeless: true },
+  { id: 'furnace', name: '熔爐', emoji: '🔥', outputId: 'furnace', outputCount: 1,
+    needs: { stone: 8 },
+    pattern: ['stone','stone','stone', 'stone',null,'stone', 'stone','stone','stone'] },
+  { id: 'bed', name: '床', emoji: '🛏️', outputId: 'bed', outputCount: 1,
+    needs: { wool: 3, wood: 3 },
+    pattern: ['wool','wool','wool', 'wood','wood','wood', null,null,null] },
 ];
+
+const smeltRecipes = [
+  { input: 'iron',         fuel: 'coal', output: 'iron_ingot',   name: '鐵錠',   emoji: '🔩' },
+  { input: 'gold',         fuel: 'coal', output: 'gold_ingot',   name: '金錠',   emoji: '🪙' },
+  { input: 'copper',       fuel: 'coal', output: 'copper_ingot', name: '銅錠',   emoji: '🟠' },
+  { input: 'pork',         fuel: 'coal', output: 'cooked_pork',    name: '烤豬排', emoji: '🥩' },
+  { input: 'chicken_meat', fuel: 'coal', output: 'cooked_chicken', name: '烤雞肉', emoji: '🍗' },
+];
+
+// Cooked food effects: item id → stamina gained
+const foodEffects = {
+  cooked_pork: 3,
+  cooked_chicken: 2,
+};
 
 const houseStages = [
   { name: '地基',  needs: { stone: 6 },             emoji: '🧱' },
   { name: '牆壁',  needs: { wood: 8 },              emoji: '🏗️' },
-  { name: '屋頂',  needs: { wood: 4, iron: 2 },     emoji: '🏠' },
-  { name: '裝飾',  needs: { gold: 1, emerald: 1 },  emoji: '🏡' },
+  { name: '屋頂',  needs: { wood: 4, iron_ingot: 2 }, emoji: '🏠' },
+  { name: '裝飾',  needs: { gold_ingot: 1, emerald: 1 },  emoji: '🏡' },
+  { name: '家具',  needs: { bed: 1 },               emoji: '🏠' },
 ];
 
 const tierColors = ['#8B7355', '#A0A0A0', '#C0C0C0', '#FFD700', '#B9F2FF'];
@@ -1677,13 +1780,15 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     tab.classList.add('active');
     document.getElementById(tab.dataset.tab).classList.add('active');
-    if (tab.dataset.tab === 'match') { if (matchedPairs.size >= 6) initMatch(); }
+    if (tab.dataset.tab === 'match') { if (!document.querySelector('#matchWords .match-item') || matchedPairs.size >= 6) initMatch(); }
     if (tab.dataset.tab === 'quiz') { if (quizIndex === 0 || quizIndex >= quizQuestions.length) initQuiz(); }
     if (tab.dataset.tab === 'sight') { if (!document.getElementById('sightWordsArea').children.length) initSightWords(); }
     if (tab.dataset.tab === 'mine') { if (!mineData.length) initMine(); else refreshMineHeader(); }
     if (tab.dataset.tab === 'craft') initCraftTab();
+    if (tab.dataset.tab === 'furnace') initFurnaceTab();
     if (tab.dataset.tab === 'equip') initEquipTab();
-    if (tab.dataset.tab === 'collection') initCollection();
+    if (tab.dataset.tab === 'encyclopedia') initEncyclopediaTab();
+    if (tab.dataset.tab === 'house') initHouseTab();
   });
 });
 
@@ -1852,7 +1957,7 @@ document.getElementById('resetMatch').addEventListener('click', initMatch);
 
 // ===== QUIZ =====
 function initQuiz() {
-  quizQuestions = shuffle(feelings).slice(0, 8).map(f => {
+  quizQuestions = shuffle(feelings).map(f => {
     const others = shuffle(feelings.filter(x => x.word !== f.word)).slice(0, 3);
     return { feeling: f, options: shuffle([f, ...others]), type: Math.random() > 0.5 ? 'e2w' : 'w2e' };
   });
@@ -2198,16 +2303,8 @@ function initMine() {
   toolChips.className = 'tool-slots';
   toolChips.id = 'toolChips';
   renderToolChips(toolChips);
-  const costInfo = document.createElement('div');
-  costInfo.className = 'mine-cost';
-  costInfo.textContent = '每格花費 1 ⚡ 體力';
-  const holdHint = document.createElement('div');
-  holdHint.className = 'mine-hold-hint';
-  holdHint.textContent = '👆 按住不放來挖礦！Hold to mine!';
   header.appendChild(h3);
   header.appendChild(toolChips);
-  header.appendChild(costInfo);
-  header.appendChild(holdHint);
   area.appendChild(header);
 
   // Result (above mountain so it's visible on short screens)
@@ -2656,7 +2753,6 @@ function refreshMineHeader() {
 }
 
 // ===== COLLECTION =====
-let collectionView = 'encyclopedia';
 
 function renderCharacter(container, size) {
   container.textContent = '';
@@ -2739,35 +2835,232 @@ function initCraftTab() {
   renderCraft(area);
 }
 
+function initFurnaceTab() {
+  const area = document.getElementById('furnaceArea');
+  area.textContent = '';
+
+  const title = document.createElement('h3');
+  title.textContent = '🔥 熔爐 Furnace';
+  title.className = 'section-title';
+  area.appendChild(title);
+
+  const ownedCount = getBlockCount('furnace');
+  if (ownedCount < 1) {
+    const msg = document.createElement('div');
+    msg.style.cssText = 'text-align:center;color:#B2BEC3;padding:40px 0;font-family:Nunito,sans-serif;';
+    const line1 = document.createTextNode('需要先合成 🔥 熔爐');
+    const br = document.createElement('br');
+    const line2 = document.createElement('span');
+    line2.style.fontSize = '0.85rem';
+    line2.textContent = '8 🪨 石頭 → 合成表';
+    msg.appendChild(line1);
+    msg.appendChild(br);
+    msg.appendChild(line2);
+    area.appendChild(msg);
+    return;
+  }
+
+  // Furnace UI
+  const furnaceUI = document.createElement('div');
+  furnaceUI.className = 'furnace-ui';
+
+  // Input slot
+  const inputSection = document.createElement('div');
+  inputSection.className = 'furnace-slot-section';
+  const inputLabel = document.createElement('div');
+  inputLabel.className = 'furnace-slot-label';
+  inputLabel.textContent = '原料';
+  const inputSlot = document.createElement('div');
+  inputSlot.className = 'furnace-slot';
+  inputSlot.id = 'furnaceInput';
+  inputSlot.textContent = '?';
+  inputSection.appendChild(inputLabel);
+  inputSection.appendChild(inputSlot);
+
+  // Plus sign
+  const plus = document.createElement('div');
+  plus.className = 'furnace-symbol';
+  plus.textContent = '+';
+
+  // Fuel slot
+  const fuelSection = document.createElement('div');
+  fuelSection.className = 'furnace-slot-section';
+  const fuelLabel = document.createElement('div');
+  fuelLabel.className = 'furnace-slot-label';
+  fuelLabel.textContent = '燃料';
+  const fuelSlot = document.createElement('div');
+  fuelSlot.className = 'furnace-slot';
+  fuelSlot.id = 'furnaceFuel';
+  fuelSlot.textContent = '⬛';
+  fuelSlot.style.opacity = '0.5';
+  fuelSection.appendChild(fuelLabel);
+  fuelSection.appendChild(fuelSlot);
+
+  // Arrow
+  const arrowEl = document.createElement('div');
+  arrowEl.className = 'furnace-symbol';
+  arrowEl.textContent = '➡️';
+
+  // Output slot
+  const outputSection = document.createElement('div');
+  outputSection.className = 'furnace-slot-section';
+  const outputLabel = document.createElement('div');
+  outputLabel.className = 'furnace-slot-label';
+  outputLabel.textContent = '產出';
+  const outputSlot = document.createElement('div');
+  outputSlot.className = 'furnace-slot';
+  outputSlot.id = 'furnaceOutput';
+  outputSlot.textContent = '?';
+  outputSection.appendChild(outputLabel);
+  outputSection.appendChild(outputSlot);
+
+  furnaceUI.appendChild(inputSection);
+  furnaceUI.appendChild(plus);
+  furnaceUI.appendChild(fuelSection);
+  furnaceUI.appendChild(arrowEl);
+  furnaceUI.appendChild(outputSection);
+  area.appendChild(furnaceUI);
+
+  // Status / smelt button
+  const status = document.createElement('div');
+  status.id = 'furnaceStatus';
+  status.className = 'furnace-status';
+  area.appendChild(status);
+
+  const smeltBtn = document.createElement('button');
+  smeltBtn.className = 'speak-btn primary';
+  smeltBtn.id = 'furnaceSmeltBtn';
+  smeltBtn.textContent = '🔥 熔煉 Smelt';
+  smeltBtn.disabled = true;
+  smeltBtn.style.cssText = 'display:block;margin:8px auto;';
+  area.appendChild(smeltBtn);
+
+  // Recipe selector
+  const recipeList = document.createElement('div');
+  recipeList.className = 'furnace-recipes';
+  const recipeTitle = document.createElement('div');
+  recipeTitle.className = 'furnace-recipes-title';
+  recipeTitle.textContent = '📜 熔煉表 Smelting Recipes';
+  recipeList.appendChild(recipeTitle);
+
+  let selectedRecipe = null;
+
+  smeltRecipes.forEach(recipe => {
+    const inputBlock = blocks.find(b => b.id === recipe.input);
+    const outputBlock = blocks.find(b => b.id === recipe.output);
+    const fuelBlock = blocks.find(b => b.id === recipe.fuel);
+    const haveInput = getBlockCount(recipe.input);
+    const haveFuel = getBlockCount(recipe.fuel);
+    const canSmelt = haveInput >= 1 && haveFuel >= 1;
+
+    const row = document.createElement('div');
+    row.className = 'furnace-recipe-row' + (canSmelt ? ' available' : '');
+
+    const inputSpan = document.createElement('span');
+    inputSpan.className = 'furnace-recipe-input';
+    inputSpan.textContent = inputBlock.emoji + ' ' + inputBlock.name + ' (' + haveInput + ')';
+    const arrowSpan = document.createElement('span');
+    arrowSpan.className = 'furnace-recipe-arrow';
+    arrowSpan.textContent = '+ ' + fuelBlock.emoji + ' (' + haveFuel + ') ➡️';
+    const outputSpan = document.createElement('span');
+    outputSpan.className = 'furnace-recipe-output';
+    outputSpan.textContent = outputBlock.emoji + ' ' + recipe.name;
+    row.appendChild(inputSpan);
+    row.appendChild(arrowSpan);
+    row.appendChild(outputSpan);
+
+    if (canSmelt) {
+      row.addEventListener('click', () => {
+        selectedRecipe = recipe;
+        recipeList.querySelectorAll('.furnace-recipe-row').forEach(r => r.classList.remove('selected'));
+        row.classList.add('selected');
+        inputSlot.textContent = inputBlock.emoji;
+        inputSlot.style.opacity = '1';
+        fuelSlot.textContent = fuelBlock.emoji;
+        fuelSlot.style.opacity = '1';
+        outputSlot.textContent = outputBlock.emoji;
+        smeltBtn.disabled = false;
+        status.textContent = inputBlock.name + ' + ' + fuelBlock.name + ' → ' + recipe.name;
+      });
+    }
+    recipeList.appendChild(row);
+  });
+
+  area.appendChild(recipeList);
+
+  // Smelt action
+  smeltBtn.addEventListener('click', () => {
+    if (!selectedRecipe) return;
+    const haveInput = getBlockCount(selectedRecipe.input);
+    const haveFuel = getBlockCount(selectedRecipe.fuel);
+    if (haveInput < 1 || haveFuel < 1) {
+      status.textContent = '材料不足！';
+      return;
+    }
+    inventory[selectedRecipe.input] = (inventory[selectedRecipe.input] || 0) - 1;
+    if (inventory[selectedRecipe.input] <= 0) delete inventory[selectedRecipe.input];
+    inventory[selectedRecipe.fuel] = (inventory[selectedRecipe.fuel] || 0) - 1;
+    if (inventory[selectedRecipe.fuel] <= 0) delete inventory[selectedRecipe.fuel];
+    addBlock(selectedRecipe.output);
+    playCraftSfx();
+    doConfetti();
+    status.textContent = '✅ 熔煉成功！獲得 ' + selectedRecipe.emoji + ' ' + selectedRecipe.name;
+    saveGame();
+    setTimeout(() => initFurnaceTab(), 800);
+  });
+
+  // Eat section for cooked food
+  const eatableItems = Object.keys(foodEffects).filter(id => getBlockCount(id) > 0);
+  if (eatableItems.length > 0) {
+    const eatSection = document.createElement('div');
+    eatSection.className = 'furnace-eat-section';
+    const eatTitle = document.createElement('div');
+    eatTitle.className = 'furnace-recipes-title';
+    eatTitle.textContent = '🍽️ 食用 Eat Food';
+    eatSection.appendChild(eatTitle);
+
+    eatableItems.forEach(id => {
+      const b = blocks.find(x => x.id === id);
+      const count = getBlockCount(id);
+      const effect = foodEffects[id];
+      const row = document.createElement('div');
+      row.className = 'furnace-eat-row';
+      const label = document.createElement('span');
+      label.textContent = b.emoji + ' ' + b.name + ' x' + count;
+      row.appendChild(label);
+      const eatBtn = document.createElement('button');
+      eatBtn.className = 'speak-btn small primary';
+      eatBtn.textContent = '🍽️ 食用 (+' + effect + ' ⚡)';
+      eatBtn.addEventListener('click', () => {
+        inventory[id] = (inventory[id] || 0) - 1;
+        if (inventory[id] <= 0) delete inventory[id];
+        addGems(effect);
+        saveGame();
+        initFurnaceTab();
+      });
+      row.appendChild(eatBtn);
+      eatSection.appendChild(row);
+    });
+    area.appendChild(eatSection);
+  }
+}
+
 function initEquipTab() {
   const area = document.getElementById('equipArea');
   area.textContent = '';
   renderEquipment(area);
 }
 
-function initCollection() {
-  const area = document.getElementById('collectionArea');
+function initEncyclopediaTab() {
+  const area = document.getElementById('encyclopediaArea');
   area.textContent = '';
+  renderEncyclopedia(area);
+}
 
-  // Sub-tabs (only encyclopedia and house remain)
-  const tabs = document.createElement('div');
-  tabs.className = 'collection-tabs';
-  ['encyclopedia', 'house'].forEach(view => {
-    const labels = { encyclopedia: '📖 圖鑑', house: '🏠 蓋房子' };
-    const btn = document.createElement('button');
-    btn.className = 'collection-tab' + (collectionView === view ? ' active' : '');
-    btn.textContent = labels[view];
-    btn.addEventListener('click', () => { collectionView = view; initCollection(); });
-    tabs.appendChild(btn);
-  });
-  area.appendChild(tabs);
-
-  const content = document.createElement('div');
-  content.id = 'collectionContent';
-  area.appendChild(content);
-
-  if (collectionView === 'encyclopedia') renderEncyclopedia(content);
-  else if (collectionView === 'house') renderHouse(content);
+function initHouseTab() {
+  const area = document.getElementById('houseArea');
+  area.textContent = '';
+  renderHouse(area);
 }
 
 function renderEncyclopedia(c) {
@@ -2923,6 +3216,7 @@ function renderRecipeBook(c) {
     { name: '🗡️ 武器 Weapons', recipes: [] },
     { name: '🛡️ 盔甲 Armor', recipes: [] },
     { name: '🔧 其他 Other', recipes: [] },
+    { name: '🔥 熔爐 Smelting', recipes: [] },
   ];
 
   pickaxes.forEach((pick) => {
@@ -2966,6 +3260,17 @@ function renderRecipeBook(c) {
       name: recipe.name + ' x' + recipe.outputCount,
       needs, itemId: recipe.outputId, type: 'item',
       shapeless: recipe.shapeless
+    });
+  });
+  smeltRecipes.forEach(recipe => {
+    const inputBlock = blocks.find(b => b.id === recipe.input);
+    const fuelBlock = blocks.find(b => b.id === recipe.fuel);
+    // Show as: input in center, fuel below
+    const pattern = [null,null,null, null,recipe.input,null, null,recipe.fuel,null];
+    categories[5].recipes.push({
+      pattern, emoji: recipe.emoji, name: recipe.name,
+      needs: { [recipe.input]: 1, [recipe.fuel]: 1 },
+      itemId: recipe.output, type: 'smelt'
     });
   });
 
@@ -3224,6 +3529,7 @@ function getHouseArt() {
     '🌳       🌳\n\n🧱🪵🪵🧱\n🪵           🪵\n🧱🪵🪵🧱',
     '     🔺\n   / 🪵 \\\n  / 🪵🪵 \\\n🧱🪵🪵🧱\n🪵  🚪  🪵\n🧱🪵🪵🧱',
     '    ⭐\n     🔺\n   / 🪵 \\\n  / 🪵🪵 \\\n🧱🪵🪵🧱\n🪵  🚪  🪵\n🧱💚🟡🧱',
+    '    ⭐\n     🔺\n   / 🪵 \\\n  / 🪵🪵 \\\n🧱🪵🪵🧱\n🪵🛏️🚪 🪵\n🧱💚🟡🧱',
   ];
   return arts[houseProgress] || arts[arts.length - 1];
 }
@@ -3281,7 +3587,7 @@ function renderHouse(c) {
         houseProgress++;
         saveGame();
         doConfetti();
-        initCollection();
+        initHouseTab();
       });
       el.appendChild(btn);
     }
