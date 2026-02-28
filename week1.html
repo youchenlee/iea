@@ -803,6 +803,7 @@ let gems = 0;
 let inventory = {};
 let houseProgress = 0;
 let toolDurability = {}; // { 'stone_pick': 28, ... } — remaining uses for active tool
+let discovered = new Set(); // permanently tracks every item ID ever obtained
 
 function getEffectivePickaxeLevel() {
   let best = 0;
@@ -827,19 +828,19 @@ function getActiveTool(toolList) {
     const t = toolList[i];
     if (i === 0 && toolList === pickaxes) return t; // wood pick always available
     if (getBlockCount(t.id) > 0) {
-      if (t.durability !== Infinity && !toolDurability[t.id]) {
+      if (t.durability !== Infinity && toolDurability[t.id] === undefined) {
         toolDurability[t.id] = t.durability;
       }
       return t;
     }
   }
-  return toolList[0]; // fallback to first (wood pick)
+  return toolList === pickaxes ? toolList[0] : null; // null = no axe owned
 }
 
 // Use a tool: decrement durability, return break message or null
 function useTool(tool) {
   if (!tool || tool.durability === Infinity) return null;
-  if (!toolDurability[tool.id]) toolDurability[tool.id] = tool.durability;
+  if (toolDurability[tool.id] === undefined) toolDurability[tool.id] = tool.durability;
   toolDurability[tool.id]--;
   if (toolDurability[tool.id] <= 0) {
     // Tool broke
@@ -864,7 +865,7 @@ function getToolDurabilityText(tool) {
 }
 
 function saveGame() {
-  localStorage.setItem('mineGame', JSON.stringify({ gems, inventory, houseProgress, stars, streak, craftGrid, toolDurability }));
+  localStorage.setItem('mineGame', JSON.stringify({ gems, inventory, houseProgress, stars, streak, craftGrid, toolDurability, discovered: [...discovered] }));
 }
 
 function loadGame() {
@@ -874,6 +875,9 @@ function loadGame() {
     gems = d.gems || 0;
     inventory = d.inventory || {};
     toolDurability = d.toolDurability || {};
+    if (d.discovered) discovered = new Set(d.discovered);
+    // Also mark any current inventory items as discovered
+    Object.keys(inventory).forEach(id => discovered.add(id));
     // Migration: convert old pickaxeLevel to inventory item
     if (d.pickaxeLevel > 0 && d.pickaxeLevel < pickaxes.length) {
       const oldPick = pickaxes[d.pickaxeLevel];
@@ -906,6 +910,7 @@ function getBlockCount(id) { return inventory[id] || 0; }
 
 function addBlock(id, n) {
   inventory[id] = (inventory[id] || 0) + (n || 1);
+  discovered.add(id);
   saveGame();
 }
 
@@ -1150,7 +1155,7 @@ function bumpStreak() {
   el.classList.add('pop');
 }
 
-function resetStreak() { streak = 0; document.getElementById('streak').textContent = 0; }
+function resetStreak() { streak = 0; document.getElementById('streak').textContent = 0; saveGame(); }
 
 function doConfetti() {
   const box = document.getElementById('confettiBox');
@@ -1177,9 +1182,9 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     tab.classList.add('active');
     document.getElementById(tab.dataset.tab).classList.add('active');
-    if (tab.dataset.tab === 'match') initMatch();
-    if (tab.dataset.tab === 'quiz') initQuiz();
-    if (tab.dataset.tab === 'sight') initSightWords();
+    if (tab.dataset.tab === 'match') { if (matchedPairs.size >= 6) initMatch(); }
+    if (tab.dataset.tab === 'quiz') { if (quizIndex === 0 || quizIndex >= quizQuestions.length) initQuiz(); }
+    if (tab.dataset.tab === 'sight') { if (!document.getElementById('sightWordsArea').children.length) initSightWords(); }
     if (tab.dataset.tab === 'mine') initMine();
     if (tab.dataset.tab === 'collection') initCollection();
   });
@@ -1408,7 +1413,6 @@ let sightEarned = new Set();
 function initSightWords() {
   const area = document.getElementById('sightWordsArea');
   area.textContent = '';
-  sightEarned.clear();
 
   sightWords.forEach((sw, i) => {
     const card = document.createElement('div');
@@ -1649,6 +1653,7 @@ function chopTree(cellData) {
   document.getElementById('mineResult').textContent =
     `🪵 砍到木頭 x${woodCount}！${axeMsg}${breakMsg}（擁有 ${getBlockCount('wood')} 個）`;
   updateExposure();
+  updateMineRefreshBtn();
   saveGame();
 }
 
@@ -1736,17 +1741,17 @@ function initCollection() {
 }
 
 function renderEncyclopedia(c) {
-  const discovered = Object.keys(inventory).length;
+  const discoveredCount = discovered.size;
   const counter = document.createElement('div');
   counter.style.cssText = 'text-align:center;margin-bottom:12px;font-family:Fredoka,sans-serif;color:#636E72';
-  counter.textContent = `已發現 ${discovered} / ${blocks.length} 種物品`;
+  counter.textContent = `已發現 ${discoveredCount} / ${blocks.length} 種物品`;
   c.appendChild(counter);
 
   const grid = document.createElement('div');
   grid.className = 'encyclopedia-grid';
   blocks.forEach(b => {
     const count = getBlockCount(b.id);
-    const owned = count > 0;
+    const owned = discovered.has(b.id);
     const card = document.createElement('div');
     card.className = 'block-card ' + (owned ? 'owned' : 'undiscovered');
     if (b.tier > 0) card.style.borderBottomColor = tierColors[b.tier - 1];
