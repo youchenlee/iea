@@ -2275,7 +2275,7 @@ function mineMountainCell(row, col, cellData) {
 
   addBlock(cellData.block.id);
 
-  const activePick = pickaxes[getEffectivePickaxeLevel()];
+  const activePick = getEquippedTool();
   const brokeName = useTool(activePick);
 
   const b = cellData.block;
@@ -2387,7 +2387,6 @@ function openToolPicker(chipEl, type) {
   // Append picker to .app (same stacking context as backdrop) and position near chip
   const appEl = document.querySelector('.app') || document.body;
   const rect = chipEl.getBoundingClientRect();
-  const appRect = appEl.getBoundingClientRect();
   picker.style.position = 'fixed';
   picker.style.left = rect.left + rect.width / 2 + 'px';
   picker.style.top = rect.bottom + 6 + 'px';
@@ -2443,7 +2442,11 @@ function openArmorPicker(cellEl, slot) {
     opt.className = 'tool-picker-option';
     if (o.wearing) opt.classList.add('selected');
     const countText = o.count ? ' x' + o.count : '';
-    opt.innerHTML = `<span class="opt-emoji">${o.emoji}</span> ${o.name}${countText}`;
+    const emojiSpan = document.createElement('span');
+    emojiSpan.className = 'opt-emoji';
+    emojiSpan.textContent = o.emoji;
+    opt.appendChild(emojiSpan);
+    opt.appendChild(document.createTextNode(' ' + o.name + countText));
     opt.addEventListener('click', (e) => {
       e.stopPropagation(); // prevent bubble to parent cell re-opening picker
       if (o.id === '__unequip__') {
