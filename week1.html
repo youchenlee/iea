@@ -411,9 +411,31 @@ let quizQuestions = [], quizIndex = 0, quizScore = 0, quizAnswered = false;
 let speechSpeed = 'normal'; // 'slow' or 'normal'
 
 // ===== TTS ENGINE =====
-// Use Google Translate TTS for clear, consistent pronunciation on all devices
-let currentAudio = null;
+// Reuse a single Audio element — iOS Safari blocks play() on newly created Audio objects
+// unless triggered by a direct user gesture. By reusing one element "unlocked" on first tap,
+// subsequent src changes + play() calls work reliably.
+const sharedAudio = new Audio();
+let audioUnlocked = false;
 let lastEngine = 'none';
+
+// Unlock audio on first user interaction (iOS requirement)
+function unlockAudio() {
+  if (audioUnlocked) return;
+  sharedAudio.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=';
+  sharedAudio.play().then(() => {
+    audioUnlocked = true;
+    sharedAudio.pause();
+    console.log('Audio unlocked for iOS');
+  }).catch(() => {});
+  // Also unlock SpeechSynthesis
+  if (window.speechSynthesis) {
+    const u = new SpeechSynthesisUtterance('');
+    u.volume = 0;
+    speechSynthesis.speak(u);
+  }
+}
+document.addEventListener('touchstart', unlockAudio, { once: true });
+document.addEventListener('click', unlockAudio, { once: true });
 
 function updateEngineDisplay(engine, detail) {
   lastEngine = engine;
@@ -433,24 +455,33 @@ function updateEngineDisplay(engine, detail) {
   }
 }
 
-function speak(text, forceSpeed) {
-  if (currentAudio) {
-    currentAudio.pause();
-    currentAudio.currentTime = 0;
-    currentAudio = null;
-  }
+// Queue for chained speak calls (word → sentence)
+let speakQueue = [];
+let speakBusy = false;
 
+function speak(text, forceSpeed) {
+  // Stop any in-progress audio
+  sharedAudio.pause();
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  speakQueue = [];
+  speakBusy = false;
+
+  return _doSpeak(text, forceSpeed);
+}
+
+function _doSpeak(text, forceSpeed) {
   const speed = forceSpeed || speechSpeed;
   const slow = speed === 'slow';
   const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=${encodeURIComponent(text)}${slow ? '&ttsspeed=0.3' : ''}`;
 
-  const audio = new Audio(url);
-  audio.playbackRate = slow ? 0.75 : 1.0;
-  currentAudio = audio;
+  sharedAudio.src = url;
+  sharedAudio.playbackRate = slow ? 0.75 : 1.0;
+  sharedAudio.onplay = () => updateEngineDisplay('google-tts', text);
+  // Clear old handlers
+  sharedAudio.onended = null;
+  sharedAudio.onerror = null;
 
-  audio.onplay = () => updateEngineDisplay('google-tts', text);
-
-  const playPromise = audio.play();
+  const playPromise = sharedAudio.play();
   if (playPromise) {
     playPromise.catch(err => {
       console.warn('Google TTS failed, fallback:', err.message);
@@ -459,7 +490,7 @@ function speak(text, forceSpeed) {
     });
   }
 
-  return audio;
+  return sharedAudio;
 }
 
 // Fallback: SpeechSynthesis (in case Google TTS is blocked)
@@ -482,14 +513,12 @@ function speakFallback(text, slow) {
   synth.speak(u);
 }
 
-// Speak word first, then sentence after a pause
+// Speak word first, then sentence after a pause — uses shared Audio element
 function speakWordThenSentence(word, sentence) {
-  const a = speak(word);
-  if (a) {
-    a.onended = () => {
-      setTimeout(() => speak(sentence), 400);
-    };
-  }
+  speak(word);
+  sharedAudio.onended = () => {
+    setTimeout(() => _doSpeak(sentence), 400);
+  };
 }
 
 // ===== SPEED TOGGLE =====
@@ -753,8 +782,8 @@ function renderQuiz() {
       </div>`;
   }
 
-  // Auto-speak the word
-  speak(q.feeling.word);
+  // Don't auto-speak — iOS blocks audio without a direct user gesture.
+  // The hint button below lets the user trigger it.
 
   // Hint button
   c.querySelector('#quizHint')?.addEventListener('click', () => speak(q.feeling.word));
