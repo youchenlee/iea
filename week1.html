@@ -40,7 +40,11 @@ body::before {
 .app { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 16px; padding-top: 40px; }
 
 .header {
-  position: fixed; top: 10px; left: 14px; z-index: 50;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 14px;
+  background: rgba(255,248,231,0.9);
+  backdrop-filter: blur(8px);
 }
 .header h1 {
   font-family: 'Fredoka', sans-serif;
@@ -50,12 +54,13 @@ body::before {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  line-height: 1;
+  flex-shrink: 0;
 }
 .header .subtitle { display: none; }
 
 .score-bar {
-  position: fixed; top: 8px; right: 12px; z-index: 50;
-  display: flex; gap: 8px; flex-wrap: nowrap;
+  display: flex; gap: 6px; flex-wrap: nowrap;
 }
 .score-item {
   background: rgba(255,255,255,0.9);
@@ -339,6 +344,15 @@ body::before {
 .mine-header h3 { font-family: 'Fredoka', sans-serif; font-size: 1.3rem; color: var(--text); }
 .mine-pickaxe { font-size: 1rem; color: #636E72; margin-top: 4px; }
 .mine-cost { font-size: 0.9rem; color: var(--accent); margin-top: 2px; }
+.mine-hold-hint {
+  font-size: 0.85rem; color: #A29BFE; margin-top: 4px;
+  font-family: 'Fredoka', sans-serif; font-weight: 600;
+  animation: holdHintPulse 2s ease-in-out infinite;
+}
+@keyframes holdHintPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
 
 .mountain {
   display: flex;
@@ -632,7 +646,9 @@ body::before {
 .settings-btn:hover { transform: scale(1.15); }
 
 @media (max-width: 600px) {
+  .header { padding: 6px 10px; }
   .header h1 { font-size: 1rem; }
+  .score-item { padding: 3px 8px; font-size: 0.7rem; }
   .feelings-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
   .feeling-card { padding: 14px 8px; }
   .feeling-card .emoji { font-size: 2.2rem; }
@@ -640,16 +656,17 @@ body::before {
   .quiz-options { grid-template-columns: 1fr; }
   .nav-groups { gap: 4px; }
   .nav-group { padding: 3px; }
-  .nav-group-label { font-size: 0.55rem; padding: 0 4px; }
-  .nav-tab { padding: 6px 10px; font-size: 0.8rem; }
+  .nav-group-label { font-size: 0; width: 0; padding: 0; overflow: hidden; }
+  .stamina-hint { display: none; }
+  .nav-tab { padding: 8px 12px; font-size: 0.85rem; }
   .sentence-display { font-size: 1.2rem; }
-  .mine-cell { width: 32px; height: 32px; font-size: 1.1rem; }
-  .mine-cell.tree { font-size: 1.3rem; }
-  .mine-cell.animal { font-size: 1.3rem; }
+  .mine-cell { width: 38px; height: 38px; font-size: 1.2rem; }
+  .mine-cell.tree { font-size: 1.4rem; }
+  .mine-cell.animal { font-size: 1.4rem; }
   .encyclopedia-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
   .craft-slot { width: 44px; height: 44px; font-size: 1.3rem; }
   .craft-result-slot { width: 52px; height: 52px; font-size: 1.6rem; }
-  .craft-inv-item { width: 40px; height: 40px; font-size: 1rem; }
+  .craft-inv-item { width: 44px; height: 44px; font-size: 1.1rem; }
   .collection-tab { padding: 6px 12px; font-size: 0.8rem; }
   .character-display.small { display: none; }
   .equip-slot { min-width: 160px; padding: 6px 10px; }
@@ -657,7 +674,7 @@ body::before {
   .modal-content { min-width: auto; width: 90vw; }
 }
 .mine-progress {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+  position: absolute; bottom: 0; left: 0; right: 0; height: 7px;
   background: rgba(0,0,0,0.2); border-radius: 0 0 4px 4px;
   overflow: hidden;
 }
@@ -711,13 +728,12 @@ body::before {
   <div class="header">
     <h1>Feelings Fun! 🎭</h1>
     <div class="subtitle">學習表達情緒的英文 · Learn to express feelings</div>
-  </div>
-
-  <div class="score-bar">
-    <div class="score-item" id="starBar"><span>⭐</span> <span id="stars">0</span></div>
-    <div class="score-item" id="streakBar"><span>🔥</span> <span id="streak">0</span></div>
-    <div class="score-item" id="gemBar"><span>⚡</span> <span id="gems">0</span></div>
-    <button class="score-item settings-btn" id="settingsBtn">⚙️</button>
+    <div class="score-bar">
+      <div class="score-item" id="starBar"><span>⭐</span> <span id="stars">0</span></div>
+      <div class="score-item" id="streakBar"><span>🔥</span> <span id="streak">0</span></div>
+      <div class="score-item" id="gemBar"><span>⚡</span> <span id="gems">0</span></div>
+      <button class="score-item settings-btn" id="settingsBtn">⚙️</button>
+    </div>
   </div>
 
   <div class="nav-groups">
@@ -1871,9 +1887,13 @@ function initMine() {
   const costInfo = document.createElement('div');
   costInfo.className = 'mine-cost';
   costInfo.textContent = '每格花費 1 ⚡ 體力';
+  const holdHint = document.createElement('div');
+  holdHint.className = 'mine-hold-hint';
+  holdHint.textContent = '👆 按住不放來挖礦！Hold to mine!';
   header.appendChild(h3);
   header.appendChild(pickInfo);
   header.appendChild(costInfo);
+  header.appendChild(holdHint);
   area.appendChild(header);
 
   // Mountain
