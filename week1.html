@@ -532,6 +532,7 @@ body::before {
 .mine-cell.tree.mined { background: rgba(135,206,235,0.25) !important; border: none; box-shadow: none; pointer-events: none; }
 .mine-cell.animal { background: none; border: none; box-shadow: none; font-size: 1.5rem; cursor: pointer; }
 .mine-cell.animal:hover { transform: scale(1.15); }
+.mine-cell.animal.hostile { filter: drop-shadow(0 0 3px rgba(255,60,60,0.6)); }
 .mine-cell.animal.mined { background: rgba(135,206,235,0.25) !important; border: none; box-shadow: none; pointer-events: none; }
 
 
@@ -725,32 +726,52 @@ body::before {
 .recipe-category-header.collapsed::after { content: ' ▸'; }
 .recipe-category-header:not(.collapsed)::after { content: ' ▾'; }
 
-.house-area { text-align: center; max-width: 400px; margin: 0 auto; }
-.house-visual {
-  font-size: 1.2rem; line-height: 1.8;
-  background: white; border-radius: var(--radius); padding: 24px;
-  box-shadow: var(--shadow-sm); margin-bottom: 16px;
-  min-height: 180px; display: flex; align-items: center; justify-content: center;
-  white-space: pre; font-family: var(--font-display);
+/* ===== BUILD (integrated into mine) ===== */
+.mine-cell.build-placed {
+  background: rgba(255,255,255,0.65) !important; border-color: rgba(0,0,0,0.1) !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important; cursor: pointer;
+  pointer-events: auto !important;
 }
-.house-stage {
-  background: white; border-radius: 14px; padding: 14px 18px;
-  margin-bottom: 10px; box-shadow: var(--shadow-sm);
-  display: flex; align-items: center; justify-content: space-between;
+.mine-cell.build-placed:hover { transform: scale(1.12); box-shadow: 0 0 8px rgba(255,80,80,0.4) !important; }
+.mine-cell.build-player {
+  pointer-events: auto !important;
 }
-.house-stage.done { border-left: 4px solid var(--success); }
-.house-stage.current { border-left: 4px solid var(--accent); }
-.house-stage.locked { opacity: 0.5; }
-.house-stage-info { text-align: left; }
-.house-stage-name { font-family: var(--font-display); font-weight: 600; }
-.house-stage-needs { font-size: 0.85rem; color: var(--text-secondary); margin-top: 2px; }
-.house-build-btn {
+.mine-cell.ghost::after {
+  content: attr(data-hint); position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0.3; font-size: inherit; pointer-events: none;
+}
+.build-info {
+  font-size: 0.75rem; color: var(--text-secondary); text-align: center;
+  margin-top: 2px; font-family: var(--font-body);
+}
+.build-palette {
+  display: flex; flex-wrap: wrap; gap: 4px; justify-content: center;
+  margin-bottom: 12px; padding: 10px;
+  background: #8B6F47; border-radius: 12px;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.3), 0 3px 10px var(--shadow);
+}
+.build-palette-item {
+  width: 48px; height: 48px; border-radius: 6px;
+  background: #A0855C; border: 2px solid #6B4F37;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 1.2rem; transition: all 0.15s; position: relative;
+}
+.build-palette-item:hover { background: #B8976A; transform: scale(1.08); }
+.build-palette-item.selected { border-color: #FFD93D; background: #C4A97D; box-shadow: 0 0 8px rgba(255,217,61,0.5); }
+.build-palette-item .count {
+  font-size: 0.55rem; font-weight: 700; color: #FFF;
+  background: rgba(0,0,0,0.5); border-radius: 4px; padding: 0 3px;
+  position: absolute; bottom: 2px; right: 2px; line-height: 1.3;
+}
+.build-actions { text-align: center; margin-bottom: 12px; }
+.build-actions button {
   padding: 8px 18px; border-radius: 50px; border: none;
-  background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #2D3436;
-  font-family: var(--font-display); font-size: 0.9rem; font-weight: 600;
-  cursor: pointer; transition: all 0.3s;
+  background: linear-gradient(135deg, var(--border), #BDC3C7); color: #2D3436;
+  font-family: var(--font-display); font-size: 0.85rem; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
 }
-.house-build-btn:disabled { opacity: 0.4; pointer-events: none; }
+.build-actions button:hover { transform: translateY(-2px); background: #E0E0E8; }
 
 /* ===== SETTINGS MODAL ===== */
 .modal-overlay {
@@ -954,7 +975,7 @@ body::before {
 
 <div class="app">
   <div class="header">
-    <h1>Feelings Fun! 🎭 <span style="font-size:0.45em;font-weight:400;color:#636E72;vertical-align:middle;">Week 1 · v3.1.0</span></h1>
+    <h1>Feelings Fun! 🎭 <span style="font-size:0.45em;font-weight:400;color:#636E72;vertical-align:middle;">Week 1 · v3.3.0</span></h1>
     <div class="score-bar">
       <div class="score-item" id="starBar"><span>⭐</span> <span id="stars">0</span></div>
       <div class="score-item" id="streakBar"><span>🔥</span> <span id="streak">0</span></div>
@@ -986,7 +1007,6 @@ body::before {
         <button class="nav-tab" data-tab="furnace">🔥 熔爐</button>
         <button class="nav-tab" data-tab="equip">👤 裝備</button>
         <button class="nav-tab" data-tab="encyclopedia">📖 圖鑑</button>
-        <button class="nav-tab" data-tab="house">🏠 房子</button>
       </div>
     </div>
   </div>
@@ -1044,10 +1064,6 @@ body::before {
     <div id="encyclopediaArea"></div>
   </div>
 
-  <div id="house" class="section">
-    <div id="houseArea"></div>
-  </div>
-
   <footer class="app-footer">
     感謝 iEA 美語學院的優良教材，本站為學生家長參考教材內容自製的輔助學習工具。
   </footer>
@@ -1076,8 +1092,12 @@ body::before {
       </div>
     </div>
     <div id="engineStatus" style="text-align:center;font-size:0.8rem;color:#B2BEC3;margin-top:12px;font-family:'Nunito',sans-serif;">🔍 偵測中...</div>
-    <div style="text-align:center;font-size:0.7rem;color:#B2BEC3;margin-top:8px;font-family:'Nunito',sans-serif;">v3.1.0</div>
+    <div style="text-align:center;font-size:0.7rem;color:#B2BEC3;margin-top:8px;font-family:'Nunito',sans-serif;">v3.3.0</div>
   </div>
+</div>
+
+<div class="modal-overlay" id="learnGateModal">
+  <div class="modal-content" id="learnGateContent"></div>
 </div>
 
 <script>
@@ -1126,29 +1146,58 @@ const blocks = [
   { id: 'dirt',     name: '泥土',   emoji: '🟫', tier: 1, weight: 40 },
   { id: 'wood',     name: '木頭',   emoji: '🪵', tier: 1, weight: 35 },
   { id: 'stick',    name: '木棍',   emoji: '🥢', tier: 1, weight: 10 },
+  { id: 'sand',     name: '沙子',   emoji: '🏖️', tier: 1, weight: 20 },
+  { id: 'gravel',   name: '礫石',   emoji: '⚪', tier: 1, weight: 15 },
+  { id: 'clay',     name: '黏土',   emoji: '🧱', tier: 1, weight: 8 },
   { id: 'stone',    name: '石頭',   emoji: '🪨', tier: 2, weight: 30 },
   { id: 'coal',     name: '煤炭',   emoji: '⬛', tier: 2, weight: 25 },
   { id: 'iron',     name: '鐵礦',   emoji: '⬜', tier: 3, weight: 18 },
   { id: 'copper',   name: '銅礦',   emoji: '🟧', tier: 3, weight: 15 },
+  { id: 'redstone', name: '紅石',   emoji: '🔴', tier: 3, weight: 10 },
+  { id: 'lapis',    name: '青金石', emoji: '🔵', tier: 3, weight: 8 },
   { id: 'gold',     name: '金礦',   emoji: '🟡', tier: 4, weight: 8 },
   { id: 'emerald',  name: '綠寶石', emoji: '💚', tier: 4, weight: 5 },
   { id: 'diamond',  name: '鑽石',   emoji: '💎', tier: 5, weight: 3 },
   { id: 'amethyst', name: '紫水晶', emoji: '🟣', tier: 5, weight: 2 },
+  { id: 'obsidian', name: '黑曜石', emoji: '🖤', tier: 5, weight: 1 },
   // Animal drops (tier 0, weight 0 = drop-only)
   { id: 'leather',      name: '皮革',   emoji: '🟤', tier: 0, weight: 0 },
   { id: 'pork',         name: '豬排',   emoji: '🍖', tier: 0, weight: 0 },
   { id: 'chicken_meat', name: '雞肉',   emoji: '🍗', tier: 0, weight: 0 },
   { id: 'feather',      name: '羽毛',   emoji: '🪶', tier: 0, weight: 0 },
   { id: 'wool',         name: '羊毛',   emoji: '🧶', tier: 0, weight: 0 },
+  // Hostile mob drops (tier 0, weight 0 = drop-only)
+  { id: 'rotten_flesh', name: '腐肉',   emoji: '🥓', tier: 0, weight: 0 },
+  { id: 'bone',         name: '骨頭',   emoji: '🦴', tier: 0, weight: 0 },
+  { id: 'gunpowder',    name: '火藥',   emoji: '💥', tier: 0, weight: 0 },
+  { id: 'string',       name: '蜘蛛絲', emoji: '🕸️', tier: 0, weight: 0 },
+  { id: 'ender_pearl',  name: '乙太珍珠', emoji: '🟢', tier: 0, weight: 0 },
   // Smelted / cooked items (tier 0, weight 0 = furnace output only)
   { id: 'iron_ingot',   name: '鐵錠',   emoji: '🔩', tier: 0, weight: 0 },
   { id: 'gold_ingot',   name: '金錠',   emoji: '🪙', tier: 0, weight: 0 },
   { id: 'copper_ingot', name: '銅錠',   emoji: '🟠', tier: 0, weight: 0 },
   { id: 'cooked_pork',    name: '烤豬排', emoji: '🥩', tier: 0, weight: 0 },
   { id: 'cooked_chicken', name: '烤雞肉', emoji: '🍗', tier: 0, weight: 0 },
+  // Smelted material items
+  { id: 'glass',   name: '玻璃',   emoji: '🪟', tier: 0, weight: 0 },
+  { id: 'brick',   name: '磚塊',   emoji: '🧱', tier: 0, weight: 0 },
   // Craftable utility items
   { id: 'furnace', name: '熔爐', emoji: '🔥', tier: 0, weight: 0 },
   { id: 'bed',     name: '床',   emoji: '🛏️', tier: 0, weight: 0 },
+  { id: 'torch',   name: '火把', emoji: '🕯️', tier: 0, weight: 0 },
+  { id: 'ladder',  name: '梯子', emoji: '🪜', tier: 0, weight: 0 },
+  { id: 'chest',   name: '箱子', emoji: '📦', tier: 0, weight: 0 },
+  { id: 'door',    name: '門',   emoji: '🚪', tier: 0, weight: 0 },
+  { id: 'fence',   name: '柵欄', emoji: '🏗️', tier: 0, weight: 0 },
+  { id: 'bookshelf', name: '書架', emoji: '📚', tier: 0, weight: 0 },
+  { id: 'painting', name: '畫',   emoji: '🖼️', tier: 0, weight: 0 },
+  { id: 'tnt',     name: 'TNT',  emoji: '🧨', tier: 0, weight: 0 },
+  { id: 'bow',     name: '弓',   emoji: '🏹', tier: 0, weight: 0 },
+  { id: 'arrow',   name: '箭',   emoji: '➡️', tier: 0, weight: 0 },
+  { id: 'boat',    name: '船',   emoji: '🛶', tier: 0, weight: 0 },
+  { id: 'bucket',  name: '桶',   emoji: '🪣', tier: 0, weight: 0 },
+  { id: 'compass', name: '指南針', emoji: '🧭', tier: 0, weight: 0 },
+  { id: 'clock',   name: '時鐘', emoji: '🕐', tier: 0, weight: 0 },
   // Tools (tier 0, weight 0 = never mined, only crafted)
   { id: 'wood_pick',    name: '木鎬',   emoji: '⛏️', tier: 0, weight: 0 },
   { id: 'stone_pick',   name: '石鎬',   emoji: '⛏️', tier: 0, weight: 0 },
@@ -1186,7 +1235,7 @@ const blocks = [
 
 const pickaxes = [
   { id: 'hands',        name: '手',     emoji: '✋', maxTier: 0, durability: Infinity, recipe: null, pattern: null },
-  { id: 'wood_pick',    name: '木鎬',   emoji: '⛏️', maxTier: 2, durability: Infinity,
+  { id: 'wood_pick',    name: '木鎬',   emoji: '⛏️', maxTier: 2, durability: 15,
     recipe: { wood: 3, stick: 2 },
     pattern: ['wood','wood','wood', null,'stick',null, null,'stick',null] },
   { id: 'stone_pick',   name: '石鎬',   emoji: '⛏️', maxTier: 3, durability: 30,
@@ -1205,7 +1254,7 @@ const pickaxes = [
 
 // Axe recipes (XX. / XS. / .S.)
 const axes = [
-  { id: 'wood_axe',    name: '木斧',   emoji: '🪓', woodBonus: 2, durability: Infinity,
+  { id: 'wood_axe',    name: '木斧',   emoji: '🪓', woodBonus: 2, durability: 15,
     recipe: { wood: 3, stick: 2 },
     pattern: ['wood','wood',null, 'wood','stick',null, null,'stick',null] },
   { id: 'stone_axe',   name: '石斧',   emoji: '🪓', woodBonus: 2, durability: 30,
@@ -1229,9 +1278,17 @@ const animals = [
   { id: 'sheep',   name: '羊',  emoji: '🐑', drops: [{ id: 'wool', min: 1, max: 2 }] },
 ];
 
+const hostileMobs = [
+  { id: 'zombie',   name: '殭屍',   emoji: '🧟', hostile: true, drops: [{ id: 'rotten_flesh', min: 1, max: 2 }] },
+  { id: 'skeleton', name: '骷髏',   emoji: '💀', hostile: true, drops: [{ id: 'bone', min: 1, max: 2 }] },
+  { id: 'creeper',  name: '苦力怕', emoji: '👾', hostile: true, drops: [{ id: 'gunpowder', min: 1, max: 2 }] },
+  { id: 'spider',   name: '蜘蛛',   emoji: '🕷️', hostile: true, drops: [{ id: 'string', min: 1, max: 2 }] },
+  { id: 'enderman', name: '乙太人', emoji: '👤', hostile: true, drops: [{ id: 'ender_pearl', min: 0, max: 1 }] },
+];
+
 const swords = [
   { id: 'hands',          name: '手',     emoji: '✋', holdTime: 2500, durability: Infinity, recipe: null, pattern: null },
-  { id: 'wood_sword',    name: '木劍',   emoji: '🗡️', holdTime: 1500, durability: Infinity,
+  { id: 'wood_sword',    name: '木劍',   emoji: '🗡️', holdTime: 1500, durability: 15,
     recipe: { wood: 2, stick: 1 },
     pattern: [null,'wood',null, null,'wood',null, null,'stick',null] },
   { id: 'stone_sword',   name: '石劍',   emoji: '🗡️', holdTime: 1000, durability: 30,
@@ -1306,6 +1363,62 @@ const craftRecipes = [
   { id: 'bed', name: '床', emoji: '🛏️', outputId: 'bed', outputCount: 1,
     needs: { wool: 3, wood: 3 },
     pattern: ['wool','wool','wool', 'wood','wood','wood', null,null,null] },
+  // Torch: coal + stick → 4 torches
+  { id: 'torch', name: '火把', emoji: '🕯️', outputId: 'torch', outputCount: 4,
+    needs: { coal: 1, stick: 1 },
+    pattern: [null,'coal',null, null,'stick',null, null,null,null] },
+  // Ladder: 7 sticks → 3 ladders
+  { id: 'ladder', name: '梯子', emoji: '🪜', outputId: 'ladder', outputCount: 3,
+    needs: { stick: 7 },
+    pattern: ['stick',null,'stick', 'stick','stick','stick', 'stick',null,'stick'] },
+  // Chest: 8 wood
+  { id: 'chest', name: '箱子', emoji: '📦', outputId: 'chest', outputCount: 1,
+    needs: { wood: 8 },
+    pattern: ['wood','wood','wood', 'wood',null,'wood', 'wood','wood','wood'] },
+  // Door: 6 wood → 3 doors
+  { id: 'door', name: '門', emoji: '🚪', outputId: 'door', outputCount: 3,
+    needs: { wood: 6 },
+    pattern: ['wood','wood',null, 'wood','wood',null, 'wood','wood',null] },
+  // Fence: 4 wood + 2 sticks → 3 fences
+  { id: 'fence', name: '柵欄', emoji: '🏗️', outputId: 'fence', outputCount: 3,
+    needs: { wood: 4, stick: 2 },
+    pattern: [null,null,null, 'wood','stick','wood', 'wood','stick','wood'] },
+  // Bookshelf: 6 wood + 3 leather (simplified — real MC uses paper/books)
+  { id: 'bookshelf', name: '書架', emoji: '📚', outputId: 'bookshelf', outputCount: 1,
+    needs: { wood: 6, leather: 3 },
+    pattern: ['wood','wood','wood', 'leather','leather','leather', 'wood','wood','wood'] },
+  // Painting: 8 sticks + 1 wool
+  { id: 'painting', name: '畫', emoji: '🖼️', outputId: 'painting', outputCount: 1,
+    needs: { stick: 8, wool: 1 },
+    pattern: ['stick','stick','stick', 'stick','wool','stick', 'stick','stick','stick'] },
+  // TNT: 5 gunpowder + 4 sand
+  { id: 'tnt', name: 'TNT', emoji: '🧨', outputId: 'tnt', outputCount: 1,
+    needs: { gunpowder: 5, sand: 4 },
+    pattern: ['gunpowder','sand','gunpowder', 'sand','gunpowder','sand', 'gunpowder','sand','gunpowder'] },
+  // Bow: 3 sticks + 3 string
+  { id: 'bow', name: '弓', emoji: '🏹', outputId: 'bow', outputCount: 1,
+    needs: { stick: 3, string: 3 },
+    pattern: [null,'stick','string', 'stick',null,'string', null,'stick','string'] },
+  // Arrow: 1 stick + 1 feather + 1 gravel (flint simplified)
+  { id: 'arrow', name: '箭', emoji: '➡️', outputId: 'arrow', outputCount: 4,
+    needs: { gravel: 1, stick: 1, feather: 1 },
+    pattern: [null,'gravel',null, null,'stick',null, null,'feather',null] },
+  // Boat: 5 wood
+  { id: 'boat', name: '船', emoji: '🛶', outputId: 'boat', outputCount: 1,
+    needs: { wood: 5 },
+    pattern: [null,null,null, 'wood',null,'wood', 'wood','wood','wood'] },
+  // Bucket: 3 iron ingots
+  { id: 'bucket', name: '桶', emoji: '🪣', outputId: 'bucket', outputCount: 1,
+    needs: { iron_ingot: 3 },
+    pattern: [null,null,null, 'iron_ingot',null,'iron_ingot', null,'iron_ingot',null] },
+  // Compass: 4 iron ingots + 1 redstone
+  { id: 'compass', name: '指南針', emoji: '🧭', outputId: 'compass', outputCount: 1,
+    needs: { iron_ingot: 4, redstone: 1 },
+    pattern: [null,'iron_ingot',null, 'iron_ingot','redstone','iron_ingot', null,'iron_ingot',null] },
+  // Clock: 4 gold ingots + 1 redstone
+  { id: 'clock', name: '時鐘', emoji: '🕐', outputId: 'clock', outputCount: 1,
+    needs: { gold_ingot: 4, redstone: 1 },
+    pattern: [null,'gold_ingot',null, 'gold_ingot','redstone','gold_ingot', null,'gold_ingot',null] },
 ];
 
 const smeltRecipes = [
@@ -1314,6 +1427,8 @@ const smeltRecipes = [
   { input: 'copper',       fuel: 'coal', output: 'copper_ingot', name: '銅錠',   emoji: '🟠' },
   { input: 'pork',         fuel: 'coal', output: 'cooked_pork',    name: '烤豬排', emoji: '🥩' },
   { input: 'chicken_meat', fuel: 'coal', output: 'cooked_chicken', name: '烤雞肉', emoji: '🍗' },
+  { input: 'sand',         fuel: 'coal', output: 'glass',    name: '玻璃', emoji: '🪟' },
+  { input: 'clay',         fuel: 'coal', output: 'brick',    name: '磚塊', emoji: '🧱' },
 ];
 
 // Cooked food effects: item id → stamina gained
@@ -1322,13 +1437,6 @@ const foodEffects = {
   cooked_chicken: 2,
 };
 
-const houseStages = [
-  { name: '地基',  needs: { stone: 6 },             emoji: '🧱' },
-  { name: '牆壁',  needs: { wood: 8 },              emoji: '🏗️' },
-  { name: '屋頂',  needs: { wood: 4, iron_ingot: 2 }, emoji: '🏠' },
-  { name: '裝飾',  needs: { gold_ingot: 1, emerald: 1 },  emoji: '🏡' },
-  { name: '家具',  needs: { bed: 1 },               emoji: '🏠' },
-];
 
 const tierColors = ['#8B7355', '#A0A0A0', '#C0C0C0', '#FFD700', '#B9F2FF'];
 
@@ -1342,7 +1450,9 @@ let isMuted = false;
 // ===== MINING STATE =====
 let gems = 0;
 let inventory = {};
-let houseProgress = 0;
+let buildGrid = {}; // sparse grid: { "row,col": blockId } for free-form building
+let buildSelected = null; // currently selected block ID for placement
+let buildPlayerPos = null; // { r, c } — player position on build grid
 let toolDurability = {}; // { 'stone_pick': 28, ... } — remaining uses for active tool
 let discovered = new Set(); // permanently tracks every item ID ever obtained
 let equipped = { helmet: null, chest: null, legs: null, boots: null };
@@ -1425,7 +1535,7 @@ function getToolDurabilityText(tool) {
 }
 
 function saveGame() {
-  localStorage.setItem('mineGame', JSON.stringify({ gems, inventory, houseProgress, stars, streak, craftGrid, toolDurability, discovered: [...discovered], equipped, selectedTools }));
+  localStorage.setItem('mineGame', JSON.stringify({ gems, inventory, buildGrid, buildPlayerPos, stars, streak, craftGrid, toolDurability, discovered: [...discovered], equipped, selectedTools, _houseMigrated: true }));
 }
 
 function loadGame() {
@@ -1453,7 +1563,20 @@ function loadGame() {
       const oldPick = pickaxes[d.pickaxeLevel + 1];
       if (!inventory[oldPick.id]) inventory[oldPick.id] = 1;
     }
-    houseProgress = d.houseProgress || 0;
+    if (d.buildGrid && typeof d.buildGrid === 'object') buildGrid = d.buildGrid;
+    if (d.buildPlayerPos) buildPlayerPos = d.buildPlayerPos;
+    // Migration: refund old house materials back to inventory
+    if (d.houseProgress > 0 && !d._houseMigrated) {
+      const oldStages = [
+        { stone: 6 }, { wood: 8 }, { wood: 4, iron_ingot: 2 },
+        { gold_ingot: 1, emerald: 1 }, { bed: 1 },
+      ];
+      for (let i = 0; i < Math.min(d.houseProgress, oldStages.length); i++) {
+        Object.entries(oldStages[i]).forEach(([id, count]) => {
+          inventory[id] = (inventory[id] || 0) + count;
+        });
+      }
+    }
     if (d.craftGrid) craftGrid = d.craftGrid;
     stars = d.stars || 0;
     streak = d.streak || 0;
@@ -1730,6 +1853,110 @@ function playPlaceSfx() {
   osc.stop(ctx.currentTime + 0.06);
 }
 
+function playRemoveSfx() {
+  if (isMuted) return;
+  const ctx = getAudioCtx();
+  if (ctx.state === 'suspended') ctx.resume();
+  const osc = ctx.createOscillator();
+  osc.type = 'sine';
+  osc.frequency.value = 300;
+  const gain = ctx.createGain();
+  gain.gain.value = 0.08;
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+  osc.connect(gain).connect(ctx.destination);
+  osc.start();
+  osc.stop(ctx.currentTime + 0.1);
+}
+
+// ===== LEARN GATE =====
+let learnGatePending = null; // { callback } — execute after correct answer
+
+function rollLearnGate(callback) {
+  if (Math.random() < 0.3) {
+    learnGatePending = { callback };
+    showLearnGate();
+  } else {
+    callback();
+  }
+}
+
+function showLearnGate() {
+  const modal = document.getElementById('learnGateModal');
+  const content = document.getElementById('learnGateContent');
+  content.textContent = '';
+
+  const header = document.createElement('div');
+  header.style.cssText = 'text-align:center;font-family:var(--font-display);font-size:1.2rem;font-weight:700;margin-bottom:12px;';
+  header.textContent = '📖 學一下！Learn First!';
+  content.appendChild(header);
+
+  // Pick quiz type: 0 = feelings (emoji→word), 1 = sight word (zh→en)
+  const quizType = Math.random() < 0.5 ? 0 : 1;
+  let correctItem, prompt, allItems, correctAnswer;
+
+  if (quizType === 0) {
+    correctItem = feelings[Math.floor(Math.random() * feelings.length)];
+    prompt = correctItem.emoji + ' 這是什麼感覺？';
+    correctAnswer = correctItem.word;
+    allItems = feelings.map(f => f.word);
+  } else {
+    correctItem = sightWords[Math.floor(Math.random() * sightWords.length)];
+    prompt = '「' + correctItem.zh + '」的英文是？';
+    correctAnswer = correctItem.word;
+    allItems = sightWords.map(s => s.word);
+  }
+
+  const promptEl = document.createElement('div');
+  promptEl.style.cssText = 'text-align:center;font-size:1.3rem;margin-bottom:16px;';
+  promptEl.textContent = prompt;
+  content.appendChild(promptEl);
+
+  // Build 4 options (1 correct + 3 distractors)
+  const others = allItems.filter(w => w !== correctAnswer);
+  const distractors = shuffle(others).slice(0, 3);
+  const options = shuffle([correctAnswer, ...distractors]);
+
+  const optGrid = document.createElement('div');
+  optGrid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:8px;';
+
+  options.forEach(word => {
+    const btn = document.createElement('button');
+    btn.style.cssText = 'padding:12px 8px;border-radius:12px;border:2px solid var(--border);background:var(--card-bg);font-family:var(--font-display);font-size:1rem;font-weight:600;cursor:pointer;transition:all 0.15s;';
+    btn.textContent = word;
+    btn.addEventListener('click', () => handleLearnGateAnswer(word === correctAnswer, correctAnswer, optGrid));
+    optGrid.appendChild(btn);
+  });
+  content.appendChild(optGrid);
+
+  modal.classList.add('active');
+}
+
+function handleLearnGateAnswer(isCorrect, correctWord, optGrid) {
+  const modal = document.getElementById('learnGateModal');
+  if (isCorrect) {
+    speak(correctWord);
+    addStars(1);
+    modal.classList.remove('active');
+    if (learnGatePending) {
+      learnGatePending.callback();
+      learnGatePending = null;
+    }
+  } else {
+    // Highlight correct answer green, wrong red, then re-quiz after 1s
+    Array.from(optGrid.children).forEach(btn => {
+      btn.disabled = true;
+      if (btn.textContent === correctWord) {
+        btn.style.background = '#00B894';
+        btn.style.color = '#FFF';
+        btn.style.borderColor = '#00B894';
+      } else {
+        btn.style.opacity = '0.4';
+      }
+    });
+    setTimeout(() => showLearnGate(), 1200);
+  }
+}
+
 // ===== UTILS =====
 function shuffle(arr) {
   const a = [...arr];
@@ -1794,7 +2021,6 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
     if (tab.dataset.tab === 'furnace') initFurnaceTab();
     if (tab.dataset.tab === 'equip') initEquipTab();
     if (tab.dataset.tab === 'encyclopedia') initEncyclopediaTab();
-    if (tab.dataset.tab === 'house') initHouseTab();
   });
 });
 
@@ -2125,20 +2351,20 @@ function initSightWords() {
 // ===== MINE =====
 // Mountain shape: each row = { width, tier } — triangle from peak to base
 const mountainShape = [
-  { width: 16, tier: 1 },  // dirt/wood (trees auto-generated on surface)
-  { width: 20, tier: 1 },
-  { width: 24, tier: 1 },
-  { width: 26, tier: 2 },  // stone/coal
-  { width: 28, tier: 2 },
-  { width: 30, tier: 2 },
-  { width: 30, tier: 3 },  // iron/copper
-  { width: 30, tier: 3 },
-  { width: 30, tier: 3 },
-  { width: 30, tier: 4 },  // gold/emerald
-  { width: 30, tier: 4 },
-  { width: 30, tier: 4 },
-  { width: 30, tier: 5 },  // diamond/amethyst
-  { width: 30, tier: 5 },
+  { width: 20, tier: 1 },  // dirt/wood (trees auto-generated on surface)
+  { width: 26, tier: 1 },
+  { width: 32, tier: 1 },
+  { width: 36, tier: 2 },  // stone/coal
+  { width: 38, tier: 2 },
+  { width: 40, tier: 2 },
+  { width: 40, tier: 3 },  // iron/copper/redstone/lapis
+  { width: 40, tier: 3 },
+  { width: 40, tier: 3 },
+  { width: 40, tier: 4 },  // gold/emerald
+  { width: 40, tier: 4 },
+  { width: 40, tier: 4 },
+  { width: 40, tier: 5 },  // diamond/amethyst/obsidian
+  { width: 40, tier: 5 },
 ];
 
 let mineData = []; // 2D array: each cell = { block, mined, tier, el } or null
@@ -2288,8 +2514,17 @@ function cancelMineHold(resetBar) {
   if (mineHoldRAF) cancelAnimationFrame(mineHoldRAF);
   mineHoldRAF = null;
   if (mineHoldTarget) {
-    mineHoldTarget.cellData.el.classList.remove('mining');
+    const cd = mineHoldTarget.cellData;
+    cd.el.classList.remove('mining');
     if (resetBar) mineHoldTarget.fill.style.width = '0%';
+    // Quick tap → show block/animal info
+    const elapsed = Date.now() - mineHoldStart;
+    if (resetBar && elapsed < 250 && !cd.mined) {
+      let info = '';
+      if (cd.animal) info = cd.animal.emoji + ' ' + cd.animal.name;
+      else if (cd.block) info = cd.block.emoji + ' ' + cd.block.name;
+      if (info) showMineResult(info, false);
+    }
   }
   mineHoldTarget = null;
 }
@@ -2323,7 +2558,7 @@ function initMine() {
   // Mountain
   const mountain = document.createElement('div');
   mountain.className = 'mountain';
-  const maxWidth = 30;
+  const maxWidth = 40;
 
   mountainShape.forEach((rowDef, r) => {
     const rowEl = document.createElement('div');
@@ -2350,13 +2585,21 @@ function initMine() {
       const isSurface = rowDef.tier === 0 || (c < prevOffset || c >= prevOffset + prevWidth);
 
       if (isSurface) {
-        if (Math.random() < 0.35) {
-          // Animal
+        const roll = Math.random();
+        if (roll < 0.25) {
+          // Passive animal
           const animal = animals[Math.floor(Math.random() * animals.length)];
           cellEl.classList.add('animal');
           cellEl.textContent = animal.emoji;
           const animalData = { tier: 0, mined: false, block: null, animal: animal, el: cellEl };
           rowData.push(animalData);
+        } else if (roll < 0.40) {
+          // Hostile mob
+          const mob = hostileMobs[Math.floor(Math.random() * hostileMobs.length)];
+          cellEl.classList.add('animal', 'hostile');
+          cellEl.textContent = mob.emoji;
+          const mobData = { tier: 0, mined: false, block: null, animal: mob, el: cellEl };
+          rowData.push(mobData);
         } else {
           // Choppable trees — gives wood
           cellEl.classList.add('tree');
@@ -2374,16 +2617,55 @@ function initMine() {
 
       // Hold-to-mine events (touch + mouse)
       const holdData = rowData[rowData.length - 1];
-      if (holdData) {
-        const startHold = (e) => { e.preventDefault(); startMineHold(holdData); };
-        const endHold = () => cancelMineHold();
-        cellEl.addEventListener('mousedown', startHold);
-        cellEl.addEventListener('mouseup', endHold);
-        cellEl.addEventListener('mouseleave', endHold);
-        cellEl.addEventListener('touchstart', startHold, { passive: false });
-        cellEl.addEventListener('touchend', endHold);
-        cellEl.addEventListener('touchcancel', endHold);
-      }
+      if (holdData) bindMineHoldEvents(cellEl, holdData);
+
+      // Build-mode click: place/remove blocks on mined cells
+      ((row, col, cd) => {
+        cellEl.addEventListener('click', () => {
+          if (!cd || !cd.mined) return;
+          const key = row + ',' + col;
+          const existing = buildGrid[key];
+          if (existing) {
+            // Remove placed block
+            delete buildGrid[key];
+            inventory[existing] = (inventory[existing] || 0) + 1;
+            cd.el.textContent = '';
+            cd.el.classList.remove('build-placed');
+            cd.el.classList.add('mined');
+            playRemoveSfx();
+            saveGame();
+            refreshBuildPalette();
+            return;
+          }
+          if (buildSelected === '_player') {
+            buildPlayerPos = { r: row, c: col };
+            document.querySelectorAll('.mine-cell.build-player').forEach(el => {
+              el.classList.remove('build-player');
+              el.textContent = '';
+            });
+            cd.el.textContent = '🧑';
+            cd.el.classList.add('build-player');
+            playPlaceSfx();
+            return;
+          }
+          if (!buildSelected || buildSelected === '_player') return;
+          if (getBlockCount(buildSelected) <= 0) return;
+          const doPlace = () => {
+            buildGrid[key] = buildSelected;
+            inventory[buildSelected] = (inventory[buildSelected] || 1) - 1;
+            if (inventory[buildSelected] <= 0) delete inventory[buildSelected];
+            const b = blocks.find(x => x.id === buildSelected);
+            cd.el.textContent = b ? b.emoji : '?';
+            cd.el.classList.remove('mined');
+            cd.el.classList.add('build-placed');
+            playPlaceSfx();
+            saveGame();
+            if (getBlockCount(buildSelected) <= 0) buildSelected = null;
+            refreshBuildPalette();
+          };
+          rollLearnGate(doPlace);
+        });
+      })(r, c, rowData[rowData.length - 1]);
 
       rowEl.appendChild(cellEl);
     }
@@ -2438,20 +2720,156 @@ function initMine() {
   scrollWrap.appendChild(rightBtn);
   area.appendChild(scrollWrap);
 
+  // Build palette (integrated into mine tab)
+  const paletteWrap = document.createElement('div');
+  paletteWrap.id = 'mineBuildPalette';
+  renderMineBuildPalette(paletteWrap);
+  area.appendChild(paletteWrap);
+
+  // Restore placed blocks and player from buildGrid on existing mined cells
+  for (let mr = 0; mr < mineData.length; mr++) {
+    for (let mc = 0; mc < mineData[mr].length; mc++) {
+      const cd = mineData[mr][mc];
+      if (!cd) continue;
+      const key = mr + ',' + mc;
+      const placedId = buildGrid[key];
+      if (placedId && cd.mined) {
+        const b = blocks.find(x => x.id === placedId);
+        cd.el.textContent = b ? b.emoji : '?';
+        cd.el.classList.remove('mined');
+        cd.el.classList.add('build-placed');
+      }
+      if (buildPlayerPos && buildPlayerPos.r === mr && buildPlayerPos.c === mc && cd.mined) {
+        cd.el.textContent = '🧑';
+        cd.el.classList.add('build-player');
+      }
+    }
+  }
+
   // Refresh button
   const refreshBtn = document.createElement('button');
   refreshBtn.className = 'mine-refresh';
   refreshBtn.id = 'mineRefresh';
   refreshBtn.textContent = '🔄 新山體 New Mountain';
-  refreshBtn.addEventListener('click', initMine);
+  refreshBtn.addEventListener('click', () => {
+    const placedCount = Object.keys(buildGrid).length;
+    const msg = placedCount > 0
+      ? '確定要重新生成山體嗎？已放置的 ' + placedCount + ' 個方塊會退回背包。'
+      : '確定要重新生成山體嗎？';
+    if (!confirm(msg)) return;
+    // Return placed blocks to inventory
+    Object.values(buildGrid).forEach(id => {
+      inventory[id] = (inventory[id] || 0) + 1;
+    });
+    buildGrid = {};
+    buildPlayerPos = null;
+    saveGame();
+    initMine();
+  });
   area.appendChild(refreshBtn);
 
   updateExposure();
   updateMineRefreshBtn();
 }
 
+function renderMineBuildPalette(container) {
+  container.textContent = '';
+  const palette = document.createElement('div');
+  palette.className = 'build-palette';
+  const placeable = blocks.filter(b => getBlockCount(b.id) > 0);
+  if (placeable.length === 0 && !buildSelected) {
+    const hint = document.createElement('div');
+    hint.style.cssText = 'color:#FFF;font-size:0.8rem;padding:6px;opacity:0.7;';
+    hint.textContent = '🏗️ 挖到方塊後可以在這裡選擇放置';
+    palette.appendChild(hint);
+  }
+  placeable.forEach(b => {
+    const item = document.createElement('div');
+    item.className = 'build-palette-item' + (buildSelected === b.id ? ' selected' : '');
+    item.appendChild(document.createTextNode(b.emoji));
+    const countSpan = document.createElement('span');
+    countSpan.className = 'count';
+    countSpan.textContent = getBlockCount(b.id);
+    item.appendChild(countSpan);
+    item.title = b.name + ' (' + getBlockCount(b.id) + ')';
+    item.addEventListener('click', () => {
+      buildSelected = (buildSelected === b.id) ? null : b.id;
+      refreshBuildPalette();
+    });
+    palette.appendChild(item);
+  });
+  // Player avatar button
+  const playerItem = document.createElement('div');
+  playerItem.className = 'build-palette-item' + (buildSelected === '_player' ? ' selected' : '');
+  playerItem.appendChild(document.createTextNode('🧑'));
+  playerItem.title = '放置自己';
+  playerItem.addEventListener('click', () => {
+    buildSelected = (buildSelected === '_player') ? null : '_player';
+    refreshBuildPalette();
+  });
+  palette.appendChild(playerItem);
+  // Deselect button
+  if (buildSelected) {
+    const deselect = document.createElement('div');
+    deselect.className = 'build-palette-item selected';
+    deselect.style.background = '#D63031';
+    deselect.style.borderColor = '#FF6B6B';
+    deselect.appendChild(document.createTextNode('✕'));
+    deselect.title = '取消選擇';
+    deselect.addEventListener('click', () => {
+      buildSelected = null;
+      refreshBuildPalette();
+    });
+    palette.appendChild(deselect);
+  }
+  container.appendChild(palette);
+
+  // Actions row
+  const totalPlaced = Object.keys(buildGrid).length;
+  if (totalPlaced > 0) {
+    const actions = document.createElement('div');
+    actions.className = 'build-actions';
+    const info = document.createElement('span');
+    info.style.cssText = 'font-size:0.75rem;color:var(--text-secondary);margin-right:8px;';
+    info.textContent = '已放 ' + totalPlaced + ' 個方塊';
+    actions.appendChild(info);
+    const clearBtn = document.createElement('button');
+    clearBtn.textContent = '🗑️ 清除建造';
+    clearBtn.addEventListener('click', () => {
+      if (!confirm('確定要清除所有放置的方塊？方塊會退回背包。')) return;
+      Object.values(buildGrid).forEach(id => {
+        inventory[id] = (inventory[id] || 0) + 1;
+      });
+      buildGrid = {};
+      buildPlayerPos = null;
+      saveGame();
+      initMine();
+    });
+    actions.appendChild(clearBtn);
+    const screenshotBtn = document.createElement('button');
+    screenshotBtn.textContent = '📸 存照片';
+    screenshotBtn.addEventListener('click', () => screenshotBuild());
+    actions.appendChild(screenshotBtn);
+    container.appendChild(actions);
+  }
+}
+
+function refreshBuildPalette() {
+  const el = document.getElementById('mineBuildPalette');
+  if (el) renderMineBuildPalette(el);
+}
+
 function attackAnimal(cellData) {
   if (cellData.mined) return;
+  const animal = cellData.animal;
+  const activeSword = getEffectiveSword();
+  // Hostile mobs require a real weapon (not bare hands)
+  if (animal.hostile && (!activeSword || activeSword.id === 'hands')) {
+    playLockedSfx();
+    resetCellProgress(cellData.el);
+    showMineResult('⚔️ ' + animal.emoji + ' ' + animal.name + ' 太危險了！需要裝備武器才能攻擊！', false);
+    return;
+  }
   if (!isCheat && gems < 1) {
     playLockedSfx();
     resetCellProgress(cellData.el);
@@ -2464,9 +2882,6 @@ function attackAnimal(cellData) {
   cellData.mined = true;
   cellData.el.classList.add('mined');
   cellData.el.textContent = '';
-
-  const animal = cellData.animal;
-  const activeSword = getEffectiveSword();
   const brokeName = useTool(activeSword);
 
   let msg = animal.emoji + ' 擊敗' + animal.name + '！獲得：';
@@ -2512,6 +2927,7 @@ function chopTree(cellData) {
   showMineResult(`🪵 木頭 x${woodCount}${stickMsg}${axeMsg}${breakMsg}`, !!brokeName);
   if (brokeName) refreshToolChips();
   updateExposure();
+  applyAnimalGravity();
   updateMineRefreshBtn();
   saveGame();
 }
@@ -2545,8 +2961,8 @@ function mineMountainCell(row, col, cellData) {
   reveal.className = 'block-reveal';
   reveal.textContent = cellData.block.emoji;
   cellData.el.appendChild(reveal);
-  // Fade out emoji after animation
-  setTimeout(() => { cellData.el.textContent = ''; }, 800);
+  // Fade out emoji after animation (only if cell is still mined — animal gravity may have claimed it)
+  setTimeout(() => { if (cellData.mined && !cellData.animal) cellData.el.textContent = ''; }, 800);
 
   addBlock(cellData.block.id);
 
@@ -2561,8 +2977,101 @@ function mineMountainCell(row, col, cellData) {
   if (brokeName) refreshToolChips();
   if (b.tier >= 4) doConfetti();
   updateExposure();
+  applyAnimalGravity();
   updateMineRefreshBtn();
   saveGame();
+}
+
+function bindMineHoldEvents(cellEl, cellData) {
+  const startHold = (e) => { e.preventDefault(); startMineHold(cellData); };
+  const endHold = () => cancelMineHold();
+  cellEl.addEventListener('mousedown', startHold);
+  cellEl.addEventListener('mouseup', endHold);
+  cellEl.addEventListener('mouseleave', endHold);
+  cellEl.addEventListener('touchstart', startHold, { passive: false });
+  cellEl.addEventListener('touchend', endHold);
+  cellEl.addEventListener('touchcancel', endHold);
+}
+
+function applyAnimalGravity() {
+  // After mining, check if any animals/mobs lost their ground support — they fall to the next solid block
+  let changed = false;
+  for (let r = 0; r < mineData.length; r++) {
+    for (let c = 0; c < mineData[r].length; c++) {
+      const cell = mineData[r][c];
+      if (!cell || cell.mined || !cell.animal) continue;
+      // Check immediate ground below
+      if (r >= mineData.length - 1) continue; // bottom edge = supported
+      const below = mineData[r + 1] ? mineData[r + 1][c] : null;
+      if (below && !below.mined) continue; // solid ground directly below
+      if (!below) continue; // null = outside mountain shape, ledge edge
+
+      // Ground below is mined — scan downward for first solid block
+      let landingRow = -1;
+      for (let sr = r + 1; sr < mineData.length; sr++) {
+        const scanCell = mineData[sr] ? mineData[sr][c] : null;
+        if (!scanCell) break; // fell off mountain shape
+        if (!scanCell.mined) { landingRow = sr; break; } // found solid ground
+      }
+
+      changed = true;
+      const animal = cell.animal;
+      const oldEl = cell.el;
+
+      // Clear old position
+      oldEl.style.transition = 'transform 0.3s, opacity 0.3s';
+      oldEl.style.transform = 'translateY(20px)';
+      oldEl.style.opacity = '0';
+      cell.mined = true;
+      cell.animal = null;
+      const capturedOldEl = oldEl;
+      setTimeout(() => {
+        capturedOldEl.textContent = '';
+        capturedOldEl.style.transform = '';
+        capturedOldEl.style.opacity = '';
+        capturedOldEl.classList.add('mined');
+        capturedOldEl.classList.remove('animal', 'hostile');
+      }, 350);
+
+      if (landingRow === -1) {
+        // Fell off the bottom — animal disappears, no drops
+        showMineResult(animal.emoji + ' ' + animal.name + ' 掉下山了！', false);
+        continue;
+      }
+
+      // Land on the cell ABOVE the solid block (the mined gap just above it)
+      // If landingRow - 1 === r, the animal stays at r (shouldn't happen since below was mined)
+      const destRow = landingRow - 1;
+      if (destRow <= r) continue; // no actual fall distance
+
+      const destCell = mineData[destRow][c];
+      if (!destCell || !destCell.mined) continue; // safety check
+
+      // Move animal into destination cell
+      destCell.mined = false;
+      destCell.animal = animal;
+      destCell.tier = 0;
+      destCell.block = null;
+      const destEl = destCell.el;
+      destEl.classList.remove('mined');
+      destEl.classList.add('animal');
+      if (animal.hostile) destEl.classList.add('hostile');
+      destEl.textContent = animal.emoji;
+
+      // Pop-in animation on new cell
+      setTimeout(() => {
+        destEl.style.transition = 'transform 0.25s cubic-bezier(0.34,1.56,0.64,1)';
+        destEl.style.transform = 'scale(1.3)';
+        setTimeout(() => { destEl.style.transform = ''; }, 250);
+      }, 380);
+
+      // Bind fresh hold-to-mine events on new cell
+      bindMineHoldEvents(destEl, destCell);
+
+      showMineResult(animal.emoji + ' ' + animal.name + ' 掉下來了！還活著！', false);
+    }
+  }
+  if (changed) updateExposure();
 }
 
 function updateMineRefreshBtn() {
@@ -3063,12 +3572,6 @@ function initEncyclopediaTab() {
   renderEncyclopedia(area);
 }
 
-function initHouseTab() {
-  const area = document.getElementById('houseArea');
-  area.textContent = '';
-  renderHouse(area);
-}
-
 function renderEncyclopedia(c) {
   const title = document.createElement('h3');
   title.className = 'section-title';
@@ -3124,14 +3627,6 @@ function renderCraft(c) {
   title.className = 'section-title';
   title.textContent = '🔨 合成 Craft';
   c.appendChild(title);
-
-  const currentPick = pickaxes[getEffectivePickaxeLevel()];
-  const current = document.createElement('div');
-  current.className = 'section-subtitle';
-  const axeB = getEffectiveAxeBonus();
-  const axeStr = axeB > 1 ? `  |  🪓 斧頭（砍樹 x${axeB}）` : '';
-  current.textContent = `⛏️ ${currentPick.name}${axeStr}`;
-  c.appendChild(current);
 
   const area = document.createElement('div');
   area.className = 'craft-area';
@@ -3523,101 +4018,93 @@ function doCraft() {
   // Clear the grid (blocks already deducted when placed)
   craftGrid = [null,null,null, null,null,null, null,null,null];
 
-  if (match.type === 'pickaxe' || match.type === 'axe' || match.type === 'sword') {
-    addBlock(match.item.id);
-    if (!toolDurability[match.item.id] && match.item.durability !== Infinity) {
-      toolDurability[match.item.id] = match.item.durability;
+  const finishCraft = () => {
+    if (match.type === 'pickaxe' || match.type === 'axe' || match.type === 'sword') {
+      addBlock(match.item.id);
+      if (!toolDurability[match.item.id] && match.item.durability !== Infinity) {
+        toolDurability[match.item.id] = match.item.durability;
+      }
+    } else if (match.type === 'armor') {
+      addBlock(match.item.outputId);
+    } else if (match.type === 'item') {
+      addBlock(match.item.outputId, match.item.outputCount);
     }
-  } else if (match.type === 'armor') {
-    addBlock(match.item.outputId);
-  } else if (match.type === 'item') {
-    addBlock(match.item.outputId, match.item.outputCount);
+    saveGame();
+    doConfetti();
+    initCraftTab();
+  };
+
+  rollLearnGate(finishCraft);
+}
+
+
+
+function screenshotBuild() {
+  if (mineData.length === 0) return;
+  const cellSize = 24;
+  const maxWidth = mineData[0].length;
+  const rows = mineData.length;
+  const cvs = document.createElement('canvas');
+  cvs.width = maxWidth * cellSize;
+  cvs.height = rows * cellSize;
+  const ctx = cvs.getContext('2d');
+
+  // Sky background
+  ctx.fillStyle = '#87CEEB';
+  ctx.fillRect(0, 0, cvs.width, cvs.height);
+
+  const tierBg = { 1: '#8B6F47', 2: '#7F8C8D', 3: '#5D6D7E', 4: '#6B4C3B', 5: '#2C3E6D' };
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < maxWidth; c++) {
+      const x = c * cellSize, y = r * cellSize;
+      const cellData = mineData[r][c];
+      const key = r + ',' + c;
+      const placedId = buildGrid[key];
+
+      if (!cellData) continue; // spacer
+
+      if (placedId) {
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(x, y, cellSize, cellSize);
+        const b = blocks.find(bl => bl.id === placedId);
+        if (b) {
+          ctx.font = (cellSize * 0.7) + 'px serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(b.emoji, x + cellSize / 2, y + cellSize / 2);
+        }
+      } else if (cellData.mined) {
+        ctx.fillStyle = 'rgba(135,206,235,0.4)';
+        ctx.fillRect(x, y, cellSize, cellSize);
+      } else if (cellData.animal) {
+        ctx.font = (cellSize * 0.7) + 'px serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(cellData.animal.emoji, x + cellSize / 2, y + cellSize / 2);
+      } else {
+        ctx.fillStyle = tierBg[cellData.tier] || '#8B6F47';
+        ctx.fillRect(x, y, cellSize, cellSize);
+      }
+
+      // Player avatar
+      if (buildPlayerPos && buildPlayerPos.r === r && buildPlayerPos.c === c) {
+        ctx.font = (cellSize * 0.8) + 'px serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('🧑', x + cellSize / 2, y + cellSize / 2);
+      }
+    }
   }
 
-  saveGame();
-  doConfetti();
-  initCraftTab();
-}
-
-function getHouseArt() {
-  const arts = [
-    '🌳  🌿  🌳\n\n   空地\n\n🌿  🌳  🌿',
-    '🌳       🌳\n\n🧱🧱🧱🧱\n🧱           🧱\n🧱🧱🧱🧱',
-    '🌳       🌳\n\n🧱🪵🪵🧱\n🪵           🪵\n🧱🪵🪵🧱',
-    '     🔺\n   / 🪵 \\\n  / 🪵🪵 \\\n🧱🪵🪵🧱\n🪵  🚪  🪵\n🧱🪵🪵🧱',
-    '    ⭐\n     🔺\n   / 🪵 \\\n  / 🪵🪵 \\\n🧱🪵🪵🧱\n🪵  🚪  🪵\n🧱💚🟡🧱',
-    '    ⭐\n     🔺\n   / 🪵 \\\n  / 🪵🪵 \\\n🧱🪵🪵🧱\n🪵🛏️🚪 🪵\n🧱💚🟡🧱',
-  ];
-  return arts[houseProgress] || arts[arts.length - 1];
-}
-
-function renderHouse(c) {
-  const title = document.createElement('h3');
-  title.className = 'section-title';
-  title.textContent = '🏠 蓋房子 Build';
-  c.appendChild(title);
-
-  const houseArea = document.createElement('div');
-  houseArea.className = 'house-area';
-
-  const visual = document.createElement('div');
-  visual.className = 'house-visual';
-  visual.textContent = getHouseArt();
-  houseArea.appendChild(visual);
-
-  const stagesEl = document.createElement('div');
-  houseStages.forEach((stage, i) => {
-    const done = i < houseProgress;
-    const isCurrent = i === houseProgress;
-    const canBuild = isCurrent && hasBlocks(stage.needs);
-
-    const el = document.createElement('div');
-    el.className = 'house-stage ' + (done ? 'done' : isCurrent ? 'current' : 'locked');
-
-    const info = document.createElement('div');
-    info.className = 'house-stage-info';
-    const nameEl = document.createElement('div');
-    nameEl.className = 'house-stage-name';
-    nameEl.textContent = `${stage.emoji} ${stage.name} ${done ? '✅' : ''}`;
-    info.appendChild(nameEl);
-
-    const needsEl = document.createElement('div');
-    needsEl.className = 'house-stage-needs';
-    if (done) {
-      needsEl.textContent = '完成';
-    } else {
-      Object.entries(stage.needs).forEach(([id, count], idx) => {
-        const b = blocks.find(x => x.id === id);
-        const have = getBlockCount(id);
-        const span = document.createElement('span');
-        span.className = have >= count ? 'has' : 'need';
-        span.textContent = `${b.emoji} ${have}/${count}`;
-        if (idx > 0) needsEl.appendChild(document.createTextNode('  '));
-        needsEl.appendChild(span);
-      });
-    }
-    info.appendChild(needsEl);
-    el.appendChild(info);
-
-    if (isCurrent) {
-      const btn = document.createElement('button');
-      btn.className = 'house-build-btn';
-      btn.textContent = '建造';
-      btn.disabled = !canBuild;
-      btn.addEventListener('click', () => {
-        removeBlocks(stage.needs);
-        houseProgress++;
-        saveGame();
-        doConfetti();
-        initHouseTab();
-      });
-      el.appendChild(btn);
-    }
-
-    stagesEl.appendChild(el);
+  cvs.toBlob(blob => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'my-build-' + Date.now() + '.png';
+    a.click();
+    URL.revokeObjectURL(url);
   });
-  houseArea.appendChild(stagesEl);
-  c.appendChild(houseArea);
 }
 
 function renderEquipment(c) {
