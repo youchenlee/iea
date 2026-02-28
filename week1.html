@@ -322,7 +322,7 @@ body::before {
   <div class="header">
     <h1>Feelings Fun! 🎭</h1>
     <div class="subtitle">學習表達情緒的英文 · Learn to express feelings</div>
-    <div style="font-size:0.7rem;color:#B2BEC3;margin-top:2px;font-family:'Nunito',sans-serif;">v1.4.0</div>
+    <div style="font-size:0.7rem;color:#B2BEC3;margin-top:2px;font-family:'Nunito',sans-serif;">v1.4.1</div>
   </div>
 
   <div class="score-bar">
@@ -487,12 +487,24 @@ function speak(text, forceSpeed) {
 
 // Speak word first, then sentence after a pause
 function speakWordThenSentence(word, sentence) {
-  const u = speak(word);
-  if (u) {
-    u.onend = () => {
-      setTimeout(() => speak(sentence), 400);
-    };
-  }
+  const synth = window.speechSynthesis;
+  if (!synth) return;
+  synth.cancel();
+
+  const speed = speechSpeed;
+  const slow = speed === 'slow';
+  const u = new SpeechSynthesisUtterance(word);
+  u.lang = 'en-US';
+  u.rate = slow ? 0.6 : 0.85;
+  u.pitch = 1.05;
+  const pick = pickBestVoice(synth.getVoices());
+  if (pick) u.voice = pick;
+  u.onstart = () => updateEngineDisplay('speech-synthesis', pick ? pick.name : 'default voice');
+  u.onend = () => {
+    setTimeout(() => speak(sentence), 400);
+  };
+  u.onerror = (e) => updateEngineDisplay('error', e.error);
+  synth.speak(u);
 }
 
 // ===== SPEED TOGGLE =====
