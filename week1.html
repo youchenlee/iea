@@ -472,6 +472,12 @@ body::before {
 
 .craft-area { max-width: 500px; margin: 0 auto; }
 .craft-current { text-align: center; font-family: 'Fredoka', sans-serif; color: #636E72; margin-bottom: 12px; font-size: 1rem; }
+.craft-guide {
+  text-align: center; font-family: 'Fredoka', sans-serif;
+  font-size: 0.85rem; color: #636E72; margin-bottom: 12px;
+  background: #F0FFF8; padding: 8px 16px; border-radius: 50px;
+  border: 1px dashed #00B894;
+}
 
 .craft-table {
   display: flex; align-items: center; justify-content: center;
@@ -523,7 +529,7 @@ body::before {
 }
 .craft-inv-title {
   font-family: 'Fredoka', sans-serif; font-size: 0.9rem;
-  color: #E8D5B7; margin-bottom: 8px; text-align: center;
+  color: #FFFFFF; margin-bottom: 8px; text-align: center;
 }
 .craft-inv-grid {
   display: flex; flex-wrap: wrap; gap: 4px; justify-content: center;
@@ -561,9 +567,9 @@ body::before {
   background: #8B6F47; padding: 4px; border-radius: 6px; flex-shrink: 0;
 }
 .recipe-mini-slot {
-  width: 22px; height: 22px; border-radius: 3px;
+  width: 28px; height: 28px; border-radius: 3px;
   background: #A0855C; display: flex; align-items: center; justify-content: center;
-  font-size: 0.7rem;
+  font-size: 0.9rem;
 }
 .recipe-arrow { color: #636E72; font-size: 1.2rem; flex-shrink: 0; }
 .recipe-result { font-size: 1.4rem; flex-shrink: 0; }
@@ -572,6 +578,16 @@ body::before {
 .recipe-needs { font-size: 0.8rem; color: #636E72; margin-top: 2px; }
 .recipe-needs .has { color: #00B894; }
 .recipe-needs .need { color: #FF6B6B; }
+.recipe-category { margin-bottom: 12px; }
+.recipe-category-header {
+  font-family: 'Fredoka', sans-serif; font-size: 1rem; font-weight: 600;
+  color: var(--text); padding: 8px 12px; cursor: pointer;
+  background: #F0F0F5; border-radius: 10px; margin-bottom: 8px;
+  transition: all 0.2s; user-select: none;
+}
+.recipe-category-header:hover { background: #E0E0E8; }
+.recipe-category-header.collapsed::after { content: ' ▸'; }
+.recipe-category-header:not(.collapsed)::after { content: ' ▾'; }
 
 .house-area { text-align: center; max-width: 400px; margin: 0 auto; }
 .house-visual {
@@ -2216,6 +2232,12 @@ function renderCraft(c) {
   const area = document.createElement('div');
   area.className = 'craft-area';
 
+  // Onboarding guide
+  const guide = document.createElement('div');
+  guide.className = 'craft-guide';
+  guide.textContent = '① 背包選材料 → ② 點格子放入 → ③ 按合成！';
+  area.appendChild(guide);
+
   // Craft table: grid + arrow + result
   const table = document.createElement('div');
   table.className = 'craft-table';
@@ -2299,34 +2321,38 @@ function renderRecipeBook(c) {
   title.textContent = '📜 合成表 Recipes';
   book.appendChild(title);
 
-  const list = document.createElement('div');
-  list.className = 'recipe-list';
+  // Collect recipes by category
+  const categories = [
+    { name: '⛏️ 鎬 Pickaxes', recipes: [] },
+    { name: '🪓 斧 Axes', recipes: [] },
+    { name: '🗡️ 劍 Swords', recipes: [] },
+    { name: '🛡️ 盔甲 Armor', recipes: [] },
+    { name: '🔧 其他 Other', recipes: [] },
+  ];
 
-  // Collect all recipes: pickaxes + general
-  const allRecipes = [];
   pickaxes.forEach((pick) => {
     if (!pick.pattern) return;
-    allRecipes.push({
+    categories[0].recipes.push({
       pattern: pick.pattern, emoji: pick.emoji, name: pick.name,
       needs: pick.recipe, itemId: pick.id, type: 'pickaxe'
     });
   });
   axes.forEach((axe) => {
-    allRecipes.push({
+    categories[1].recipes.push({
       pattern: axe.pattern, emoji: axe.emoji, name: axe.name,
       needs: axe.recipe, itemId: axe.id, type: 'axe'
     });
   });
   swords.forEach((sword) => {
     if (!sword.pattern) return;
-    allRecipes.push({
+    categories[2].recipes.push({
       pattern: sword.pattern, emoji: sword.emoji, name: sword.name,
       needs: sword.recipe, itemId: sword.id, type: 'sword'
     });
   });
   armorRecipes.forEach((armor) => {
     const b = blocks.find(x => x.id === armor.outputId);
-    allRecipes.push({
+    categories[3].recipes.push({
       pattern: armor.pattern, emoji: b ? b.emoji : '?', name: b ? b.name : armor.outputId,
       needs: armor.recipe, itemId: armor.outputId, type: 'armor'
     });
@@ -2340,70 +2366,94 @@ function renderRecipeBook(c) {
         if (ids.length === 1) { p[4] = ids[0][0]; }
         return p;
       })() : [null,null,null, null,null,null, null,null,null]);
-    allRecipes.push({
+    categories[4].recipes.push({
       pattern, emoji: recipe.emoji,
-      name: `${recipe.name} x${recipe.outputCount}`,
+      name: recipe.name + ' x' + recipe.outputCount,
       needs, itemId: recipe.outputId, type: 'item',
       shapeless: recipe.shapeless
     });
   });
 
-  allRecipes.forEach(r => {
-    const canCraft = hasBlocks(r.needs);
-    const owned = r.itemId ? getBlockCount(r.itemId) : 0;
-    const card = document.createElement('div');
-    card.className = 'recipe-card' + (canCraft ? ' craftable' : '');
+  categories.forEach((cat, catIdx) => {
+    if (cat.recipes.length === 0) return;
 
-    // Mini 3x3 grid
-    const miniGrid = document.createElement('div');
-    miniGrid.className = 'recipe-mini-grid';
-    r.pattern.forEach(slot => {
-      const cell = document.createElement('div');
-      cell.className = 'recipe-mini-slot';
-      if (slot) {
-        const b = blocks.find(x => x.id === slot);
-        if (b) cell.textContent = b.emoji;
-      }
-      miniGrid.appendChild(cell);
+    const section = document.createElement('div');
+    section.className = 'recipe-category';
+
+    const header = document.createElement('div');
+    header.className = 'recipe-category-header' + (catIdx >= 3 ? ' collapsed' : '');
+    header.textContent = cat.name + ' (' + cat.recipes.length + ')';
+    // Start with tools expanded, armor collapsed
+    let expanded = catIdx < 3;
+    header.addEventListener('click', () => {
+      expanded = !expanded;
+      list.style.display = expanded ? 'flex' : 'none';
+      header.classList.toggle('collapsed', !expanded);
     });
-    card.appendChild(miniGrid);
+    section.appendChild(header);
 
-    const arrow = document.createElement('div');
-    arrow.className = 'recipe-arrow';
-    arrow.textContent = '➡️';
-    card.appendChild(arrow);
+    const list = document.createElement('div');
+    list.className = 'recipe-list';
+    list.style.display = expanded ? 'flex' : 'none';
 
-    const result = document.createElement('div');
-    result.className = 'recipe-result';
-    result.textContent = r.emoji;
-    card.appendChild(result);
+    cat.recipes.forEach(r => {
+      const canCraft = hasBlocks(r.needs);
+      const owned = r.itemId ? getBlockCount(r.itemId) : 0;
+      const card = document.createElement('div');
+      card.className = 'recipe-card' + (canCraft ? ' craftable' : '');
 
-    const info = document.createElement('div');
-    info.className = 'recipe-info';
-    const nameEl = document.createElement('div');
-    nameEl.className = 'recipe-name';
-    const ownedLabel = owned > 0 ? ` (擁有 x${owned})` : '';
-    nameEl.textContent = r.name + ownedLabel + (r.shapeless ? ' (任意位置)' : '');
-    info.appendChild(nameEl);
+      const miniGrid = document.createElement('div');
+      miniGrid.className = 'recipe-mini-grid';
+      r.pattern.forEach(slot => {
+        const cell = document.createElement('div');
+        cell.className = 'recipe-mini-slot';
+        if (slot) {
+          const b = blocks.find(x => x.id === slot);
+          if (b) cell.textContent = b.emoji;
+        }
+        miniGrid.appendChild(cell);
+      });
+      card.appendChild(miniGrid);
 
-    const needsEl = document.createElement('div');
-    needsEl.className = 'recipe-needs';
-    Object.entries(r.needs).forEach(([id, count], idx) => {
-      const b = blocks.find(x => x.id === id);
-      const have = getBlockCount(id);
-      const span = document.createElement('span');
-      span.className = have >= count ? 'has' : 'need';
-      span.textContent = `${b ? b.emoji : id} ${have}/${count}`;
-      if (idx > 0) needsEl.appendChild(document.createTextNode('  '));
-      needsEl.appendChild(span);
+      const arrow = document.createElement('div');
+      arrow.className = 'recipe-arrow';
+      arrow.textContent = '➡️';
+      card.appendChild(arrow);
+
+      const result = document.createElement('div');
+      result.className = 'recipe-result';
+      result.textContent = r.emoji;
+      card.appendChild(result);
+
+      const info = document.createElement('div');
+      info.className = 'recipe-info';
+      const nameEl = document.createElement('div');
+      nameEl.className = 'recipe-name';
+      const ownedLabel = owned > 0 ? ' (擁有 x' + owned + ')' : '';
+      nameEl.textContent = r.name + ownedLabel + (r.shapeless ? ' (任意位置)' : '');
+      info.appendChild(nameEl);
+
+      const needsEl = document.createElement('div');
+      needsEl.className = 'recipe-needs';
+      Object.entries(r.needs).forEach(([id, count], idx) => {
+        const b = blocks.find(x => x.id === id);
+        const have = getBlockCount(id);
+        const span = document.createElement('span');
+        span.className = have >= count ? 'has' : 'need';
+        span.textContent = (b ? b.emoji : id) + ' ' + have + '/' + count;
+        if (idx > 0) needsEl.appendChild(document.createTextNode('  '));
+        needsEl.appendChild(span);
+      });
+      info.appendChild(needsEl);
+      card.appendChild(info);
+
+      list.appendChild(card);
     });
-    info.appendChild(needsEl);
-    card.appendChild(info);
 
-    list.appendChild(card);
+    section.appendChild(list);
+    book.appendChild(section);
   });
 
-  book.appendChild(list);
   c.appendChild(book);
 }
 
