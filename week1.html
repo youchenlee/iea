@@ -377,7 +377,9 @@ body::before {
 .mine-cell.tier3 { background: linear-gradient(180deg, #5D6D7E, #4A5568); }
 .mine-cell.tier4 { background: linear-gradient(180deg, #6B4C3B, #4A3728); }
 .mine-cell.tier5 { background: linear-gradient(180deg, #2C3E6D, #1A2547); }
-.mine-cell.tree { background: none; border: none; box-shadow: none; font-size: 1.5rem; cursor: default; pointer-events: none; }
+.mine-cell.tree { background: none; border: none; box-shadow: none; font-size: 1.5rem; cursor: pointer; }
+.mine-cell.tree:hover { transform: scale(1.15); }
+.mine-cell.tree.mined { background: none !important; border: none; box-shadow: none; opacity: 0; pointer-events: none; }
 
 .mine-result {
   text-align: center; margin-top: 12px; padding: 10px;
@@ -546,7 +548,7 @@ body::before {
   <div class="header">
     <h1>Feelings Fun! 🎭</h1>
     <div class="subtitle">學習表達情緒的英文 · Learn to express feelings</div>
-    <div style="font-size:0.7rem;color:#B2BEC3;margin-top:2px;font-family:'Nunito',sans-serif;">v2.1.1</div>
+    <div style="font-size:0.7rem;color:#B2BEC3;margin-top:2px;font-family:'Nunito',sans-serif;">v2.2.0</div>
   </div>
 
   <div class="score-bar">
@@ -643,6 +645,7 @@ const sightColors = ['#FF6B6B','#A29BFE','#FFD93D','#00B894','#FF85CA','#74B9FF'
 const blocks = [
   { id: 'dirt',     name: '泥土',   emoji: '🟫', tier: 1, weight: 40 },
   { id: 'wood',     name: '木頭',   emoji: '🪵', tier: 1, weight: 35 },
+  { id: 'stick',    name: '木棍',   emoji: '🥢', tier: 0, weight: 0 },
   { id: 'stone',    name: '石頭',   emoji: '🪨', tier: 2, weight: 30 },
   { id: 'coal',     name: '煤炭',   emoji: '⬛', tier: 2, weight: 25 },
   { id: 'iron',     name: '鐵礦',   emoji: '⬜', tier: 3, weight: 18 },
@@ -656,14 +659,20 @@ const blocks = [
 const pickaxes = [
   { id: 'wood_pick',  name: '木鎬',  emoji: '🪓', maxTier: 2, recipe: null, pattern: null },
   { id: 'stone_pick', name: '石鎬',  emoji: '⛏️', maxTier: 3,
-    recipe: { wood: 2, stone: 3 },
-    pattern: ['stone','stone','stone', null,'wood',null, null,'wood',null] },
+    recipe: { stick: 2, stone: 3 },
+    pattern: ['stone','stone','stone', null,'stick',null, null,'stick',null] },
   { id: 'iron_pick',  name: '鐵鎬',  emoji: '⛏️', maxTier: 4,
-    recipe: { wood: 2, iron: 3 },
-    pattern: ['iron','iron','iron', null,'wood',null, null,'wood',null] },
+    recipe: { stick: 2, iron: 3 },
+    pattern: ['iron','iron','iron', null,'stick',null, null,'stick',null] },
   { id: 'gold_pick',  name: '金鎬',  emoji: '🔱', maxTier: 5,
-    recipe: { iron: 2, gold: 3 },
-    pattern: ['gold','gold','gold', null,'iron',null, null,'iron',null] },
+    recipe: { stick: 2, gold: 3 },
+    pattern: ['gold','gold','gold', null,'stick',null, null,'stick',null] },
+];
+
+// General crafting recipes (non-pickaxe)
+const craftRecipes = [
+  { id: 'wood_to_sticks', name: '木棍', emoji: '🥢', outputId: 'stick', outputCount: 4,
+    pattern: [null,null,null, null,'wood',null, null,null,null] },
 ];
 
 const houseStages = [
@@ -1296,6 +1305,7 @@ function isExposed(row, col) {
     if (nc < 0 || nc >= mineData[nr].length) return true; // side edge
     if (mineData[nr][nc] === null) return true; // outside mountain shape
     if (mineData[nr][nc].mined) return true; // adjacent to mined cell
+    if (mineData[nr][nc].tier === 0) return true; // tree row counts as open
   }
   return false;
 }
@@ -1358,10 +1368,13 @@ function initMine() {
       cellEl.className = 'mine-cell';
 
       if (rowDef.tier === 0) {
-        // Decorative tree row
+        // Choppable trees — gives wood
         cellEl.classList.add('tree');
         cellEl.textContent = Math.random() > 0.5 ? '🌳' : '🌲';
-        rowData.push({ tier: 0, mined: false, block: null, el: cellEl });
+        const woodBlock = blocks.find(b => b.id === 'wood');
+        const treeData = { tier: 0, mined: false, block: woodBlock, el: cellEl };
+        cellEl.addEventListener('click', () => chopTree(treeData));
+        rowData.push(treeData);
       } else {
         const block = rollBlockForTier(rowDef.tier);
         cellEl.classList.add('tier' + rowDef.tier);
@@ -1397,8 +1410,27 @@ function initMine() {
   updateMineRefreshBtn();
 }
 
+function chopTree(cellData) {
+  if (cellData.mined) return;
+  if (gems < 1) {
+    playLockedSfx();
+    document.getElementById('mineResult').textContent = '💎 鑑石不夠！去答題賺更多吧！';
+    return;
+  }
+  playMineSfx(1);
+  gems--;
+  updateGemDisplay();
+  cellData.mined = true;
+  cellData.el.classList.add('mined');
+  addBlock('wood');
+  document.getElementById('mineResult').textContent =
+    `🪵 砍到木頭！（擁有 ${getBlockCount('wood')} 個）提示：可合成木棍 🥢`;
+  updateExposure();
+  saveGame();
+}
+
 function mineMountainCell(row, col, cellData) {
-  if (cellData.mined || cellData.tier === 0) return;
+  if (cellData.mined) return;
 
   const maxTier = pickaxes[pickaxeLevel].maxTier;
   if (cellData.tier > maxTier) {
@@ -1617,6 +1649,7 @@ function craftSlotClick(idx) {
 }
 
 function checkCraftMatch() {
+  // Check pickaxe recipes
   for (const pick of pickaxes) {
     if (!pick.pattern) continue;
     if (pickaxeLevel >= pickaxes.indexOf(pick)) continue; // already have
@@ -1624,7 +1657,15 @@ function checkCraftMatch() {
       if (need === null) return craftGrid[i] === null;
       return craftGrid[i] === need;
     });
-    if (match) return pick;
+    if (match) return { type: 'pickaxe', item: pick, emoji: pick.emoji, name: pick.name };
+  }
+  // Check general recipes
+  for (const recipe of craftRecipes) {
+    const match = recipe.pattern.every((need, i) => {
+      if (need === null) return craftGrid[i] === null;
+      return craftGrid[i] === need;
+    });
+    if (match) return { type: 'item', item: recipe, emoji: recipe.emoji, name: `${recipe.name} x${recipe.outputCount}` };
   }
   return null;
 }
@@ -1683,7 +1724,13 @@ function doCraft() {
   playCraftSfx();
   // Clear the grid (blocks already deducted when placed)
   craftGrid = [null,null,null, null,null,null, null,null,null];
-  pickaxeLevel = pickaxes.indexOf(match);
+
+  if (match.type === 'pickaxe') {
+    pickaxeLevel = pickaxes.indexOf(match.item);
+  } else if (match.type === 'item') {
+    addBlock(match.item.outputId, match.item.outputCount);
+  }
+
   saveGame();
   doConfetti();
   initCollection();
