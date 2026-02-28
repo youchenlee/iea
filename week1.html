@@ -422,25 +422,77 @@ body::before {
 .block-card .block-tier { font-size: 0.7rem; color: var(--accent); margin-top: 2px; }
 
 .craft-area { max-width: 500px; margin: 0 auto; }
-.craft-card {
-  background: white; border-radius: var(--radius); padding: 18px;
-  margin-bottom: 14px; box-shadow: 0 2px 10px var(--shadow);
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+.craft-current { text-align: center; font-family: 'Fredoka', sans-serif; color: #636E72; margin-bottom: 12px; font-size: 1rem; }
+
+.craft-table {
+  display: flex; align-items: center; justify-content: center;
+  gap: 16px; flex-wrap: wrap; margin-bottom: 16px;
 }
-.craft-info { flex: 1; }
-.craft-name { font-family: 'Fredoka', sans-serif; font-size: 1.1rem; font-weight: 600; }
-.craft-recipe { font-size: 0.85rem; color: #636E72; margin-top: 4px; }
-.craft-recipe .has { color: #00B894; }
-.craft-recipe .need { color: #FF6B6B; }
+.craft-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;
+  background: #8B6F47; padding: 8px; border-radius: 12px;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.3), 0 3px 10px var(--shadow);
+}
+.craft-slot {
+  width: 52px; height: 52px; border-radius: 6px;
+  background: #A0855C; border: 2px solid #6B4F37;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; cursor: pointer; transition: all 0.15s;
+  box-shadow: inset 0 -2px 4px rgba(0,0,0,0.15);
+}
+.craft-slot:hover { background: #B8976A; transform: scale(1.05); }
+.craft-slot.filled { background: #C4A97D; border-color: #8B6F47; }
+
+.craft-arrow { font-size: 1.8rem; color: #636E72; }
+
+.craft-result-slot {
+  width: 64px; height: 64px; border-radius: 8px;
+  background: #A0855C; border: 3px solid #6B4F37;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem; position: relative;
+  box-shadow: inset 0 -2px 4px rgba(0,0,0,0.15);
+}
+.craft-result-slot.matched {
+  border-color: #00B894; background: #C4A97D;
+  animation: correctBounce 0.5s ease;
+}
+
+.craft-actions { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; }
 .craft-btn {
-  padding: 10px 20px; border-radius: 50px; border: none;
-  background: linear-gradient(135deg, #00B894, #00CEC9);
-  color: white; font-family: 'Fredoka', sans-serif; font-size: 0.95rem; font-weight: 600;
+  padding: 10px 24px; border-radius: 50px; border: none;
+  font-family: 'Fredoka', sans-serif; font-size: 1rem; font-weight: 600;
   cursor: pointer; transition: all 0.3s;
 }
-.craft-btn:hover { transform: scale(1.05); }
-.craft-btn:disabled { opacity: 0.4; pointer-events: none; background: #BDC3C7; }
-.craft-current { text-align: center; font-family: 'Fredoka', sans-serif; color: #636E72; margin-bottom: 16px; font-size: 1rem; }
+.craft-btn:hover { transform: translateY(-2px); }
+.craft-btn:disabled { opacity: 0.4; pointer-events: none; }
+.craft-btn.primary { background: linear-gradient(135deg, #00B894, #00CEC9); color: white; box-shadow: 0 4px 15px rgba(0,184,148,0.3); }
+.craft-btn.secondary { background: linear-gradient(135deg, #DFE6E9, #BDC3C7); color: #2D3436; }
+
+.craft-inventory {
+  background: #8B6F47; border-radius: 12px; padding: 10px;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.3), 0 3px 10px var(--shadow);
+}
+.craft-inv-title {
+  font-family: 'Fredoka', sans-serif; font-size: 0.9rem;
+  color: #E8D5B7; margin-bottom: 8px; text-align: center;
+}
+.craft-inv-grid {
+  display: flex; flex-wrap: wrap; gap: 4px; justify-content: center;
+}
+.craft-inv-item {
+  width: 48px; height: 48px; border-radius: 6px;
+  background: #A0855C; border: 2px solid #6B4F37;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-size: 1.2rem; cursor: pointer; transition: all 0.15s;
+  position: relative;
+}
+.craft-inv-item:hover { background: #B8976A; transform: scale(1.08); }
+.craft-inv-item.selected { border-color: #FFD93D; background: #C4A97D; box-shadow: 0 0 8px rgba(255,217,61,0.5); }
+.craft-inv-item .inv-count {
+  font-size: 0.55rem; font-weight: 700; color: #FFF;
+  background: rgba(0,0,0,0.5); border-radius: 4px; padding: 0 3px;
+  position: absolute; bottom: 2px; right: 2px;
+}
 
 .house-area { text-align: center; max-width: 400px; margin: 0 auto; }
 .house-visual {
@@ -481,7 +533,9 @@ body::before {
   .mine-cell { width: 32px; height: 32px; font-size: 1.1rem; }
   .mine-cell.tree { font-size: 1.3rem; }
   .encyclopedia-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
-  .craft-card { flex-direction: column; text-align: center; }
+  .craft-slot { width: 44px; height: 44px; font-size: 1.3rem; }
+  .craft-result-slot { width: 52px; height: 52px; font-size: 1.6rem; }
+  .craft-inv-item { width: 40px; height: 40px; font-size: 1rem; }
   .collection-tab { padding: 6px 12px; font-size: 0.8rem; }
 }
 </style>
@@ -492,7 +546,7 @@ body::before {
   <div class="header">
     <h1>Feelings Fun! 🎭</h1>
     <div class="subtitle">學習表達情緒的英文 · Learn to express feelings</div>
-    <div style="font-size:0.7rem;color:#B2BEC3;margin-top:2px;font-family:'Nunito',sans-serif;">v2.0.0</div>
+    <div style="font-size:0.7rem;color:#B2BEC3;margin-top:2px;font-family:'Nunito',sans-serif;">v2.1.0</div>
   </div>
 
   <div class="score-bar">
@@ -600,10 +654,16 @@ const blocks = [
 ];
 
 const pickaxes = [
-  { id: 'wood_pick',  name: '木鎬',  emoji: '🪓', maxTier: 2, recipe: null },
-  { id: 'stone_pick', name: '石鎬',  emoji: '⛏️', maxTier: 3, recipe: { wood: 3, stone: 2 } },
-  { id: 'iron_pick',  name: '鐵鎬',  emoji: '⛏️', maxTier: 4, recipe: { wood: 2, iron: 3 } },
-  { id: 'gold_pick',  name: '金鎬',  emoji: '🔱', maxTier: 5, recipe: { iron: 2, gold: 3 } },
+  { id: 'wood_pick',  name: '木鎬',  emoji: '🪓', maxTier: 2, recipe: null, pattern: null },
+  { id: 'stone_pick', name: '石鎬',  emoji: '⛏️', maxTier: 3,
+    recipe: { wood: 2, stone: 3 },
+    pattern: ['stone','stone','stone', null,'wood',null, null,'wood',null] },
+  { id: 'iron_pick',  name: '鐵鎬',  emoji: '⛏️', maxTier: 4,
+    recipe: { wood: 2, iron: 3 },
+    pattern: ['iron','iron','iron', null,'wood',null, null,'wood',null] },
+  { id: 'gold_pick',  name: '金鎬',  emoji: '🔱', maxTier: 5,
+    recipe: { iron: 2, gold: 3 },
+    pattern: ['gold','gold','gold', null,'iron',null, null,'iron',null] },
 ];
 
 const houseStages = [
@@ -1356,7 +1416,14 @@ function renderEncyclopedia(c) {
   c.appendChild(grid);
 }
 
+// ===== CRAFTING TABLE =====
+let craftGrid = [null,null,null, null,null,null, null,null,null]; // 9 slots, block id or null
+let craftSelected = null; // selected block id from inventory
+
 function renderCraft(c) {
+  craftGrid = [null,null,null, null,null,null, null,null,null];
+  craftSelected = null;
+
   const currentPick = pickaxes[pickaxeLevel];
   const current = document.createElement('div');
   current.className = 'craft-current';
@@ -1366,57 +1433,160 @@ function renderCraft(c) {
   const area = document.createElement('div');
   area.className = 'craft-area';
 
-  pickaxes.forEach((pick, i) => {
-    if (i === 0) return;
-    const alreadyHave = pickaxeLevel >= i;
-    const canCraft = !alreadyHave && pickaxeLevel === i - 1 && hasBlocks(pick.recipe);
+  // Craft table: grid + arrow + result
+  const table = document.createElement('div');
+  table.className = 'craft-table';
 
-    const card = document.createElement('div');
-    card.className = 'craft-card';
+  const grid = document.createElement('div');
+  grid.className = 'craft-grid';
+  grid.id = 'craftGrid';
+  for (let i = 0; i < 9; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'craft-slot';
+    slot.dataset.idx = i;
+    slot.addEventListener('click', () => craftSlotClick(i));
+    grid.appendChild(slot);
+  }
+  table.appendChild(grid);
 
-    const info = document.createElement('div');
-    info.className = 'craft-info';
-    const nameEl = document.createElement('div');
-    nameEl.className = 'craft-name';
-    nameEl.textContent = `${pick.emoji} ${pick.name} ${alreadyHave ? '✅' : ''}`;
-    info.appendChild(nameEl);
+  const arrow = document.createElement('div');
+  arrow.className = 'craft-arrow';
+  arrow.textContent = '➡️';
+  table.appendChild(arrow);
 
-    const recipeEl = document.createElement('div');
-    recipeEl.className = 'craft-recipe';
-    if (alreadyHave) {
-      recipeEl.textContent = '已擁有';
-    } else {
-      Object.entries(pick.recipe).forEach(([id, count], idx) => {
-        const b = blocks.find(x => x.id === id);
-        const have = getBlockCount(id);
-        const span = document.createElement('span');
-        span.className = have >= count ? 'has' : 'need';
-        span.textContent = `${b.emoji} ${b.name} ${have}/${count}`;
-        if (idx > 0) recipeEl.appendChild(document.createTextNode(' + '));
-        recipeEl.appendChild(span);
-      });
-    }
-    info.appendChild(recipeEl);
-    card.appendChild(info);
+  const resultSlot = document.createElement('div');
+  resultSlot.className = 'craft-result-slot';
+  resultSlot.id = 'craftResultSlot';
+  table.appendChild(resultSlot);
 
-    if (!alreadyHave) {
-      const btn = document.createElement('button');
-      btn.className = 'craft-btn';
-      btn.textContent = '合成';
-      btn.disabled = !canCraft;
-      btn.addEventListener('click', () => {
-        removeBlocks(pick.recipe);
-        pickaxeLevel = i;
-        saveGame();
-        doConfetti();
-        initCollection();
-      });
-      card.appendChild(btn);
-    }
+  area.appendChild(table);
 
-    area.appendChild(card);
+  // Action buttons
+  const actions = document.createElement('div');
+  actions.className = 'craft-actions';
+  const craftBtn = document.createElement('button');
+  craftBtn.className = 'craft-btn primary';
+  craftBtn.id = 'craftBtn';
+  craftBtn.textContent = '🔨 合成';
+  craftBtn.disabled = true;
+  craftBtn.addEventListener('click', doCraft);
+  const clearBtn = document.createElement('button');
+  clearBtn.className = 'craft-btn secondary';
+  clearBtn.textContent = '🔄 清空';
+  clearBtn.addEventListener('click', () => {
+    // Return all placed blocks to inventory
+    craftGrid.forEach(id => { if (id) addBlock(id); });
+    craftGrid = [null,null,null, null,null,null, null,null,null];
+    updateCraftUI();
   });
+  actions.appendChild(craftBtn);
+  actions.appendChild(clearBtn);
+  area.appendChild(actions);
+
+  // Inventory panel
+  const inv = document.createElement('div');
+  inv.className = 'craft-inventory';
+  const invTitle = document.createElement('div');
+  invTitle.className = 'craft-inv-title';
+  invTitle.textContent = '🎒 背包（點選方塊再放到格子上）';
+  inv.appendChild(invTitle);
+  const invGrid = document.createElement('div');
+  invGrid.className = 'craft-inv-grid';
+  invGrid.id = 'craftInvGrid';
+  inv.appendChild(invGrid);
+  area.appendChild(inv);
+
   c.appendChild(area);
+  updateCraftUI();
+}
+
+function craftSlotClick(idx) {
+  if (craftGrid[idx]) {
+    // Remove block from grid, return to inventory
+    addBlock(craftGrid[idx]);
+    craftGrid[idx] = null;
+    updateCraftUI();
+  } else if (craftSelected && getBlockCount(craftSelected) > 0) {
+    // Place selected block
+    craftGrid[idx] = craftSelected;
+    // Deduct from inventory (temporarily)
+    inventory[craftSelected] = (inventory[craftSelected] || 0) - 1;
+    if (inventory[craftSelected] <= 0) delete inventory[craftSelected];
+    saveGame();
+    updateCraftUI();
+  }
+}
+
+function checkCraftMatch() {
+  for (const pick of pickaxes) {
+    if (!pick.pattern) continue;
+    if (pickaxeLevel >= pickaxes.indexOf(pick)) continue; // already have
+    const match = pick.pattern.every((need, i) => {
+      if (need === null) return craftGrid[i] === null;
+      return craftGrid[i] === need;
+    });
+    if (match) return pick;
+  }
+  return null;
+}
+
+function updateCraftUI() {
+  // Update grid slots
+  const gridEl = document.getElementById('craftGrid');
+  if (!gridEl) return;
+  const slots = gridEl.children;
+  for (let i = 0; i < 9; i++) {
+    const slot = slots[i];
+    slot.textContent = '';
+    slot.classList.toggle('filled', craftGrid[i] !== null);
+    if (craftGrid[i]) {
+      const b = blocks.find(x => x.id === craftGrid[i]);
+      if (b) slot.textContent = b.emoji;
+    }
+  }
+
+  // Check for recipe match
+  const match = checkCraftMatch();
+  const resultSlot = document.getElementById('craftResultSlot');
+  const craftBtn = document.getElementById('craftBtn');
+  if (resultSlot) {
+    resultSlot.textContent = match ? match.emoji : '';
+    resultSlot.classList.toggle('matched', !!match);
+  }
+  if (craftBtn) craftBtn.disabled = !match;
+
+  // Update inventory panel
+  const invGrid = document.getElementById('craftInvGrid');
+  if (!invGrid) return;
+  invGrid.textContent = '';
+  blocks.forEach(b => {
+    const count = getBlockCount(b.id);
+    if (count <= 0) return;
+    const item = document.createElement('div');
+    item.className = 'craft-inv-item' + (craftSelected === b.id ? ' selected' : '');
+    item.textContent = b.emoji;
+    const countEl = document.createElement('span');
+    countEl.className = 'inv-count';
+    countEl.textContent = count;
+    item.appendChild(countEl);
+    item.addEventListener('click', (e) => {
+      e.stopPropagation();
+      craftSelected = (craftSelected === b.id) ? null : b.id;
+      updateCraftUI();
+    });
+    invGrid.appendChild(item);
+  });
+}
+
+function doCraft() {
+  const match = checkCraftMatch();
+  if (!match) return;
+  // Clear the grid (blocks already deducted when placed)
+  craftGrid = [null,null,null, null,null,null, null,null,null];
+  pickaxeLevel = pickaxes.indexOf(match);
+  saveGame();
+  doConfetti();
+  initCollection();
 }
 
 function getHouseArt() {
