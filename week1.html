@@ -529,11 +529,11 @@ body::before {
 .mine-cell.tier5 { background: linear-gradient(180deg, #2C3E6D, #1A2547); }
 .mine-cell.tree { background: none; border: none; box-shadow: none; font-size: 1.5rem; cursor: pointer; }
 .mine-cell.tree:hover { transform: scale(1.15); }
-.mine-cell.tree.mined { background: rgba(135,206,235,0.25) !important; border: none; box-shadow: none; pointer-events: none; }
+.mine-cell.tree.mined { background: rgba(135,206,235,0.25) !important; border: none; box-shadow: none; }
 .mine-cell.animal { background: none; border: none; box-shadow: none; font-size: 1.5rem; cursor: pointer; }
 .mine-cell.animal:hover { transform: scale(1.15); }
 .mine-cell.animal.hostile { filter: drop-shadow(0 0 3px rgba(255,60,60,0.6)); }
-.mine-cell.animal.mined { background: rgba(135,206,235,0.25) !important; border: none; box-shadow: none; pointer-events: none; }
+.mine-cell.animal.mined { background: rgba(135,206,235,0.25) !important; border: none; box-shadow: none; }
 
 
 .mine-result {
@@ -581,14 +581,13 @@ body::before {
 .tool-picker-backdrop { position: fixed; inset: 0; z-index: 19; }
 .mine-refresh {
   display: block; margin: 10px auto 0;
-  padding: 10px 28px; border-radius: 50px; border: none;
-  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-  color: white;
-  font-family: var(--font-display); font-size: 1rem; font-weight: 600;
-  cursor: pointer; transition: all 0.3s;
-  box-shadow: 0 4px 15px rgba(108,92,231,0.3);
+  padding: 6px 16px; border-radius: 20px; border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-family: var(--font-body); font-size: 0.8rem; font-weight: 400;
+  cursor: pointer; transition: all 0.2s;
 }
-.mine-refresh:hover { transform: translateY(-2px); }
+.mine-refresh:hover { background: #E0E0E8; }
 .mine-refresh:disabled { opacity: 0.4; pointer-events: none; }
 
 /* ===== ENCYCLOPEDIA ===== */
@@ -1002,7 +1001,7 @@ body::before {
     <div class="nav-group">
       <div class="nav-group-label">遊戲</div>
       <div class="nav-group-tabs">
-        <button class="nav-tab" data-tab="mine">⛏️ Mine</button>
+        <button class="nav-tab" data-tab="mine">⛏️ 挖礦/建造</button>
         <button class="nav-tab" data-tab="craft">🔨 合成</button>
         <button class="nav-tab" data-tab="furnace">🔥 熔爐</button>
         <button class="nav-tab" data-tab="equip">👤 裝備</button>
@@ -2449,6 +2448,8 @@ function getMineHoldDuration(cellData) {
 
 function startMineHold(cellData) {
   if (cellData.mined) return;
+  // Auto-deselect palette item when starting to mine/attack
+  if (buildSelected) { buildSelected = null; refreshBuildPalette(); }
   const duration = getMineHoldDuration(cellData);
   if (duration === Infinity) {
     playLockedSfx();
@@ -2540,7 +2541,7 @@ function initMine() {
   header.className = 'mine-header';
   const h3 = document.createElement('h3');
   h3.className = 'section-title';
-  h3.textContent = '⛏️ 挖礦 Mine';
+  h3.textContent = '⛏️ 挖礦/建造 Mine & Build';
   const toolChips = document.createElement('div');
   toolChips.className = 'tool-slots';
   toolChips.id = 'toolChips';
@@ -2808,20 +2809,6 @@ function renderMineBuildPalette(container) {
     refreshBuildPalette();
   });
   palette.appendChild(playerItem);
-  // Deselect button
-  if (buildSelected) {
-    const deselect = document.createElement('div');
-    deselect.className = 'build-palette-item selected';
-    deselect.style.background = '#D63031';
-    deselect.style.borderColor = '#FF6B6B';
-    deselect.appendChild(document.createTextNode('✕'));
-    deselect.title = '取消選擇';
-    deselect.addEventListener('click', () => {
-      buildSelected = null;
-      refreshBuildPalette();
-    });
-    palette.appendChild(deselect);
-  }
   container.appendChild(palette);
 
   // Actions row
@@ -2857,6 +2844,31 @@ function renderMineBuildPalette(container) {
 function refreshBuildPalette() {
   const el = document.getElementById('mineBuildPalette');
   if (el) renderMineBuildPalette(el);
+  updateGhostHints();
+}
+
+function updateGhostHints() {
+  const selectedBlock = buildSelected && buildSelected !== '_player' ? blocks.find(b => b.id === buildSelected) : null;
+  const hintEmoji = selectedBlock ? selectedBlock.emoji : '';
+  for (let r = 0; r < mineData.length; r++) {
+    for (let c = 0; c < mineData[r].length; c++) {
+      const cd = mineData[r][c];
+      if (!cd) continue;
+      const key = r + ',' + c;
+      if (cd.mined && !buildGrid[key]) {
+        if (hintEmoji) {
+          cd.el.classList.add('ghost');
+          cd.el.setAttribute('data-hint', hintEmoji);
+        } else {
+          cd.el.classList.remove('ghost');
+          cd.el.removeAttribute('data-hint');
+        }
+      } else {
+        cd.el.classList.remove('ghost');
+        cd.el.removeAttribute('data-hint');
+      }
+    }
+  }
 }
 
 function attackAnimal(cellData) {
@@ -2983,7 +2995,7 @@ function mineMountainCell(row, col, cellData) {
 }
 
 function bindMineHoldEvents(cellEl, cellData) {
-  const startHold = (e) => { e.preventDefault(); startMineHold(cellData); };
+  const startHold = (e) => { if (!cellData.mined) e.preventDefault(); startMineHold(cellData); };
   const endHold = () => cancelMineHold();
   cellEl.addEventListener('mousedown', startHold);
   cellEl.addEventListener('mouseup', endHold);
