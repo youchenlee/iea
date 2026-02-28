@@ -546,7 +546,7 @@ body::before {
   <div class="header">
     <h1>Feelings Fun! 🎭</h1>
     <div class="subtitle">學習表達情緒的英文 · Learn to express feelings</div>
-    <div style="font-size:0.7rem;color:#B2BEC3;margin-top:2px;font-family:'Nunito',sans-serif;">v2.1.0</div>
+    <div style="font-size:0.7rem;color:#B2BEC3;margin-top:2px;font-family:'Nunito',sans-serif;">v2.1.1</div>
   </div>
 
   <div class="score-bar">
@@ -844,6 +844,100 @@ document.querySelectorAll('.speed-btn').forEach(btn => {
     speechSpeed = btn.dataset.speed;
   });
 });
+
+// ===== SFX (Web Audio API) =====
+let audioCtx = null;
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playMineSfx(tier) {
+  const ctx = getAudioCtx();
+  if (ctx.state === 'suspended') ctx.resume();
+
+  // Noise burst — sounds like stone breaking
+  const bufferSize = ctx.sampleRate * 0.08;
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize); // decaying noise
+  }
+  const noise = ctx.createBufferSource();
+  noise.buffer = buffer;
+
+  // Filter — higher tier = higher pitch
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.value = 400 + tier * 200;
+  filter.Q.value = 1.5;
+
+  const gain = ctx.createGain();
+  gain.gain.value = 0.3;
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+
+  noise.connect(filter).connect(gain).connect(ctx.destination);
+  noise.start();
+  noise.stop(ctx.currentTime + 0.08);
+
+  // Extra "ding" for rare blocks (tier 4+)
+  if (tier >= 4) {
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = tier >= 5 ? 1200 : 900;
+    const oscGain = ctx.createGain();
+    oscGain.gain.value = 0.15;
+    oscGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    osc.connect(oscGain).connect(ctx.destination);
+    osc.start(ctx.currentTime + 0.05);
+    osc.stop(ctx.currentTime + 0.3);
+  }
+}
+
+function playLockedSfx() {
+  const ctx = getAudioCtx();
+  if (ctx.state === 'suspended') ctx.resume();
+  const osc = ctx.createOscillator();
+  osc.type = 'square';
+  osc.frequency.value = 120;
+  const gain = ctx.createGain();
+  gain.gain.value = 0.1;
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+  osc.connect(gain).connect(ctx.destination);
+  osc.start();
+  osc.stop(ctx.currentTime + 0.15);
+}
+
+function playCraftSfx() {
+  const ctx = getAudioCtx();
+  if (ctx.state === 'suspended') ctx.resume();
+  // Ascending arpeggio
+  [0, 1, 2].forEach((i) => {
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = 600 + i * 200;
+    const gain = ctx.createGain();
+    gain.gain.value = 0.12;
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15 + i * 0.1);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(ctx.currentTime + i * 0.1);
+    osc.stop(ctx.currentTime + 0.15 + i * 0.1);
+  });
+}
+
+function playPlaceSfx() {
+  const ctx = getAudioCtx();
+  if (ctx.state === 'suspended') ctx.resume();
+  const osc = ctx.createOscillator();
+  osc.type = 'sine';
+  osc.frequency.value = 500;
+  const gain = ctx.createGain();
+  gain.gain.value = 0.08;
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
+  osc.connect(gain).connect(ctx.destination);
+  osc.start();
+  osc.stop(ctx.currentTime + 0.06);
+}
 
 // ===== UTILS =====
 function shuffle(arr) {
@@ -1308,6 +1402,7 @@ function mineMountainCell(row, col, cellData) {
 
   const maxTier = pickaxes[pickaxeLevel].maxTier;
   if (cellData.tier > maxTier) {
+    playLockedSfx();
     document.getElementById('mineResult').textContent = `🔒 需要更好的鎬才能挖第 ${cellData.tier} 層！`;
     return;
   }
@@ -1315,10 +1410,12 @@ function mineMountainCell(row, col, cellData) {
   if (!isExposed(row, col)) return;
 
   if (gems < 1) {
+    playLockedSfx();
     document.getElementById('mineResult').textContent = '💎 鑑石不夠！去答題賺更多吧！';
     return;
   }
 
+  playMineSfx(cellData.tier);
   gems--;
   updateGemDisplay();
   cellData.mined = true;
@@ -1503,11 +1600,13 @@ function renderCraft(c) {
 function craftSlotClick(idx) {
   if (craftGrid[idx]) {
     // Remove block from grid, return to inventory
+    playPlaceSfx();
     addBlock(craftGrid[idx]);
     craftGrid[idx] = null;
     updateCraftUI();
   } else if (craftSelected && getBlockCount(craftSelected) > 0) {
     // Place selected block
+    playPlaceSfx();
     craftGrid[idx] = craftSelected;
     // Deduct from inventory (temporarily)
     inventory[craftSelected] = (inventory[craftSelected] || 0) - 1;
@@ -1581,6 +1680,7 @@ function updateCraftUI() {
 function doCraft() {
   const match = checkCraftMatch();
   if (!match) return;
+  playCraftSfx();
   // Clear the grid (blocks already deducted when placed)
   craftGrid = [null,null,null, null,null,null, null,null,null];
   pickaxeLevel = pickaxes.indexOf(match);
