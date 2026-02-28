@@ -305,55 +305,87 @@ body::before {
 }
 
 /* ===== MINE ===== */
-.mine-header { text-align: center; margin-bottom: 16px; }
+.mine-header { text-align: center; margin-bottom: 12px; }
 .mine-header h3 { font-family: 'Fredoka', sans-serif; font-size: 1.3rem; color: var(--text); }
 .mine-pickaxe { font-size: 1rem; color: #636E72; margin-top: 4px; }
 .mine-cost { font-size: 0.9rem; color: var(--accent); margin-top: 2px; }
 
-.mine-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  max-width: 360px;
+.mountain {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
   margin: 0 auto;
+  padding: 10px 0;
+  background: linear-gradient(180deg, #87CEEB 0%, #87CEEB 20%, #E8D5B7 100%);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.mountain-row {
+  display: flex;
+  gap: 2px;
 }
 .mine-cell {
-  aspect-ratio: 1;
-  border-radius: 14px;
+  width: 38px; height: 38px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.5rem;
+  font-size: 1.3rem;
   cursor: pointer;
-  transition: all 0.2s;
-  border: 3px solid #DFE6E9;
-  background: linear-gradient(180deg, #8B6F47 0%, #6B4F37 100%);
-  box-shadow: inset 0 -3px 6px rgba(0,0,0,0.2), 0 3px 10px var(--shadow);
+  transition: all 0.15s;
+  border: 1px solid rgba(0,0,0,0.15);
+  box-shadow: inset 0 -2px 4px rgba(0,0,0,0.2);
   position: relative;
+  user-select: none;
 }
-.mine-cell:hover { transform: scale(1.05); }
-.mine-cell:active { transform: scale(0.92); }
+.mine-cell:hover:not(.mined):not(.locked) { transform: scale(1.12); z-index: 2; box-shadow: 0 0 8px rgba(255,255,255,0.5); }
+.mine-cell:active:not(.mined):not(.locked) { transform: scale(0.9); }
+.mine-cell.unexposed { opacity: 0.85; cursor: default; }
+.mine-cell.unexposed:hover { transform: none; box-shadow: inset 0 -2px 4px rgba(0,0,0,0.2); }
 .mine-cell.mined {
-  background: linear-gradient(180deg, #DFE6E9 0%, #BDC3C7 100%);
-  border-color: transparent;
+  background: #1a1a2e !important;
+  border-color: #0d0d1a;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
   pointer-events: none;
 }
+.mine-cell.locked {
+  cursor: not-allowed;
+  position: relative;
+}
+.mine-cell.locked::after {
+  content: '🔒';
+  position: absolute;
+  font-size: 0.8rem;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.4);
+  border-radius: 4px;
+}
 .mine-cell .block-reveal {
-  animation: blockPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: blockPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 @keyframes blockPop {
   0% { transform: scale(0) rotate(-20deg); opacity: 0; }
   60% { transform: scale(1.3) rotate(5deg); opacity: 1; }
   100% { transform: scale(1) rotate(0); }
 }
-.mine-cell .crack { font-size: 2rem; opacity: 0.5; }
+.mine-cell.tier1 { background: linear-gradient(180deg, #8B6F47, #6B4F37); }
+.mine-cell.tier2 { background: linear-gradient(180deg, #7F8C8D, #616A6B); }
+.mine-cell.tier3 { background: linear-gradient(180deg, #5D6D7E, #4A5568); }
+.mine-cell.tier4 { background: linear-gradient(180deg, #6B4C3B, #4A3728); }
+.mine-cell.tier5 { background: linear-gradient(180deg, #2C3E6D, #1A2547); }
+.mine-cell.tree { background: none; border: none; box-shadow: none; font-size: 1.5rem; cursor: default; pointer-events: none; }
+
 .mine-result {
-  text-align: center; margin-top: 16px; padding: 14px;
-  font-family: 'Fredoka', sans-serif; font-size: 1.1rem; font-weight: 600;
-  min-height: 50px;
+  text-align: center; margin-top: 12px; padding: 10px;
+  font-family: 'Fredoka', sans-serif; font-size: 1.05rem; font-weight: 600;
+  min-height: 44px;
 }
 .mine-refresh {
-  display: block; margin: 12px auto 0;
+  display: block; margin: 10px auto 0;
   padding: 10px 28px; border-radius: 50px; border: none;
   background: linear-gradient(135deg, #A29BFE, #6C5CE7);
   color: white;
@@ -446,8 +478,8 @@ body::before {
   .quiz-options { grid-template-columns: 1fr; }
   .nav-tab { padding: 8px 14px; font-size: 0.9rem; }
   .sentence-display { font-size: 1.2rem; }
-  .mine-grid { max-width: 280px; }
-  .mine-cell { font-size: 2rem; }
+  .mine-cell { width: 32px; height: 32px; font-size: 1.1rem; }
+  .mine-cell.tree { font-size: 1.3rem; }
   .encyclopedia-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
   .craft-card { flex-direction: column; text-align: center; }
   .collection-tab { padding: 6px 12px; font-size: 0.8rem; }
@@ -1073,13 +1105,24 @@ function initSightWords() {
 }
 
 // ===== MINE =====
-function getMinableBlocks() {
-  const maxTier = pickaxes[pickaxeLevel].maxTier;
-  return blocks.filter(b => b.tier <= maxTier);
-}
+// Mountain shape: each row = { width, tier } — triangle from peak to base
+const mountainShape = [
+  { width: 2, tier: 0 },  // tree tops (decorative)
+  { width: 4, tier: 1 },  // dirt/wood
+  { width: 6, tier: 1 },
+  { width: 8, tier: 2 },  // stone/coal
+  { width: 8, tier: 2 },
+  { width: 8, tier: 3 },  // iron/copper
+  { width: 8, tier: 3 },
+  { width: 8, tier: 4 },  // gold/emerald
+  { width: 8, tier: 4 },
+  { width: 8, tier: 5 },  // diamond/amethyst
+];
 
-function rollBlock() {
-  const pool = getMinableBlocks();
+let mineData = []; // 2D array: each cell = { block, mined, tier, el } or null
+
+function rollBlockForTier(tier) {
+  const pool = blocks.filter(b => b.tier === tier);
   const totalWeight = pool.reduce((s, b) => s + b.weight, 0);
   let r = Math.random() * totalWeight;
   for (const b of pool) {
@@ -1089,11 +1132,41 @@ function rollBlock() {
   return pool[pool.length - 1];
 }
 
+function isExposed(row, col) {
+  if (mineData[row][col] === null || mineData[row][col].mined) return false;
+  // Check 4 neighbors — if any is outside mountain or mined, this cell is exposed
+  const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+  for (const [dr, dc] of dirs) {
+    const nr = row + dr, nc = col + dc;
+    if (nr < 0 || nr >= mineData.length) return true; // top/bottom edge
+    if (nc < 0 || nc >= mineData[nr].length) return true; // side edge
+    if (mineData[nr][nc] === null) return true; // outside mountain shape
+    if (mineData[nr][nc].mined) return true; // adjacent to mined cell
+  }
+  return false;
+}
+
+function updateExposure() {
+  const maxTier = pickaxes[pickaxeLevel].maxTier;
+  for (let r = 0; r < mineData.length; r++) {
+    for (let c = 0; c < mineData[r].length; c++) {
+      const cell = mineData[r][c];
+      if (!cell || cell.mined || cell.tier === 0) continue;
+      const exposed = isExposed(r, c);
+      const locked = cell.tier > maxTier;
+      cell.el.classList.toggle('unexposed', !exposed);
+      cell.el.classList.toggle('locked', exposed && locked);
+    }
+  }
+}
+
 function initMine() {
   const area = document.getElementById('mineArea');
   const pick = pickaxes[pickaxeLevel];
   area.textContent = '';
+  mineData = [];
 
+  // Header
   const header = document.createElement('div');
   header.className = 'mine-header';
   const h3 = document.createElement('h3');
@@ -1109,62 +1182,104 @@ function initMine() {
   header.appendChild(costInfo);
   area.appendChild(header);
 
-  const grid = document.createElement('div');
-  grid.className = 'mine-grid';
-  grid.id = 'mineGrid';
-  for (let i = 0; i < 9; i++) {
-    const cell = document.createElement('div');
-    cell.className = 'mine-cell';
-    const crack = document.createElement('span');
-    crack.className = 'crack';
-    crack.textContent = '⛏️';
-    cell.appendChild(crack);
-    const block = rollBlock();
-    cell.dataset.blockId = block.id;
-    cell.addEventListener('click', () => mineCell(cell, block));
-    grid.appendChild(cell);
-  }
-  area.appendChild(grid);
+  // Mountain
+  const mountain = document.createElement('div');
+  mountain.className = 'mountain';
+  const maxWidth = 8;
 
+  mountainShape.forEach((rowDef, r) => {
+    const rowEl = document.createElement('div');
+    rowEl.className = 'mountain-row';
+    const rowData = [];
+
+    // Pad to maxWidth with nulls for consistent indexing
+    const offset = Math.floor((maxWidth - rowDef.width) / 2);
+    for (let c = 0; c < maxWidth; c++) {
+      if (c < offset || c >= offset + rowDef.width) {
+        rowData.push(null);
+        continue;
+      }
+
+      const cellEl = document.createElement('div');
+      cellEl.className = 'mine-cell';
+
+      if (rowDef.tier === 0) {
+        // Decorative tree row
+        cellEl.classList.add('tree');
+        cellEl.textContent = Math.random() > 0.5 ? '🌳' : '🌲';
+        rowData.push({ tier: 0, mined: false, block: null, el: cellEl });
+      } else {
+        const block = rollBlockForTier(rowDef.tier);
+        cellEl.classList.add('tier' + rowDef.tier);
+        const cellData = { tier: rowDef.tier, mined: false, block, el: cellEl };
+        cellEl.addEventListener('click', () => mineMountainCell(r, c, cellData));
+        rowData.push(cellData);
+      }
+
+      rowEl.appendChild(cellEl);
+    }
+
+    mineData.push(rowData);
+    mountain.appendChild(rowEl);
+  });
+
+  area.appendChild(mountain);
+
+  // Result
   const result = document.createElement('div');
   result.className = 'mine-result';
   result.id = 'mineResult';
   area.appendChild(result);
 
+  // Refresh button
   const refreshBtn = document.createElement('button');
   refreshBtn.className = 'mine-refresh';
   refreshBtn.id = 'mineRefresh';
-  refreshBtn.textContent = '🔄 新礦區 New Mine';
+  refreshBtn.textContent = '🔄 新山體 New Mountain';
   refreshBtn.addEventListener('click', initMine);
   area.appendChild(refreshBtn);
 
+  updateExposure();
   updateMineRefreshBtn();
 }
 
-function mineCell(cell, block) {
-  if (cell.classList.contains('mined') || gems < 1) {
-    if (gems < 1) {
-      document.getElementById('mineResult').textContent = '💎 鑑石不夠！去答題賺更多吧！';
-    }
+function mineMountainCell(row, col, cellData) {
+  if (cellData.mined || cellData.tier === 0) return;
+
+  const maxTier = pickaxes[pickaxeLevel].maxTier;
+  if (cellData.tier > maxTier) {
+    document.getElementById('mineResult').textContent = `🔒 需要更好的鎬才能挖第 ${cellData.tier} 層！`;
+    return;
+  }
+
+  if (!isExposed(row, col)) return;
+
+  if (gems < 1) {
+    document.getElementById('mineResult').textContent = '💎 鑑石不夠！去答題賺更多吧！';
     return;
   }
 
   gems--;
   updateGemDisplay();
-  cell.classList.add('mined');
-  cell.style.borderColor = tierColors[block.tier - 1];
-  cell.textContent = '';
+  cellData.mined = true;
+  cellData.el.classList.add('mined');
+  cellData.el.textContent = '';
   const reveal = document.createElement('span');
   reveal.className = 'block-reveal';
-  reveal.textContent = block.emoji;
-  cell.appendChild(reveal);
-  addBlock(block.id);
+  reveal.textContent = cellData.block.emoji;
+  cellData.el.appendChild(reveal);
+  // Fade out emoji after animation
+  setTimeout(() => { cellData.el.textContent = ''; }, 800);
 
-  const rarity = block.tier >= 4 ? '✨ 稀有！' : block.tier >= 3 ? '不錯！' : '';
+  addBlock(cellData.block.id);
+
+  const b = cellData.block;
+  const rarity = b.tier >= 4 ? ' ✨ 稀有！' : b.tier >= 3 ? ' 不錯！' : '';
   document.getElementById('mineResult').textContent =
-    `${block.emoji} 挖到 ${block.name}！${rarity} (擁有 ${getBlockCount(block.id)} 個)`;
+    `${b.emoji} 挖到 ${b.name}！${rarity}（擁有 ${getBlockCount(b.id)} 個）`;
 
-  if (block.tier >= 4) doConfetti();
+  if (b.tier >= 4) doConfetti();
+  updateExposure();
   updateMineRefreshBtn();
   saveGame();
 }
