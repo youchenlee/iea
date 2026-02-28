@@ -322,7 +322,7 @@ body::before {
   <div class="header">
     <h1>Feelings Fun! 🎭</h1>
     <div class="subtitle">學習表達情緒的英文 · Learn to express feelings</div>
-    <div style="font-size:0.7rem;color:#B2BEC3;margin-top:2px;font-family:'Nunito',sans-serif;">v1.3.2</div>
+    <div style="font-size:0.7rem;color:#B2BEC3;margin-top:2px;font-family:'Nunito',sans-serif;">v1.4.0</div>
   </div>
 
   <div class="score-bar">
@@ -411,23 +411,34 @@ let quizQuestions = [], quizIndex = 0, quizScore = 0, quizAnswered = false;
 let speechSpeed = 'normal'; // 'slow' or 'normal'
 
 // ===== TTS ENGINE =====
-// Reuse a single Audio element — iOS Safari blocks play() on newly created Audio objects
-// unless triggered by a direct user gesture. By reusing one element "unlocked" on first tap,
-// subsequent src changes + play() calls work reliably.
-const sharedAudio = new Audio();
-let audioUnlocked = false;
+// Primary: SpeechSynthesis with smart voice selection
+// macOS has many novelty voices (Albert, Bad News, Bells, etc.) — filter those out
 let lastEngine = 'none';
+let cachedVoice = null;
 
-// Unlock audio on first user interaction (iOS requirement)
+const noveltyVoices = new Set([
+  'Albert','Bad News','Bahh','Bells','Boing','Bubbles','Cellos','Good News',
+  'Jester','Organ','Superstar','Trinoids','Whisper','Wobble','Zarvox',
+  'Ralph','Fred','Kathy','Junior','Princess'
+]);
+
+function pickBestVoice(voices) {
+  if (cachedVoice) return cachedVoice;
+  const preferred = ['Samantha','Alex','Karen','Daniel','Moira','Tessa','Ava','Tom','Allison'];
+  for (const name of preferred) {
+    const v = voices.find(v => v.name.includes(name) && v.lang.startsWith('en'));
+    if (v) { cachedVoice = v; return v; }
+  }
+  const enUS = voices.filter(v => v.lang === 'en-US' && !noveltyVoices.has(v.name));
+  if (enUS.length) { cachedVoice = enUS[0]; return enUS[0]; }
+  const en = voices.filter(v => v.lang.startsWith('en') && !noveltyVoices.has(v.name));
+  if (en.length) { cachedVoice = en[0]; return en[0]; }
+  cachedVoice = voices.find(v => v.lang.startsWith('en')) || voices[0];
+  return cachedVoice;
+}
+
+// Unlock SpeechSynthesis on first user interaction (iOS requirement)
 function unlockAudio() {
-  if (audioUnlocked) return;
-  sharedAudio.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=';
-  sharedAudio.play().then(() => {
-    audioUnlocked = true;
-    sharedAudio.pause();
-    console.log('Audio unlocked for iOS');
-  }).catch(() => {});
-  // Also unlock SpeechSynthesis
   if (window.speechSynthesis) {
     const u = new SpeechSynthesisUtterance('');
     u.volume = 0;
@@ -440,12 +451,9 @@ document.addEventListener('click', unlockAudio, { once: true });
 function updateEngineDisplay(engine, detail) {
   lastEngine = engine;
   const el = document.getElementById('engineStatus');
-  if (engine === 'google-tts') {
-    el.textContent = `🟢 Google TTS${detail ? ' — ' + detail : ''}`;
+  if (engine === 'speech-synthesis') {
+    el.textContent = `🟢 SpeechSynthesis${detail ? ' — ' + detail : ''}`;
     el.style.color = '#00B894';
-  } else if (engine === 'speech-synthesis') {
-    el.textContent = `🟡 SpeechSynthesis (fallback)${detail ? ' — ' + detail : ''}`;
-    el.style.color = '#FDCB6E';
   } else if (engine === 'error') {
     el.textContent = `🔴 無法發音${detail ? ' — ' + detail : ''}`;
     el.style.color = '#FF6B6B';
@@ -455,76 +463,16 @@ function updateEngineDisplay(engine, detail) {
   }
 }
 
-// Queue for chained speak calls (word → sentence)
-let speakQueue = [];
-let speakBusy = false;
-
 function speak(text, forceSpeed) {
-  // Stop any in-progress audio
-  sharedAudio.pause();
-  if (window.speechSynthesis) speechSynthesis.cancel();
-  speakQueue = [];
-  speakBusy = false;
-
-  return _doSpeak(text, forceSpeed);
-}
-
-function _doSpeak(text, forceSpeed) {
-  const speed = forceSpeed || speechSpeed;
-  const slow = speed === 'slow';
-  const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=${encodeURIComponent(text)}${slow ? '&ttsspeed=0.3' : ''}`;
-
-  sharedAudio.src = url;
-  sharedAudio.playbackRate = slow ? 0.75 : 1.0;
-  sharedAudio.onplay = () => updateEngineDisplay('google-tts', text);
-  // Clear old handlers
-  sharedAudio.onended = null;
-  sharedAudio.onerror = null;
-
-  const playPromise = sharedAudio.play();
-  if (playPromise) {
-    playPromise.catch(err => {
-      console.warn('Google TTS failed, fallback:', err.message);
-      updateEngineDisplay('speech-synthesis', err.message);
-      speakFallback(text, slow);
-    });
-  }
-
-  return sharedAudio;
-}
-
-// Fallback: SpeechSynthesis (in case Google TTS is blocked)
-// macOS has many novelty voices (Albert, Bad News, Bells, etc.) — filter those out
-const noveltyVoices = new Set([
-  'Albert','Bad News','Bahh','Bells','Boing','Bubbles','Cellos','Good News',
-  'Jester','Organ','Superstar','Trinoids','Whisper','Wobble','Zarvox',
-  'Ralph','Fred','Kathy','Junior','Princess'
-]);
-
-function pickBestVoice(voices) {
-  // Prefer high-quality en-US voices by name
-  const preferred = ['Samantha','Alex','Karen','Daniel','Moira','Tessa','Ava','Tom','Allison'];
-  for (const name of preferred) {
-    const v = voices.find(v => v.name.includes(name) && v.lang.startsWith('en'));
-    if (v) return v;
-  }
-  // Any en-US voice that isn't a novelty voice
-  const enUS = voices.filter(v => v.lang === 'en-US' && !noveltyVoices.has(v.name));
-  if (enUS.length) return enUS[0];
-  // Any English voice that isn't novelty
-  const en = voices.filter(v => v.lang.startsWith('en') && !noveltyVoices.has(v.name));
-  if (en.length) return en[0];
-  // Last resort
-  return voices.find(v => v.lang.startsWith('en')) || voices[0];
-}
-
-function speakFallback(text, slow) {
   const synth = window.speechSynthesis;
   if (!synth) {
     updateEngineDisplay('error', 'SpeechSynthesis not available');
-    return;
+    return null;
   }
   synth.cancel();
+
+  const speed = forceSpeed || speechSpeed;
+  const slow = speed === 'slow';
   const u = new SpeechSynthesisUtterance(text);
   u.lang = 'en-US';
   u.rate = slow ? 0.6 : 0.85;
@@ -534,14 +482,17 @@ function speakFallback(text, slow) {
   u.onstart = () => updateEngineDisplay('speech-synthesis', pick ? pick.name : 'default voice');
   u.onerror = (e) => updateEngineDisplay('error', e.error);
   synth.speak(u);
+  return u;
 }
 
-// Speak word first, then sentence after a pause — uses shared Audio element
+// Speak word first, then sentence after a pause
 function speakWordThenSentence(word, sentence) {
-  speak(word);
-  sharedAudio.onended = () => {
-    setTimeout(() => _doSpeak(sentence), 400);
-  };
+  const u = speak(word);
+  if (u) {
+    u.onend = () => {
+      setTimeout(() => speak(sentence), 400);
+    };
+  }
 }
 
 // ===== SPEED TOGGLE =====
@@ -872,10 +823,13 @@ function initSightWords() {
 // ===== INIT =====
 initLearn();
 
-// Pre-warm: load voices for fallback
+// Pre-warm: load voices so pickBestVoice works on first click
 if (window.speechSynthesis) {
   speechSynthesis.getVoices();
-  speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+  speechSynthesis.onvoiceschanged = () => {
+    cachedVoice = null; // re-pick on voice list change
+    speechSynthesis.getVoices();
+  };
 }
 </script>
 </body>
