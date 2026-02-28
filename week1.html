@@ -661,6 +661,44 @@ body::before {
   height: 100%; width: 0%; background: #00B894;
   transition: none;
 }
+.character-display {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 2px; margin: 16px auto;
+}
+.character-row { font-size: 2rem; line-height: 1.1; text-align: center; }
+.character-display.small { margin: 0; }
+.character-display.small .character-row { font-size: 1.2rem; }
+
+.equip-area { text-align: center; }
+.equip-slots {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 8px; margin: 16px 0;
+}
+.equip-slot {
+  display: flex; align-items: center; gap: 12px;
+  background: white; padding: 8px 16px; border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(45, 52, 54, 0.1); min-width: 200px;
+  cursor: pointer; transition: all 0.2s;
+}
+.equip-slot:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(45, 52, 54, 0.1); }
+.equip-slot-label { font-size: 0.8rem; color: #636E72; font-family: 'Fredoka', sans-serif; min-width: 50px; }
+.equip-slot-item { font-size: 1.3rem; }
+.equip-slot-name { font-family: 'Fredoka', sans-serif; font-size: 0.9rem; }
+.equip-slot-empty { color: #B2BEC3; font-style: italic; }
+
+.equip-inventory {
+  display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+  margin-top: 16px; padding: 12px;
+  background: #F0F0F5; border-radius: 12px;
+}
+.equip-inv-item {
+  width: 48px; height: 48px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; background: white; border-radius: 8px;
+  cursor: pointer; transition: all 0.2s; position: relative;
+  box-shadow: 0 1px 4px rgba(45, 52, 54, 0.1);
+}
+.equip-inv-item:hover { transform: scale(1.1); }
 </style>
 </head>
 <body>
@@ -1897,7 +1935,16 @@ function initMine() {
     mountain.appendChild(rowEl);
   });
 
-  area.appendChild(mountain);
+  const mineLayout = document.createElement('div');
+  mineLayout.style.cssText = 'display:flex;align-items:flex-start;justify-content:center;gap:12px;';
+  mineLayout.appendChild(mountain);
+
+  const charSide = document.createElement('div');
+  charSide.id = 'mineCharacter';
+  renderCharacter(charSide, 'small');
+  mineLayout.appendChild(charSide);
+
+  area.appendChild(mineLayout);
 
   // Result
   const result = document.createElement('div');
@@ -2030,6 +2077,36 @@ function updateMineRefreshBtn() {
 // ===== COLLECTION =====
 let collectionView = 'encyclopedia';
 
+function renderCharacter(container, size) {
+  container.textContent = '';
+  const display = document.createElement('div');
+  display.className = 'character-display' + (size === 'small' ? ' small' : '');
+
+  const getEmoji = (slot, fallback) => {
+    if (!equipped[slot]) return fallback;
+    const b = blocks.find(x => x.id === equipped[slot]);
+    return b ? b.emoji : fallback;
+  };
+
+  const rows = [getEmoji('helmet', '😊'), getEmoji('chest', '👕'), getEmoji('legs', '👖'), getEmoji('boots', '👟')];
+  rows.forEach(emoji => {
+    const row = document.createElement('div');
+    row.className = 'character-row';
+    row.textContent = emoji;
+    display.appendChild(row);
+  });
+
+  const pick = pickaxes[getEffectivePickaxeLevel()];
+  const toolRow = document.createElement('div');
+  toolRow.className = 'character-row';
+  toolRow.style.fontSize = size === 'small' ? '0.8rem' : '1.2rem';
+  toolRow.style.marginTop = '4px';
+  toolRow.textContent = pick.emoji;
+  display.appendChild(toolRow);
+
+  container.appendChild(display);
+}
+
 function initCollection() {
   const area = document.getElementById('collectionArea');
   area.textContent = '';
@@ -2037,8 +2114,8 @@ function initCollection() {
   // Sub-tabs
   const tabs = document.createElement('div');
   tabs.className = 'collection-tabs';
-  ['encyclopedia', 'craft', 'house'].forEach(view => {
-    const labels = { encyclopedia: '📖 圖鑑', craft: '🔨 合成', house: '🏠 蓋房子' };
+  ['encyclopedia', 'craft', 'house', 'equip'].forEach(view => {
+    const labels = { encyclopedia: '📖 圖鑑', craft: '🔨 合成', house: '🏠 蓋房子', equip: '👤 裝備' };
     const btn = document.createElement('button');
     btn.className = 'collection-tab' + (collectionView === view ? ' active' : '');
     btn.textContent = labels[view];
@@ -2053,7 +2130,8 @@ function initCollection() {
 
   if (collectionView === 'encyclopedia') renderEncyclopedia(content);
   else if (collectionView === 'craft') renderCraft(content);
-  else renderHouse(content);
+  else if (collectionView === 'house') renderHouse(content);
+  else if (collectionView === 'equip') renderEquipment(content);
 }
 
 function renderEncyclopedia(c) {
@@ -2542,6 +2620,115 @@ function renderHouse(c) {
   });
   houseArea.appendChild(stagesEl);
   c.appendChild(houseArea);
+}
+
+function renderEquipment(c) {
+  const area = document.createElement('div');
+  area.className = 'equip-area';
+
+  const charContainer = document.createElement('div');
+  renderCharacter(charContainer, 'large');
+  area.appendChild(charContainer);
+
+  const slotsEl = document.createElement('div');
+  slotsEl.className = 'equip-slots';
+  const slotLabels = { helmet: '🪖 頭盔', chest: '🦺 盔甲', legs: '👖 褲子', boots: '👢 鞋子' };
+
+  armorSlots.forEach(slot => {
+    const slotEl = document.createElement('div');
+    slotEl.className = 'equip-slot';
+
+    const label = document.createElement('div');
+    label.className = 'equip-slot-label';
+    label.textContent = slotLabels[slot];
+    slotEl.appendChild(label);
+
+    const itemEl = document.createElement('div');
+    itemEl.className = 'equip-slot-item';
+
+    if (equipped[slot]) {
+      const b = blocks.find(x => x.id === equipped[slot]);
+      itemEl.textContent = b ? b.emoji : '';
+      const nameEl = document.createElement('div');
+      nameEl.className = 'equip-slot-name';
+      nameEl.textContent = b ? b.name : '';
+      slotEl.appendChild(itemEl);
+      slotEl.appendChild(nameEl);
+      slotEl.addEventListener('click', () => {
+        addBlock(equipped[slot]);
+        equipped[slot] = null;
+        saveGame();
+        initCollection();
+      });
+    } else {
+      itemEl.textContent = '—';
+      const nameEl = document.createElement('div');
+      nameEl.className = 'equip-slot-name equip-slot-empty';
+      nameEl.textContent = '空';
+      slotEl.appendChild(itemEl);
+      slotEl.appendChild(nameEl);
+      slotEl.addEventListener('click', () => {
+        const available = blocks.filter(b => b.id.includes('_' + slot) && getBlockCount(b.id) > 0);
+        if (available.length === 0) return;
+        const best = available[available.length - 1];
+        inventory[best.id] = (inventory[best.id] || 1) - 1;
+        if (inventory[best.id] <= 0) delete inventory[best.id];
+        equipped[slot] = best.id;
+        saveGame();
+        initCollection();
+      });
+    }
+
+    slotsEl.appendChild(slotEl);
+  });
+  area.appendChild(slotsEl);
+
+  const invTitle = document.createElement('div');
+  invTitle.style.cssText = 'text-align:center;margin-top:16px;font-family:Fredoka,sans-serif;font-size:0.9rem;color:#636E72;';
+  invTitle.textContent = '📦 背包中的裝備（點擊穿上）';
+  area.appendChild(invTitle);
+
+  const invGrid = document.createElement('div');
+  invGrid.className = 'equip-inventory';
+  let hasEquipment = false;
+
+  blocks.forEach(b => {
+    if (!b.id.includes('_helmet') && !b.id.includes('_chest') && !b.id.includes('_legs') && !b.id.includes('_boots')) return;
+    const count = getBlockCount(b.id);
+    if (count <= 0) return;
+    hasEquipment = true;
+
+    const item = document.createElement('div');
+    item.className = 'equip-inv-item';
+    item.textContent = b.emoji;
+    item.title = b.name;
+
+    const countEl = document.createElement('span');
+    countEl.className = 'inv-count';
+    countEl.textContent = count;
+    item.appendChild(countEl);
+
+    const slot = b.id.includes('_helmet') ? 'helmet' : b.id.includes('_chest') ? 'chest' : b.id.includes('_legs') ? 'legs' : 'boots';
+    item.addEventListener('click', () => {
+      if (equipped[slot]) addBlock(equipped[slot]);
+      inventory[b.id] = (inventory[b.id] || 1) - 1;
+      if (inventory[b.id] <= 0) delete inventory[b.id];
+      equipped[slot] = b.id;
+      saveGame();
+      initCollection();
+    });
+
+    invGrid.appendChild(item);
+  });
+
+  if (!hasEquipment) {
+    const emptyMsg = document.createElement('div');
+    emptyMsg.style.cssText = 'color:#B2BEC3;font-size:0.85rem;padding:8px;';
+    emptyMsg.textContent = '還沒有裝備，去合成一些吧！';
+    invGrid.appendChild(emptyMsg);
+  }
+  area.appendChild(invGrid);
+  c.appendChild(area);
 }
 
 // ===== INIT =====
