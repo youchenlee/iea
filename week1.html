@@ -1129,7 +1129,7 @@ const isCheat = new URLSearchParams(window.location.search).get('cheat') === '1'
 const feelings = [
   { word: 'happy',   zh: '開心的', emoji: '😊', color: '#FFD93D' },
   { word: 'sad',     zh: '難過的', emoji: '😢', color: '#74B9FF' },
-  { word: 'angry',   zh: '生氣的', emoji: '😠', color: '#FF6B6B' },
+  { word: 'angry',   zh: '憤怒的', emoji: '😠', color: '#FF6B6B' },
   { word: 'excited', zh: '興奮的', emoji: '🤩', color: '#FF85CA' },
   { word: 'silly',   zh: '可笑的', emoji: '🤪', color: '#A29BFE' },
   { word: 'tired',   zh: '累的',   emoji: '😴', color: '#B2BEC3' },
@@ -3271,9 +3271,16 @@ function openToolPicker(chipEl, type) {
   const rect = chipEl.getBoundingClientRect();
   picker.style.position = 'fixed';
   picker.style.left = rect.left + rect.width / 2 + 'px';
-  picker.style.top = rect.bottom + 6 + 'px';
   picker.style.transform = 'translateX(-50%)';
   appEl.appendChild(picker);
+
+  // Flip upward if picker overflows the viewport bottom
+  const pickerRect = picker.getBoundingClientRect();
+  if (rect.bottom + 6 + pickerRect.height > window.innerHeight) {
+    picker.style.top = (rect.top - pickerRect.height - 6) + 'px';
+  } else {
+    picker.style.top = rect.bottom + 6 + 'px';
+  }
 }
 
 function closeToolPicker() {
