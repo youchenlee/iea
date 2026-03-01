@@ -996,7 +996,7 @@ body::before {
 
 <div class="app">
   <div class="header">
-    <h1>Feelings Fun! 🎭 <span style="font-size:0.45em;font-weight:400;color:#636E72;vertical-align:middle;">Week 1 · v3.3.0</span></h1>
+    <h1>Feelings Fun! 🎭 <span style="font-size:0.45em;font-weight:400;color:#636E72;vertical-align:middle;">Week 1 · v3.4.0</span></h1>
     <div class="score-bar">
       <div class="score-item" id="starBar"><span>⭐</span> <span id="stars">0</span></div>
       <div class="score-item" id="streakBar"><span>🔥</span> <span id="streak">0</span></div>
@@ -1113,7 +1113,7 @@ body::before {
       </div>
     </div>
     <div id="engineStatus" style="text-align:center;font-size:0.8rem;color:#B2BEC3;margin-top:12px;font-family:'Nunito',sans-serif;">🔍 偵測中...</div>
-    <div style="text-align:center;font-size:0.7rem;color:#B2BEC3;margin-top:8px;font-family:'Nunito',sans-serif;">v3.3.0</div>
+    <div style="text-align:center;font-size:0.7rem;color:#B2BEC3;margin-top:8px;font-family:'Nunito',sans-serif;">v3.4.0</div>
   </div>
 </div>
 
@@ -2990,6 +2990,7 @@ function attackAnimal(cellData) {
   if (brokeName) refreshToolChips();
   updateExposure();
   updateMineRefreshBtn();
+  refreshBuildPalette();
   saveGame();
 }
 
@@ -3022,6 +3023,7 @@ function chopTree(cellData) {
   updateExposure();
   applyAnimalGravity();
   updateMineRefreshBtn();
+  refreshBuildPalette();
   saveGame();
 }
 
@@ -3072,6 +3074,7 @@ function mineMountainCell(row, col, cellData) {
   updateExposure();
   applyAnimalGravity();
   updateMineRefreshBtn();
+  refreshBuildPalette();
   saveGame();
 }
 
