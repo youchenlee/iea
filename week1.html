@@ -271,6 +271,56 @@ body::before {
   font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; font-style: italic;
 }
 
+/* ===== READ (Sentence Reading) ===== */
+.read-header { text-align: center; margin-bottom: 16px; }
+.read-header h3 { font-family: var(--font-display); font-size: 1.3rem; color: var(--text); }
+.read-header p { font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px; }
+.read-progress-bar { width: 100%; height: 8px; background: var(--surface); border-radius: 4px; margin-top: 8px; overflow: hidden; }
+.read-progress-fill { height: 100%; background: linear-gradient(90deg, var(--success), #55EFC4); border-radius: 4px; transition: width 0.4s ease; }
+.sentence-cards { display: flex; flex-direction: column; gap: 14px; }
+.sentence-card {
+  background: var(--card-bg); border-radius: var(--radius); padding: 18px 16px;
+  box-shadow: var(--shadow-md); cursor: pointer; position: relative;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border-left: 5px solid var(--border);
+}
+.sentence-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+.sentence-card:active { transform: scale(0.98); }
+.sentence-card.speaking { border-left-color: var(--accent); animation: speakRing 0.6s ease; }
+.sentence-card.done { border-left-color: var(--success); }
+.sentence-card .sc-number {
+  font-family: var(--font-display); font-size: 0.8rem; font-weight: 700;
+  color: var(--text-muted); margin-bottom: 6px;
+}
+.sentence-card .sc-en {
+  font-family: var(--font-display); font-size: 1.1rem; font-weight: 600;
+  color: var(--text); line-height: 1.5;
+}
+.sentence-card .sc-zh {
+  font-size: 0.85rem; color: var(--text-secondary); margin-top: 6px;
+}
+.sentence-card .sc-bottom {
+  display: flex; align-items: center; justify-content: space-between; margin-top: 10px;
+}
+.sentence-card .sc-count {
+  font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-body);
+}
+.sentence-card .sc-dots { display: flex; gap: 6px; }
+.sentence-card .sc-dot {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--surface); border: 2px solid var(--border); transition: all 0.3s;
+}
+.sentence-card .sc-dot.filled { background: var(--success); border-color: var(--success); }
+.sentence-card .sc-listen-btn {
+  padding: 6px 14px; border-radius: var(--radius-pill); border: 2px solid var(--accent);
+  background: transparent; color: var(--accent-dark); font-family: var(--font-display);
+  font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+}
+.sentence-card .sc-listen-btn:hover { background: var(--accent); color: white; }
+@media (max-width: 600px) {
+  .sentence-card .sc-en { font-size: 1rem; }
+}
+
 .btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 .speak-btn {
   padding: 12px 28px;
@@ -1018,6 +1068,7 @@ body::before {
 <nav class="bottom-nav">
   <div class="bottom-nav-inner">
     <button class="nav-tab active" data-tab="learn"><span class="nav-icon">📖</span><span class="nav-label">Learn</span></button>
+    <button class="nav-tab" data-tab="read"><span class="nav-icon">📗</span><span class="nav-label">Read</span></button>
     <button class="nav-tab" data-tab="sight"><span class="nav-icon">👀</span><span class="nav-label">Sight</span><span class="stamina-hint">⚡</span></button>
     <button class="nav-tab" data-tab="match"><span class="nav-icon">🎯</span><span class="nav-label">Match</span><span class="stamina-hint">⚡</span></button>
     <button class="nav-tab" data-tab="quiz"><span class="nav-icon">🧠</span><span class="nav-label">Quiz</span><span class="stamina-hint">⚡</span></button>
@@ -1046,6 +1097,15 @@ body::before {
     </div>
     <h3 class="learn-section-title" style="margin-top:24px;">📖 Sight Words 常見字</h3>
     <div class="sight-learn-grid" id="sightLearnGrid"></div>
+  </div>
+
+  <div id="read" class="section">
+    <div class="read-header">
+      <h3>📗 Sentence Reading 朗讀練習</h3>
+      <p>點句子聽發音，每句唸 3 次就過關！</p>
+      <div class="read-progress-bar"><div class="read-progress-fill" id="readProgressFill" style="width:0%"></div></div>
+    </div>
+    <div class="sentence-cards" id="sentenceCards"></div>
   </div>
 
   <div id="match" class="section">
@@ -1161,6 +1221,19 @@ const sightWords = [
   { word: 'years',  zh: '年', sentence: 'I am six years old.' },
 ];
 const sightColors = ['#FF6B6B','#A29BFE','#FFD93D','#00B894','#FF85CA','#74B9FF','#E17055'];
+
+// ===== SENTENCE READING DATA =====
+const sentences = [
+  { en: 'My teacher tells us interesting stories every day.', zh: '我的老師每天都會跟我們分享有趣的故事。' },
+  { en: 'I get very excited.', zh: '我總是感到非常興奮。' },
+  { en: 'My friends think they are so silly.', zh: '只是我的朋友們覺得那些故事有些可笑。' },
+  { en: 'One story was about a duck with a dress that lays eggs behind a door because she is very scared of the angry goat in the barn.', zh: '有個故事是關於一隻穿著裙子的鴨子。因為穀倉裡有隻愛生氣的山羊，鴨子很怕那隻山羊，因此鴨子只能躲在門後面下蛋。' },
+  { en: 'I feel very sad for the duck.', zh: '我為那隻鴨子感到難過。' },
+  { en: 'Joe loves the story about the brave bear that got lost in the forest.', zh: '我的朋友Joe喜歡的故事是關於一隻在森林中迷路但卻非常勇敢的熊。' },
+  { en: 'He is so proud of the bear for never getting scared and helping other sick animals on his way.', zh: '那一隻熊不曾感到害怕而且一路上幫助其他生病的動物，他為那隻熊感到驕傲。' },
+];
+let sentenceReadCount = new Array(sentences.length).fill(0);
+const SENTENCE_GOAL = 3;
 
 // ===== MINING DATA =====
 const blocks = [
@@ -1569,7 +1642,7 @@ function serializeMineData() {
 }
 
 function saveGame() {
-  localStorage.setItem('mineGame', JSON.stringify({ gems, inventory, buildGrid, buildPlayerPos, stars, streak, craftGrid, toolDurability, discovered: [...discovered], equipped, selectedTools, sightEarned: [...sightEarned], _houseMigrated: true, mineGrid: serializeMineData() }));
+  localStorage.setItem('mineGame', JSON.stringify({ gems, inventory, buildGrid, buildPlayerPos, stars, streak, craftGrid, toolDurability, discovered: [...discovered], equipped, selectedTools, sightEarned: [...sightEarned], _houseMigrated: true, mineGrid: serializeMineData(), sentenceReadCount }));
 }
 
 function loadGame() {
@@ -1614,6 +1687,7 @@ function loadGame() {
     }
     if (d.craftGrid) craftGrid = d.craftGrid;
     if (d.sightEarned) sightEarned = new Set(d.sightEarned);
+    if (d.sentenceReadCount) sentenceReadCount = d.sentenceReadCount;
     stars = d.stars || 0;
     streak = d.streak || 0;
     document.getElementById('stars').textContent = Math.floor(stars);
@@ -2082,6 +2156,7 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
     document.getElementById(tab.dataset.tab).classList.add('active');
     if (tab.dataset.tab === 'match') { if (!document.querySelector('#matchWords .match-item') || matchedPairs.size >= 6) initMatch(); }
     if (tab.dataset.tab === 'quiz') { if (quizIndex === 0 || quizIndex >= quizQuestions.length) initQuiz(); }
+    if (tab.dataset.tab === 'read') { if (!document.getElementById('sentenceCards').children.length) initRead(); }
     if (tab.dataset.tab === 'sight') { if (!document.getElementById('sightWordsArea').children.length) initSightWords(); }
     if (tab.dataset.tab === 'mine') { if (!mineData.length) initMine(); else refreshMineHeader(); }
     if (tab.dataset.tab === 'craft') initCraftTab();
@@ -2147,6 +2222,98 @@ function initLearn() {
     });
     slGrid.appendChild(card);
   });
+}
+
+// ===== READ (Sentence Reading) =====
+function createEl(tag, className, textContent) {
+  const el = document.createElement(tag);
+  if (className) el.className = className;
+  if (textContent) el.textContent = textContent;
+  return el;
+}
+
+function initRead() {
+  const container = document.getElementById('sentenceCards');
+  container.textContent = '';
+  sentences.forEach((s, i) => {
+    const card = buildSentenceCard(s, i);
+    container.appendChild(card);
+  });
+  updateReadProgress();
+}
+
+function buildSentenceCard(s, i) {
+  const count = sentenceReadCount[i];
+  const done = count >= SENTENCE_GOAL;
+  const card = createEl('div', 'sentence-card' + (done ? ' done' : ''));
+  card.id = `sc-${i}`;
+
+  card.appendChild(createEl('div', 'sc-number', `#${i + 1}`));
+  card.appendChild(createEl('div', 'sc-en', s.en));
+  card.appendChild(createEl('div', 'sc-zh', s.zh));
+
+  const bottom = createEl('div', 'sc-bottom');
+  const dots = createEl('div', 'sc-dots');
+  for (let d = 0; d < SENTENCE_GOAL; d++) {
+    dots.appendChild(createEl('div', 'sc-dot' + (d < count ? ' filled' : '')));
+  }
+  bottom.appendChild(dots);
+
+  const listenBtn = createEl('button', 'sc-listen-btn', '🔊 Listen');
+  listenBtn.addEventListener('click', (e) => { e.stopPropagation(); listenSentence(i); });
+  bottom.appendChild(listenBtn);
+
+  bottom.appendChild(createEl('div', 'sc-count', done ? '✅' : `${count}/${SENTENCE_GOAL}`));
+  card.appendChild(bottom);
+
+  card.addEventListener('click', () => readSentence(i));
+  return card;
+}
+
+function refreshSentenceCard(i) {
+  const old = document.getElementById(`sc-${i}`);
+  if (!old) return;
+  const fresh = buildSentenceCard(sentences[i], i);
+  old.replaceWith(fresh);
+}
+
+function listenSentence(i) {
+  const card = document.getElementById(`sc-${i}`);
+  card.classList.add('speaking');
+  setTimeout(() => card.classList.remove('speaking'), 1200);
+  speak(sentences[i].en, 'slow');
+}
+
+function readSentence(i) {
+  const card = document.getElementById(`sc-${i}`);
+  card.classList.add('speaking');
+  setTimeout(() => card.classList.remove('speaking'), 1200);
+  const u = speak(sentences[i].en);
+  let incremented = false;
+  const increment = () => {
+    if (incremented) return;
+    incremented = true;
+    if (sentenceReadCount[i] < SENTENCE_GOAL) {
+      sentenceReadCount[i]++;
+      refreshSentenceCard(i);
+      if (sentenceReadCount[i] >= SENTENCE_GOAL) addGems(2);
+      updateReadProgress();
+      saveGame();
+    }
+  };
+  if (u && u.addEventListener) {
+    u.addEventListener('end', increment);
+    setTimeout(increment, 15000);
+  } else {
+    increment();
+  }
+}
+
+function updateReadProgress() {
+  const done = sentenceReadCount.filter(c => c >= SENTENCE_GOAL).length;
+  const pct = Math.round((done / sentences.length) * 100);
+  const fill = document.getElementById('readProgressFill');
+  if (fill) fill.style.width = pct + '%';
 }
 
 function selectFeeling(word) {
