@@ -1680,7 +1680,7 @@ function serializeMineData() {
 }
 
 function saveGame() {
-  localStorage.setItem('mineGame', JSON.stringify({ gems, inventory, buildGrid, buildPlayerPos, stars, streak, craftGrid, toolDurability, discovered: [...discovered], equipped, selectedTools, sightEarned: [...sightEarned], _houseMigrated: true, mineGrid: serializeMineData(), sentenceReadCount, dialogueReadCount }));
+  localStorage.setItem('mineGame', JSON.stringify({ gems, inventory, buildGrid, buildPlayerPos, stars, streak, craftGrid, toolDurability, discovered: [...discovered], equipped, selectedTools, sightEarned: [...sightEarned], _houseMigrated: true, mineGrid: serializeMineData(), sentenceReadCount, dialogueReadCount, speechSpeed }));
 }
 
 function loadGame() {
@@ -1733,6 +1733,12 @@ function loadGame() {
     if (d.dialogueReadCount) {
       dialogueReadCount = d.dialogueReadCount;
       while (dialogueReadCount.length < dialogues.length) dialogueReadCount.push(0);
+    }
+    if (d.speechSpeed) {
+      speechSpeed = d.speechSpeed;
+      document.querySelectorAll('.speed-btn[data-speed]').forEach(b => {
+        b.classList.toggle('active', b.dataset.speed === speechSpeed);
+      });
     }
     stars = d.stars || 0;
     streak = d.streak || 0;
@@ -1905,6 +1911,7 @@ document.querySelectorAll('.speed-btn[data-speed]').forEach(btn => {
     document.querySelectorAll('.speed-btn[data-speed]').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     speechSpeed = btn.dataset.speed;
+    saveGame();
   });
 });
 
