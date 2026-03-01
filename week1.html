@@ -275,6 +275,23 @@ body::before {
 .read-header { text-align: center; margin-bottom: 16px; }
 .read-header h3 { font-family: var(--font-display); font-size: 1.3rem; color: var(--text); }
 .read-header p { font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px; }
+.read-unit-toggle { display: flex; gap: 8px; justify-content: center; margin: 10px 0 6px; }
+.read-unit-btn {
+  padding: 7px 16px; border-radius: var(--radius-pill); border: 2px solid var(--border);
+  background: var(--surface); color: var(--text-secondary); font-family: var(--font-display);
+  font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+}
+.read-unit-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+.sc-qa { display: flex; flex-direction: column; gap: 6px; }
+.sc-qa-row { display: flex; gap: 8px; align-items: flex-start; }
+.sc-qa-label {
+  font-family: var(--font-display); font-size: 0.7rem; font-weight: 700;
+  padding: 2px 7px; border-radius: 8px; flex-shrink: 0; margin-top: 2px;
+}
+.sc-qa-label.q { background: #74B9FF33; color: #0984e3; }
+.sc-qa-label.a { background: #00B89433; color: #00b894; }
+.sc-qa-text { font-family: var(--font-display); font-size: 1rem; font-weight: 600; color: var(--text); line-height: 1.4; }
+.sc-qa-zh { font-size: 0.78rem; color: var(--text-secondary); margin-top: 1px; padding-left: 36px; }
 .read-progress-bar { width: 100%; height: 8px; background: var(--surface); border-radius: 4px; margin-top: 8px; overflow: hidden; }
 .read-progress-fill { height: 100%; background: linear-gradient(90deg, var(--success), #55EFC4); border-radius: 4px; transition: width 0.4s ease; }
 .sentence-cards { display: flex; flex-direction: column; gap: 14px; }
@@ -1102,7 +1119,11 @@ body::before {
   <div id="read" class="section">
     <div class="read-header">
       <h3>📗 Sentence Reading 朗讀練習</h3>
-      <p>點句子聽發音，每句唸 3 次就過關！</p>
+      <p>點卡片朗讀，每句唸 3 次就過關！</p>
+      <div class="read-unit-toggle">
+        <button class="read-unit-btn active" data-unit="sentences">📖 Unit 1 Sentences</button>
+        <button class="read-unit-btn" data-unit="dialogues">💬 Q&amp;A Dialogues</button>
+      </div>
       <div class="read-progress-bar"><div class="read-progress-fill" id="readProgressFill" style="width:0%"></div></div>
     </div>
     <div class="sentence-cards" id="sentenceCards"></div>
@@ -1234,6 +1255,19 @@ const sentences = [
 ];
 let sentenceReadCount = new Array(sentences.length).fill(0);
 const SENTENCE_GOAL = 3;
+
+const dialogues = [
+  { q: 'What are those?', qzh: '那些是什麼？', a: 'They are my mom\'s shoes.', azh: '它們是我媽媽的鞋子。' },
+  { q: 'Are these your pants?', qzh: '這是你的長褲嗎？', a: 'Yes, they are.', azh: '是，它們是。' },
+  { q: 'Are those her books?', qzh: '那些是她的書嗎？', a: 'No, they aren\'t. They are mine.', azh: '不，不是。它們是我的。' },
+  { q: 'What color do you like?', qzh: '你喜歡什麼顏色？', a: 'I like blue.', azh: '我喜歡藍色。' },
+  { q: 'What color does your mom like?', qzh: '你媽媽喜歡什麼顏色？', a: 'She likes pink.', azh: '她喜歡粉紅色。' },
+  { q: 'Do you like carrots?', qzh: '你喜歡胡蘿蔔嗎？', a: 'Yes, I do. But my sister doesn\'t.', azh: '是，我喜歡。但我妹妹不喜歡。' },
+  { q: 'What can she do?', qzh: '她會做什麼？', a: 'She can ride horses.', azh: '她會騎馬。' },
+  { q: 'Can your dad speak English?', qzh: '你爸爸會說英文嗎？', a: 'No, he can\'t. But he can speak Japanese.', azh: '不，他不會。但是他會說日文。' },
+  { q: 'Can monkeys climb trees?', qzh: '猴子能爬樹嗎？', a: 'Yes, they can.', azh: '會，牠們會。' },
+];
+let dialogueReadCount = new Array(dialogues.length).fill(0);
 
 // ===== MINING DATA =====
 const blocks = [
@@ -1642,7 +1676,7 @@ function serializeMineData() {
 }
 
 function saveGame() {
-  localStorage.setItem('mineGame', JSON.stringify({ gems, inventory, buildGrid, buildPlayerPos, stars, streak, craftGrid, toolDurability, discovered: [...discovered], equipped, selectedTools, sightEarned: [...sightEarned], _houseMigrated: true, mineGrid: serializeMineData(), sentenceReadCount }));
+  localStorage.setItem('mineGame', JSON.stringify({ gems, inventory, buildGrid, buildPlayerPos, stars, streak, craftGrid, toolDurability, discovered: [...discovered], equipped, selectedTools, sightEarned: [...sightEarned], _houseMigrated: true, mineGrid: serializeMineData(), sentenceReadCount, dialogueReadCount }));
 }
 
 function loadGame() {
@@ -1688,6 +1722,7 @@ function loadGame() {
     if (d.craftGrid) craftGrid = d.craftGrid;
     if (d.sightEarned) sightEarned = new Set(d.sightEarned);
     if (d.sentenceReadCount) sentenceReadCount = d.sentenceReadCount;
+    if (d.dialogueReadCount) dialogueReadCount = d.dialogueReadCount;
     stars = d.stars || 0;
     streak = d.streak || 0;
     document.getElementById('stars').textContent = Math.floor(stars);
@@ -2224,7 +2259,7 @@ function initLearn() {
   });
 }
 
-// ===== READ (Sentence Reading) =====
+// ===== READ (Sentence Reading + Dialogues) =====
 function createEl(tag, className, textContent) {
   const el = document.createElement(tag);
   if (className) el.className = className;
@@ -2232,86 +2267,133 @@ function createEl(tag, className, textContent) {
   return el;
 }
 
+let currentReadUnit = 'sentences';
+
 function initRead() {
+  // Unit toggle listeners (only bind once)
+  document.querySelectorAll('.read-unit-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.read-unit-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentReadUnit = btn.dataset.unit;
+      renderReadCards();
+    });
+  });
+  renderReadCards();
+}
+
+function renderReadCards() {
   const container = document.getElementById('sentenceCards');
   container.textContent = '';
-  sentences.forEach((s, i) => {
-    const card = buildSentenceCard(s, i);
-    container.appendChild(card);
-  });
+  if (currentReadUnit === 'sentences') {
+    sentences.forEach((s, i) => container.appendChild(buildSentenceCard(s, i)));
+  } else {
+    dialogues.forEach((d, i) => container.appendChild(buildDialogueCard(d, i)));
+  }
   updateReadProgress();
 }
 
-function buildSentenceCard(s, i) {
-  const count = sentenceReadCount[i];
-  const done = count >= SENTENCE_GOAL;
+function buildCardShell(id, done) {
   const card = createEl('div', 'sentence-card' + (done ? ' done' : ''));
-  card.id = `sc-${i}`;
+  card.id = id;
+  return card;
+}
 
-  card.appendChild(createEl('div', 'sc-number', `#${i + 1}`));
-  card.appendChild(createEl('div', 'sc-en', s.en));
-  card.appendChild(createEl('div', 'sc-zh', s.zh));
-
+function buildCardBottom(count, listenFn, readFn) {
   const bottom = createEl('div', 'sc-bottom');
   const dots = createEl('div', 'sc-dots');
   for (let d = 0; d < SENTENCE_GOAL; d++) {
     dots.appendChild(createEl('div', 'sc-dot' + (d < count ? ' filled' : '')));
   }
   bottom.appendChild(dots);
-
   const listenBtn = createEl('button', 'sc-listen-btn', '🔊 Listen');
-  listenBtn.addEventListener('click', (e) => { e.stopPropagation(); listenSentence(i); });
+  listenBtn.addEventListener('click', (e) => { e.stopPropagation(); listenFn(); });
   bottom.appendChild(listenBtn);
+  bottom.appendChild(createEl('div', 'sc-count', count >= SENTENCE_GOAL ? '✅' : `${count}/${SENTENCE_GOAL}`));
+  return bottom;
+}
 
-  bottom.appendChild(createEl('div', 'sc-count', done ? '✅' : `${count}/${SENTENCE_GOAL}`));
-  card.appendChild(bottom);
-
-  card.addEventListener('click', () => readSentence(i));
+function buildSentenceCard(s, i) {
+  const count = sentenceReadCount[i];
+  const card = buildCardShell(`sc-${i}`, count >= SENTENCE_GOAL);
+  card.appendChild(createEl('div', 'sc-number', `#${i + 1}`));
+  card.appendChild(createEl('div', 'sc-en', s.en));
+  card.appendChild(createEl('div', 'sc-zh', s.zh));
+  card.appendChild(buildCardBottom(count,
+    () => { card.classList.add('speaking'); setTimeout(() => card.classList.remove('speaking'), 1200); speak(s.en, 'slow'); },
+    () => trackRead('sentences', i, card)
+  ));
+  card.addEventListener('click', () => trackRead('sentences', i, card));
   return card;
 }
 
-function refreshSentenceCard(i) {
-  const old = document.getElementById(`sc-${i}`);
-  if (!old) return;
-  const fresh = buildSentenceCard(sentences[i], i);
-  old.replaceWith(fresh);
+function buildDialogueCard(d, i) {
+  const count = dialogueReadCount[i];
+  const card = buildCardShell(`dc-${i}`, count >= SENTENCE_GOAL);
+  card.appendChild(createEl('div', 'sc-number', `#${i + 1}`));
+
+  const qa = createEl('div', 'sc-qa');
+  const qRow = createEl('div', 'sc-qa-row');
+  qRow.appendChild(createEl('span', 'sc-qa-label q', 'Q'));
+  qRow.appendChild(createEl('span', 'sc-qa-text', d.q));
+  qa.appendChild(qRow);
+  qa.appendChild(createEl('div', 'sc-qa-zh', d.qzh));
+  const aRow = createEl('div', 'sc-qa-row');
+  aRow.appendChild(createEl('span', 'sc-qa-label a', 'A'));
+  aRow.appendChild(createEl('span', 'sc-qa-text', d.a));
+  qa.appendChild(aRow);
+  qa.appendChild(createEl('div', 'sc-qa-zh', d.azh));
+  card.appendChild(qa);
+
+  card.appendChild(buildCardBottom(count,
+    () => {
+      card.classList.add('speaking');
+      const synth = window.speechSynthesis;
+      if (synth) {
+        synth.cancel();
+        const uq = new SpeechSynthesisUtterance(d.q); uq.lang = 'en-US'; uq.rate = 0.65;
+        const ua = new SpeechSynthesisUtterance(d.a); ua.lang = 'en-US'; ua.rate = 0.65;
+        uq.onend = () => setTimeout(() => { synth.speak(ua); }, 600);
+        ua.onend = () => card.classList.remove('speaking');
+        synth.speak(uq);
+      }
+    },
+    () => trackRead('dialogues', i, card)
+  ));
+  card.addEventListener('click', () => trackRead('dialogues', i, card));
+  return card;
 }
 
-function listenSentence(i) {
-  const card = document.getElementById(`sc-${i}`);
+function trackRead(unit, i, card) {
+  const counts = unit === 'sentences' ? sentenceReadCount : dialogueReadCount;
+  const data = unit === 'sentences' ? sentences[i] : dialogues[i];
   card.classList.add('speaking');
-  setTimeout(() => card.classList.remove('speaking'), 1200);
-  speak(sentences[i].en, 'slow');
-}
-
-function readSentence(i) {
-  const card = document.getElementById(`sc-${i}`);
-  card.classList.add('speaking');
-  setTimeout(() => card.classList.remove('speaking'), 1200);
-  const u = speak(sentences[i].en);
+  const text = unit === 'sentences' ? data.en : (data.q + ' ' + data.a);
+  const u = speak(text);
   let incremented = false;
   const increment = () => {
     if (incremented) return;
     incremented = true;
-    if (sentenceReadCount[i] < SENTENCE_GOAL) {
-      sentenceReadCount[i]++;
-      refreshSentenceCard(i);
-      if (sentenceReadCount[i] >= SENTENCE_GOAL) addGems(2);
+    card.classList.remove('speaking');
+    if (counts[i] < SENTENCE_GOAL) {
+      counts[i]++;
+      // Rebuild the card in place
+      const fresh = unit === 'sentences' ? buildSentenceCard(data, i) : buildDialogueCard(data, i);
+      card.replaceWith(fresh);
+      if (counts[i] >= SENTENCE_GOAL) addGems(2);
       updateReadProgress();
       saveGame();
     }
   };
-  if (u && u.addEventListener) {
-    u.addEventListener('end', increment);
-    setTimeout(increment, 15000);
-  } else {
-    increment();
-  }
+  if (u && u.addEventListener) { u.addEventListener('end', increment); setTimeout(increment, 15000); }
+  else { increment(); }
 }
 
 function updateReadProgress() {
-  const done = sentenceReadCount.filter(c => c >= SENTENCE_GOAL).length;
-  const pct = Math.round((done / sentences.length) * 100);
+  const counts = currentReadUnit === 'sentences' ? sentenceReadCount : dialogueReadCount;
+  const total = currentReadUnit === 'sentences' ? sentences.length : dialogues.length;
+  const done = counts.filter(c => c >= SENTENCE_GOAL).length;
+  const pct = Math.round((done / total) * 100);
   const fill = document.getElementById('readProgressFill');
   if (fill) fill.style.width = pct + '%';
 }
