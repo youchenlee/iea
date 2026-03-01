@@ -42,7 +42,6 @@ body {
   font-family: var(--font-body);
   background: var(--bg);
   min-height: 100vh;
-  overflow-x: hidden;
 }
 
 body::before {
@@ -57,7 +56,7 @@ body::before {
   z-index: 0;
 }
 
-.app { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 16px; padding-top: 40px; min-height: 100vh; display: flex; flex-direction: column; }
+.app { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 16px; padding-top: 40px; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
 
 .header {
   position: fixed; top: 0; left: 0; right: 0; z-index: 50;
@@ -113,6 +112,7 @@ body::before {
   box-shadow: 0 2px 10px rgba(0,0,0,0.12);
   display: flex; align-items: center; gap: 4px;
   transition: transform 0.3s, top 0.25s;
+  -webkit-transform: translateZ(0); transform: translateZ(0);
 }
 .gem-float.pop { animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 
@@ -1007,7 +1007,7 @@ body::before {
 <body>
 
 <div class="header" id="appHeader">
-  <h1>Feelings Fun! 🎭 <span style="font-size:0.45em;font-weight:400;color:#636E72;vertical-align:middle;">Week 1 · v3.6.1</span></h1>
+  <h1>Feelings Fun! 🎭 <span style="font-size:0.45em;font-weight:400;color:#636E72;vertical-align:middle;">Week 1 · v3.6.2</span></h1>
   <div class="score-bar">
     <div class="score-item" id="starBar"><span>⭐</span> <span id="stars">0</span></div>
     <div class="score-item" id="streakBar"><span>🔥</span> <span id="streak">0</span></div>
@@ -1113,7 +1113,7 @@ body::before {
       </div>
     </div>
     <div id="engineStatus" style="text-align:center;font-size:0.8rem;color:#B2BEC3;margin-top:12px;font-family:'Nunito',sans-serif;">🔍 偵測中...</div>
-    <div style="text-align:center;font-size:0.7rem;color:#B2BEC3;margin-top:8px;font-family:'Nunito',sans-serif;">v3.6.1</div>
+    <div style="text-align:center;font-size:0.7rem;color:#B2BEC3;margin-top:8px;font-family:'Nunito',sans-serif;">v3.6.2</div>
   </div>
 </div>
 
