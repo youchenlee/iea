@@ -57,18 +57,21 @@ body::before {
   z-index: 0;
 }
 
-.app { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 16px; padding-top: 40px; min-height: 100vh; display: flex; flex-direction: column; }
+.app { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 16px; padding-top: 40px; min-height: 100vh; display: flex; flex-direction: column; }
 
 .header {
   position: fixed; top: 0; left: 0; right: 0; z-index: 50;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 8px 14px;
-  background: rgba(255,248,231,0.9);
-  backdrop-filter: blur(8px);
+  padding: 8px 14px; padding-right: 80px;
+  background: rgba(255,248,231,0.95);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  transition: transform 0.3s ease, box-shadow 0.3s;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.06);
 }
+.header.hidden { transform: translateY(-100%); }
 .header h1 {
   font-family: var(--font-display);
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 700;
   background: linear-gradient(135deg, #FF6B6B, #A29BFE, #E17055);
   -webkit-background-clip: text;
@@ -102,36 +105,45 @@ body::before {
   60% { transform: scale(0.95); }
   100% { transform: scale(1); }
 }
-
-.nav-groups { display: flex; gap: 6px; justify-content: center; margin: 16px 0; flex-wrap: wrap; }
-.nav-group {
+.gem-float {
+  position: fixed; top: 8px; right: 14px; z-index: 51;
+  background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  padding: 5px 12px; border-radius: 50px;
+  font-weight: 700; font-size: 0.8rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.12);
   display: flex; align-items: center; gap: 4px;
-  background: var(--surface); border-radius: 50px; padding: 4px;
+  transition: transform 0.3s, top 0.25s;
 }
-.nav-group-label {
-  font-size: 0.8rem; color: var(--text-secondary); font-family: var(--font-display);
-  font-weight: 600; padding: 0 6px; white-space: nowrap;
+.gem-float.pop { animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
+  background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(0,0,0,0.08);
+  display: flex; justify-content: center;
+  padding: 0 4px; padding-bottom: env(safe-area-inset-bottom, 0);
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
+}
+.bottom-nav-inner {
+  display: flex; width: 100%; max-width: 600px; justify-content: space-around;
 }
 .nav-tab {
-  padding: 8px 14px;
-  border-radius: 50px;
-  border: none;
-  background: transparent;
-  font-family: var(--font-display);
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
-  color: var(--text-secondary);
-  white-space: nowrap;
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+  padding: 6px 2px 4px; border: none; background: transparent;
+  font-family: var(--font-display); font-size: 0.6rem; font-weight: 600;
+  color: var(--text-secondary); cursor: pointer; transition: all 0.2s;
+  min-width: 0; flex: 1; position: relative;
 }
-.nav-tab:hover { background: rgba(255,255,255,0.7); }
-.nav-tab.active {
-  background: white;
-  color: var(--text);
-  box-shadow: 0 2px 8px var(--shadow);
+.nav-tab .nav-icon { font-size: 1.25rem; line-height: 1.2; }
+.nav-tab .nav-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.nav-tab:hover { color: var(--text); }
+.nav-tab.active { color: var(--accent); font-weight: 700; }
+.nav-tab.active::after {
+  content: ''; position: absolute; top: 0; left: 25%; right: 25%;
+  height: 2.5px; border-radius: 0 0 2px 2px; background: var(--accent);
 }
-.nav-tab .stamina-hint { font-size: 0.65rem; opacity: 0.6; }
+.nav-tab .stamina-hint { font-size: 0.5rem; opacity: 0.6; position: absolute; top: 2px; right: 4px; }
+.nav-spacer { height: 64px; } /* push content above fixed nav */
 
 .section { display: none; animation: fadeIn 0.4s ease; }
 .section.active { display: block; }
@@ -745,7 +757,7 @@ body::before {
   margin-top: 2px; font-family: var(--font-body);
 }
 .mine-sidebar {
-  position: sticky; bottom: 0; z-index: 5;
+  position: sticky; bottom: 64px; z-index: 5;
   background: #8B6F47; border-radius: 12px 12px 0 0;
   padding: 6px 10px;
   display: flex; flex-wrap: wrap; gap: 4px;
@@ -841,9 +853,10 @@ body::before {
 .settings-btn:hover { transform: scale(1.15); }
 
 @media (max-width: 600px) {
-  .header { padding: 6px 10px; }
-  .header h1 { font-size: 1rem; }
+  .header { padding: 6px 10px; padding-right: 70px; }
+  .header h1 { font-size: 0.95rem; }
   .score-item { padding: 3px 8px; font-size: 0.7rem; }
+  .gem-float { top: 6px; right: 10px; font-size: 0.7rem; padding: 3px 8px; }
   .feelings-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
   .feeling-card { padding: 14px 8px; }
   .feeling-card .emoji { font-size: 2.2rem; }
@@ -852,11 +865,9 @@ body::before {
   .sight-learn-card .sl-word { font-size: 1.1rem; }
   .match-game { grid-template-columns: 1fr; }
   .quiz-options { grid-template-columns: 1fr; }
-  .nav-groups { gap: 4px; }
-  .nav-group { padding: 3px; }
-  .nav-group-label { font-size: 0; width: 0; padding: 0; overflow: hidden; }
-  .stamina-hint { display: none; }
-  .nav-tab { padding: 8px 12px; font-size: 0.85rem; }
+  .nav-tab .nav-label { font-size: 0.55rem; }
+  .nav-tab .nav-icon { font-size: 1.1rem; }
+  .nav-tab .stamina-hint { display: none; }
   .sentence-display { font-size: 1.2rem; }
   .mountain-scroll-hint { display: block; }
   .mine-cell { width: 38px; height: 38px; font-size: 1.2rem; }
@@ -995,42 +1006,30 @@ body::before {
 <body>
 
 <div class="app">
-  <div class="header">
+  <div class="header" id="appHeader">
     <h1>Feelings Fun! 🎭 <span style="font-size:0.45em;font-weight:400;color:#636E72;vertical-align:middle;">Week 1 · v3.4.0</span></h1>
     <div class="score-bar">
       <div class="score-item" id="starBar"><span>⭐</span> <span id="stars">0</span></div>
       <div class="score-item" id="streakBar"><span>🔥</span> <span id="streak">0</span></div>
-      <div class="score-item" id="gemBar"><span>⚡</span> <span id="gems">0</span></div>
       <button class="score-item settings-btn" id="settingsBtn">⚙️</button>
     </div>
   </div>
+  <div class="gem-float" id="gemBar"><span>⚡</span> <span id="gems">0</span></div>
 
-  <div class="nav-groups">
-    <div class="nav-group">
-      <div class="nav-group-label">學習</div>
-      <div class="nav-group-tabs">
-        <button class="nav-tab active" data-tab="learn">📖 Learn</button>
-      </div>
+  <nav class="bottom-nav">
+    <div class="bottom-nav-inner">
+      <button class="nav-tab active" data-tab="learn"><span class="nav-icon">📖</span><span class="nav-label">Learn</span></button>
+      <button class="nav-tab" data-tab="sight"><span class="nav-icon">👀</span><span class="nav-label">Sight</span><span class="stamina-hint">⚡</span></button>
+      <button class="nav-tab" data-tab="match"><span class="nav-icon">🎯</span><span class="nav-label">Match</span><span class="stamina-hint">⚡</span></button>
+      <button class="nav-tab" data-tab="quiz"><span class="nav-icon">🧠</span><span class="nav-label">Quiz</span><span class="stamina-hint">⚡</span></button>
+      <button class="nav-tab" data-tab="mine"><span class="nav-icon">⛏️</span><span class="nav-label">挖礦</span></button>
+      <button class="nav-tab" data-tab="craft"><span class="nav-icon">🔨</span><span class="nav-label">合成</span></button>
+      <button class="nav-tab" data-tab="furnace"><span class="nav-icon">🔥</span><span class="nav-label">熔爐</span></button>
+      <button class="nav-tab" data-tab="equip"><span class="nav-icon">👤</span><span class="nav-label">裝備</span></button>
+      <button class="nav-tab" data-tab="encyclopedia"><span class="nav-icon">📦</span><span class="nav-label">圖鑑</span></button>
     </div>
-    <div class="nav-group">
-      <div class="nav-group-label">挑戰</div>
-      <div class="nav-group-tabs">
-        <button class="nav-tab" data-tab="sight">👀 Sight <span class="stamina-hint">+⚡</span></button>
-        <button class="nav-tab" data-tab="match">🎯 Match <span class="stamina-hint">+⚡</span></button>
-        <button class="nav-tab" data-tab="quiz">🧠 Quiz <span class="stamina-hint">+⚡</span></button>
-      </div>
-    </div>
-    <div class="nav-group">
-      <div class="nav-group-label">遊戲</div>
-      <div class="nav-group-tabs">
-        <button class="nav-tab" data-tab="mine">⛏️ 挖礦/建造</button>
-        <button class="nav-tab" data-tab="craft">🔨 合成</button>
-        <button class="nav-tab" data-tab="furnace">🔥 熔爐</button>
-        <button class="nav-tab" data-tab="equip">👤 裝備</button>
-        <button class="nav-tab" data-tab="encyclopedia">📖 圖鑑</button>
-      </div>
-    </div>
-  </div>
+  </nav>
+  <div class="nav-spacer"></div>
 
   <div id="learn" class="section active">
     <h3 class="learn-section-title">😊 Feelings 情緒</h3>
@@ -1108,8 +1107,8 @@ body::before {
     <div class="settings-section">
       <div class="settings-label">🔇 靜音 Mute</div>
       <div class="speed-toggle">
-        <button class="speed-btn" id="muteOff">🔊 開</button>
-        <button class="speed-btn active" id="muteOn">🔇 關</button>
+        <button class="speed-btn active" id="muteOff">🔊 開</button>
+        <button class="speed-btn" id="muteOn">🔇 關</button>
       </div>
     </div>
     <div id="engineStatus" style="text-align:center;font-size:0.8rem;color:#B2BEC3;margin-top:12px;font-family:'Nunito',sans-serif;">🔍 偵測中...</div>
@@ -1464,7 +1463,7 @@ const tierColors = ['#8B7355', '#A0A0A0', '#C0C0C0', '#FFD700', '#B9F2FF'];
 // ===== STATE =====
 let stars = 0, streak = 0, currentFeeling = 'happy';
 let matchSelected = null, matchedPairs = new Set();
-let quizQuestions = [], quizIndex = 0, quizScore = 0, quizAnswered = false;
+let quizQuestions = [], quizIndex = 0, quizScore = 0, quizAnswered = false, quizWrong = new Set();
 let speechSpeed = 'normal'; // 'slow' or 'normal'
 let isMuted = false;
 
@@ -1569,7 +1568,7 @@ function serializeMineData() {
 }
 
 function saveGame() {
-  localStorage.setItem('mineGame', JSON.stringify({ gems, inventory, buildGrid, buildPlayerPos, stars, streak, craftGrid, toolDurability, discovered: [...discovered], equipped, selectedTools, _houseMigrated: true, mineGrid: serializeMineData() }));
+  localStorage.setItem('mineGame', JSON.stringify({ gems, inventory, buildGrid, buildPlayerPos, stars, streak, craftGrid, toolDurability, discovered: [...discovered], equipped, selectedTools, sightEarned: [...sightEarned], _houseMigrated: true, mineGrid: serializeMineData() }));
 }
 
 function loadGame() {
@@ -1613,6 +1612,7 @@ function loadGame() {
       }
     }
     if (d.craftGrid) craftGrid = d.craftGrid;
+    if (d.sightEarned) sightEarned = new Set(d.sightEarned);
     stars = d.stars || 0;
     streak = d.streak || 0;
     document.getElementById('stars').textContent = Math.floor(stars);
@@ -1905,10 +1905,12 @@ function playRemoveSfx() {
 
 // ===== LEARN GATE =====
 let learnGatePending = null; // { callback } — execute after correct answer
+let learnGateAttempts = 0;
 
 function rollLearnGate(callback) {
   if (Math.random() < 0.3) {
     learnGatePending = { callback };
+    learnGateAttempts = 0;
     showLearnGate();
   } else {
     callback();
@@ -1977,7 +1979,8 @@ function handleLearnGateAnswer(isCorrect, correctWord, optGrid) {
       learnGatePending = null;
     }
   } else {
-    // Highlight correct answer green, wrong red, then re-quiz after 1s
+    learnGateAttempts++;
+    // Highlight correct answer green, wrong red
     Array.from(optGrid.children).forEach(btn => {
       btn.disabled = true;
       if (btn.textContent === correctWord) {
@@ -1988,7 +1991,22 @@ function handleLearnGateAnswer(isCorrect, correctWord, optGrid) {
         btn.style.opacity = '0.4';
       }
     });
-    setTimeout(() => showLearnGate(), 1200);
+    if (learnGateAttempts >= 2) {
+      // Show skip button after 2 wrong attempts
+      const skipBtn = document.createElement('button');
+      skipBtn.style.cssText = 'display:block;margin:12px auto 0;padding:8px 20px;border-radius:20px;border:1px solid var(--border);background:var(--surface);font-family:var(--font-display);font-size:0.85rem;cursor:pointer;color:var(--text-muted);';
+      skipBtn.textContent = '跳過 Skip';
+      skipBtn.addEventListener('click', () => {
+        modal.classList.remove('active');
+        if (learnGatePending) {
+          learnGatePending.callback();
+          learnGatePending = null;
+        }
+      });
+      document.getElementById('learnGateContent').appendChild(skipBtn);
+    } else {
+      setTimeout(() => showLearnGate(), 1200);
+    }
   }
 }
 
@@ -2040,6 +2058,19 @@ function doConfetti() {
   }
   setTimeout(() => box.innerHTML = '', 3000);
 }
+
+// ===== HEADER HIDE ON SCROLL DOWN, SHOW ON SCROLL UP =====
+let lastScrollY = 0;
+window.addEventListener('scroll', () => {
+  const header = document.getElementById('appHeader');
+  const y = window.scrollY;
+  if (y > lastScrollY && y > 50) {
+    header.classList.add('hidden');    // scrolling down — hide
+  } else {
+    header.classList.remove('hidden'); // scrolling up — show
+  }
+  lastScrollY = y;
+}, { passive: true });
 
 // ===== NAV =====
 document.querySelectorAll('.nav-tab').forEach(tab => {
@@ -2228,7 +2259,7 @@ function initQuiz() {
     const others = shuffle(feelings.filter(x => x.word !== f.word)).slice(0, 3);
     return { feeling: f, options: shuffle([f, ...others]), type: Math.random() > 0.5 ? 'e2w' : 'w2e' };
   });
-  quizIndex = 0; quizScore = 0;
+  quizIndex = 0; quizScore = 0; quizWrong = new Set();
   renderQuiz();
 }
 
@@ -2249,7 +2280,7 @@ function renderQuiz() {
 
   const q = quizQuestions[quizIndex];
   quizAnswered = false;
-  const dots = quizQuestions.map((_, i) => `<div class="quiz-dot${i < quizIndex ? ' done' : ''}${i === quizIndex ? ' current' : ''}"></div>`).join('');
+  const dots = quizQuestions.map((_, i) => `<div class="quiz-dot${i < quizIndex ? (quizWrong.has(i) ? ' wrong-dot' : ' done') : ''}${i === quizIndex ? ' current' : ''}"></div>`).join('');
 
   if (q.type === 'e2w') {
     c.innerHTML = `
@@ -2288,6 +2319,7 @@ function renderQuiz() {
         speak('Great job!');
       } else {
         btn.classList.add('wrong-answer');
+        quizWrong.add(quizIndex);
         resetStreak();
         c.querySelector(`[data-word="${q.feeling.word}"]`)?.classList.add('correct-answer');
         speak(q.feeling.word);
@@ -2307,7 +2339,7 @@ function initSightWords() {
   sightWords.forEach((sw, i) => {
     const card = document.createElement('div');
     card.className = 'sight-word-card';
-    card.style.borderLeft = `5px solid ${sightColors[i]}`;
+    card.style.borderLeft = `5px solid ${sightColors[i % sightColors.length]}`;
 
     const info = document.createElement('div');
     const wordEl = document.createElement('div');
@@ -3079,14 +3111,19 @@ function mineMountainCell(row, col, cellData) {
 }
 
 function bindMineHoldEvents(cellEl, cellData) {
+  // Abort previous listeners on this element to prevent duplicates (e.g. animal gravity)
+  if (cellEl._mineAC) cellEl._mineAC.abort();
+  const ac = new AbortController();
+  cellEl._mineAC = ac;
+  const sig = { signal: ac.signal };
   const startHold = (e) => { if (!cellData.mined) e.preventDefault(); startMineHold(cellData); };
   const endHold = () => cancelMineHold();
-  cellEl.addEventListener('mousedown', startHold);
-  cellEl.addEventListener('mouseup', endHold);
-  cellEl.addEventListener('mouseleave', endHold);
-  cellEl.addEventListener('touchstart', startHold, { passive: false });
-  cellEl.addEventListener('touchend', endHold);
-  cellEl.addEventListener('touchcancel', endHold);
+  cellEl.addEventListener('mousedown', startHold, sig);
+  cellEl.addEventListener('mouseup', endHold, sig);
+  cellEl.addEventListener('mouseleave', endHold, sig);
+  cellEl.addEventListener('touchstart', startHold, { passive: false, ...sig });
+  cellEl.addEventListener('touchend', endHold, sig);
+  cellEl.addEventListener('touchcancel', endHold, sig);
 }
 
 function applyAnimalGravity() {
@@ -4221,7 +4258,9 @@ function screenshotBuild() {
     const a = document.createElement('a');
     a.href = url;
     a.download = 'my-build-' + Date.now() + '.png';
+    document.body.appendChild(a);
     a.click();
+    a.remove();
     URL.revokeObjectURL(url);
   });
 }
