@@ -1724,8 +1724,15 @@ function loadGame() {
     }
     if (d.craftGrid) craftGrid = d.craftGrid;
     if (d.sightEarned) sightEarned = new Set(d.sightEarned);
-    if (d.sentenceReadCount) sentenceReadCount = d.sentenceReadCount;
-    if (d.dialogueReadCount) dialogueReadCount = d.dialogueReadCount;
+    if (d.sentenceReadCount) {
+      sentenceReadCount = d.sentenceReadCount;
+      // Pad if sentences were added after save
+      while (sentenceReadCount.length < sentences.length) sentenceReadCount.push(0);
+    }
+    if (d.dialogueReadCount) {
+      dialogueReadCount = d.dialogueReadCount;
+      while (dialogueReadCount.length < dialogues.length) dialogueReadCount.push(0);
+    }
     stars = d.stars || 0;
     streak = d.streak || 0;
     document.getElementById('stars').textContent = Math.floor(stars);
