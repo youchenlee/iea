@@ -1837,10 +1837,13 @@ function speak(text, forceSpeed) {
   synth.cancel();
 
   const speed = forceSpeed || speechSpeed;
-  const rateMap = { slower: 0.1, slow: 0.5, normal: 0.9 };
+  // Word-by-word mode for 'slower': split into words, speak each with a pause
+  if (speed === 'slower') return speakWordByWord(text, synth);
+
+  const rateMap = { slow: 0.5, normal: 0.9 };
   const u = new SpeechSynthesisUtterance(text);
   u.lang = 'en-US';
-  u.rate = rateMap[speed] || 0.85;
+  u.rate = rateMap[speed] || 0.9;
   u.pitch = 1.05;
   const pick = pickBestVoice(synth.getVoices());
   if (pick) u.voice = pick;
@@ -1848,6 +1851,31 @@ function speak(text, forceSpeed) {
   u.onerror = (e) => updateEngineDisplay('error', e.error);
   synth.speak(u);
   return u;
+}
+
+function speakWordByWord(text, synth) {
+  const words = text.split(/\s+/).filter(Boolean);
+  const pick = pickBestVoice(synth.getVoices());
+  let i = 0;
+  // Return a fake utterance-like object so callers can listen for 'end'
+  const emitter = document.createElement('span');
+  function next() {
+    if (i >= words.length) {
+      emitter.dispatchEvent(new Event('end'));
+      return;
+    }
+    const u = new SpeechSynthesisUtterance(words[i]);
+    u.lang = 'en-US';
+    u.rate = 0.55;
+    u.pitch = 1.05;
+    if (pick) u.voice = pick;
+    if (i === 0) u.onstart = () => updateEngineDisplay('speech-synthesis', (pick ? pick.name : 'default') + ' (word-by-word)');
+    u.onend = () => { i++; setTimeout(next, 400); };
+    u.onerror = () => { i++; setTimeout(next, 400); };
+    synth.speak(u);
+  }
+  next();
+  return emitter;
 }
 
 // Speak word first, then sentence after a pause
@@ -2358,16 +2386,17 @@ function buildDialogueCard(d, i) {
   card.appendChild(buildCardBottom(count,
     () => {
       card.classList.add('speaking');
-      const synth = window.speechSynthesis;
-      if (synth) {
-        synth.cancel();
-        const listenRate = ({ slower: 0.1, slow: 0.5, normal: 0.9 })[speechSpeed] || 0.85;
-        const uq = new SpeechSynthesisUtterance(d.q); uq.lang = 'en-US'; uq.rate = listenRate;
-        const ua = new SpeechSynthesisUtterance(d.a); ua.lang = 'en-US'; ua.rate = listenRate;
-        uq.onend = () => setTimeout(() => { synth.speak(ua); }, 600);
-        ua.onend = () => card.classList.remove('speaking');
-        synth.speak(uq);
-      }
+      // Speak Q then A, using speak() so 'slower' gets word-by-word
+      const uq = speak(d.q);
+      if (uq && uq.addEventListener) {
+        uq.addEventListener('end', () => {
+          setTimeout(() => {
+            const ua = speak(d.a);
+            if (ua && ua.addEventListener) ua.addEventListener('end', () => card.classList.remove('speaking'));
+            else card.classList.remove('speaking');
+          }, 600);
+        });
+      } else { card.classList.remove('speaking'); }
     },
     () => trackRead('dialogues', i, card)
   ));
