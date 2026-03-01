@@ -1005,30 +1005,30 @@ body::before {
 </head>
 <body>
 
-<div class="app">
-  <div class="header" id="appHeader">
-    <h1>Feelings Fun! 🎭 <span style="font-size:0.45em;font-weight:400;color:#636E72;vertical-align:middle;">Week 1 · v3.5.0</span></h1>
-    <div class="score-bar">
-      <div class="score-item" id="starBar"><span>⭐</span> <span id="stars">0</span></div>
-      <div class="score-item" id="streakBar"><span>🔥</span> <span id="streak">0</span></div>
-      <button class="score-item settings-btn" id="settingsBtn">⚙️</button>
-    </div>
+<div class="header" id="appHeader">
+  <h1>Feelings Fun! 🎭 <span style="font-size:0.45em;font-weight:400;color:#636E72;vertical-align:middle;">Week 1 · v3.6.0</span></h1>
+  <div class="score-bar">
+    <div class="score-item" id="starBar"><span>⭐</span> <span id="stars">0</span></div>
+    <div class="score-item" id="streakBar"><span>🔥</span> <span id="streak">0</span></div>
+    <button class="score-item settings-btn" id="settingsBtn">⚙️</button>
   </div>
-  <div class="gem-float" id="gemBar"><span>⚡</span> <span id="gems">0</span></div>
+</div>
+<div class="gem-float" id="gemBar"><span>⚡</span> <span id="gems">0</span></div>
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <button class="nav-tab active" data-tab="learn"><span class="nav-icon">📖</span><span class="nav-label">Learn</span></button>
+    <button class="nav-tab" data-tab="sight"><span class="nav-icon">👀</span><span class="nav-label">Sight</span><span class="stamina-hint">⚡</span></button>
+    <button class="nav-tab" data-tab="match"><span class="nav-icon">🎯</span><span class="nav-label">Match</span><span class="stamina-hint">⚡</span></button>
+    <button class="nav-tab" data-tab="quiz"><span class="nav-icon">🧠</span><span class="nav-label">Quiz</span><span class="stamina-hint">⚡</span></button>
+    <button class="nav-tab" data-tab="mine"><span class="nav-icon">⛏️</span><span class="nav-label">挖礦</span></button>
+    <button class="nav-tab" data-tab="craft"><span class="nav-icon">🔨</span><span class="nav-label">合成</span></button>
+    <button class="nav-tab" data-tab="furnace"><span class="nav-icon">🔥</span><span class="nav-label">熔爐</span></button>
+    <button class="nav-tab" data-tab="equip"><span class="nav-icon">👤</span><span class="nav-label">裝備</span></button>
+    <button class="nav-tab" data-tab="encyclopedia"><span class="nav-icon">📦</span><span class="nav-label">圖鑑</span></button>
+  </div>
+</nav>
 
-  <nav class="bottom-nav">
-    <div class="bottom-nav-inner">
-      <button class="nav-tab active" data-tab="learn"><span class="nav-icon">📖</span><span class="nav-label">Learn</span></button>
-      <button class="nav-tab" data-tab="sight"><span class="nav-icon">👀</span><span class="nav-label">Sight</span><span class="stamina-hint">⚡</span></button>
-      <button class="nav-tab" data-tab="match"><span class="nav-icon">🎯</span><span class="nav-label">Match</span><span class="stamina-hint">⚡</span></button>
-      <button class="nav-tab" data-tab="quiz"><span class="nav-icon">🧠</span><span class="nav-label">Quiz</span><span class="stamina-hint">⚡</span></button>
-      <button class="nav-tab" data-tab="mine"><span class="nav-icon">⛏️</span><span class="nav-label">挖礦</span></button>
-      <button class="nav-tab" data-tab="craft"><span class="nav-icon">🔨</span><span class="nav-label">合成</span></button>
-      <button class="nav-tab" data-tab="furnace"><span class="nav-icon">🔥</span><span class="nav-label">熔爐</span></button>
-      <button class="nav-tab" data-tab="equip"><span class="nav-icon">👤</span><span class="nav-label">裝備</span></button>
-      <button class="nav-tab" data-tab="encyclopedia"><span class="nav-icon">📦</span><span class="nav-label">圖鑑</span></button>
-    </div>
-  </nav>
+<div class="app">
   <div class="nav-spacer"></div>
 
   <div id="learn" class="section active">
@@ -1112,7 +1112,7 @@ body::before {
       </div>
     </div>
     <div id="engineStatus" style="text-align:center;font-size:0.8rem;color:#B2BEC3;margin-top:12px;font-family:'Nunito',sans-serif;">🔍 偵測中...</div>
-    <div style="text-align:center;font-size:0.7rem;color:#B2BEC3;margin-top:8px;font-family:'Nunito',sans-serif;">v3.5.0</div>
+    <div style="text-align:center;font-size:0.7rem;color:#B2BEC3;margin-top:8px;font-family:'Nunito',sans-serif;">v3.6.0</div>
   </div>
 </div>
 
@@ -1556,7 +1556,7 @@ function getToolDurabilityText(tool) {
 }
 
 function serializeMineData() {
-  if (!mineData.length) return null;
+  if (!mineData.length) return savedMineGrid || null;
   return mineData.map(row => row.map(cell => {
     if (!cell) return null;
     const s = { t: cell.tier, m: cell.mined ? 1 : 0 };
@@ -2629,7 +2629,7 @@ function initMine() {
   mountain.className = 'mountain';
   const maxWidth = 50;
 
-  const restoring = savedMineGrid && savedMineGrid.length === mountainShape.length;
+  const restoring = savedMineGrid && savedMineGrid.length > 0;
 
   mountainShape.forEach((rowDef, r) => {
     const rowEl = document.createElement('div');
@@ -2650,7 +2650,7 @@ function initMine() {
       const cellEl = document.createElement('div');
       cellEl.className = 'mine-cell';
 
-      const saved = restoring ? savedMineGrid[r][c] : null;
+      const saved = (restoring && savedMineGrid[r] && savedMineGrid[r][c]) ? savedMineGrid[r][c] : null;
 
       if (saved) {
         // Restore from saved data
