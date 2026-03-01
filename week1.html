@@ -1007,7 +1007,7 @@ body::before {
 <body>
 
 <div class="header" id="appHeader">
-  <h1>Feelings Fun! 🎭 <span style="font-size:0.45em;font-weight:400;color:#636E72;vertical-align:middle;">Week 1 · v3.6.2</span></h1>
+  <h1>Feelings Fun! 🎭 <span style="font-size:0.45em;font-weight:400;color:#636E72;vertical-align:middle;">Week 1 · v3.7.0</span></h1>
   <div class="score-bar">
     <div class="score-item" id="starBar"><span>⭐</span> <span id="stars">0</span></div>
     <div class="score-item" id="streakBar"><span>🔥</span> <span id="streak">0</span></div>
@@ -1113,7 +1113,7 @@ body::before {
       </div>
     </div>
     <div id="engineStatus" style="text-align:center;font-size:0.8rem;color:#B2BEC3;margin-top:12px;font-family:'Nunito',sans-serif;">🔍 偵測中...</div>
-    <div style="text-align:center;font-size:0.7rem;color:#B2BEC3;margin-top:8px;font-family:'Nunito',sans-serif;">v3.6.2</div>
+    <div style="text-align:center;font-size:0.7rem;color:#B2BEC3;margin-top:8px;font-family:'Nunito',sans-serif;">v3.7.0</div>
   </div>
 </div>
 
@@ -1184,7 +1184,7 @@ const blocks = [
   // Animal drops (tier 0, weight 0 = drop-only)
   { id: 'leather',      name: '皮革',   emoji: '🟤', tier: 0, weight: 0 },
   { id: 'pork',         name: '豬排',   emoji: '🍖', tier: 0, weight: 0 },
-  { id: 'chicken_meat', name: '雞肉',   emoji: '🍗', tier: 0, weight: 0 },
+  { id: 'chicken_meat', name: '生雞肉', emoji: '🥩', tier: 0, weight: 0 },
   { id: 'feather',      name: '羽毛',   emoji: '🪶', tier: 0, weight: 0 },
   { id: 'wool',         name: '羊毛',   emoji: '🧶', tier: 0, weight: 0 },
   // Hostile mob drops (tier 0, weight 0 = drop-only)
@@ -2599,7 +2599,10 @@ function cancelMineHold(resetBar) {
   mineHoldTarget = null;
 }
 
+let _mineDragAC = null;
 function initMine() {
+  if (_mineDragAC) _mineDragAC.abort();
+  _mineDragAC = new AbortController();
   const area = document.getElementById('mineArea');
   const pick = pickaxes[getEffectivePickaxeLevel()];
   area.textContent = '';
@@ -2792,10 +2795,10 @@ function initMine() {
   document.addEventListener('mousemove', (e) => {
     if (!dragState) return;
     mountainScroll.scrollLeft = dragState.scrollL - (e.pageX - dragState.startX);
-  });
+  }, { signal: _mineDragAC.signal });
   document.addEventListener('mouseup', () => {
     if (dragState) { mountainScroll.style.cursor = ''; dragState = null; }
-  });
+  }, { signal: _mineDragAC.signal });
 
   // Wrap with arrow buttons
   const scrollWrap = document.createElement('div');
@@ -3181,6 +3184,13 @@ function applyAnimalGravity() {
       const destCell = mineData[destRow][c];
       if (!destCell || !destCell.mined) continue; // safety check
 
+      // Return build-placed block to inventory if animal lands on it
+      const destKey = destRow + ',' + c;
+      if (buildGrid[destKey]) {
+        inventory[buildGrid[destKey]] = (inventory[buildGrid[destKey]] || 0) + 1;
+        delete buildGrid[destKey];
+      }
+
       // Move animal into destination cell
       destCell.mined = false;
       destCell.animal = animal;
@@ -3403,9 +3413,14 @@ function openArmorPicker(cellEl, slot) {
   const rect = cellEl.getBoundingClientRect();
   picker.style.position = 'fixed';
   picker.style.left = rect.left + rect.width / 2 + 'px';
-  picker.style.top = rect.bottom + 6 + 'px';
   picker.style.transform = 'translateX(-50%)';
   appEl.appendChild(picker);
+  const pickerRect = picker.getBoundingClientRect();
+  if (rect.bottom + 6 + pickerRect.height > window.innerHeight) {
+    picker.style.top = (rect.top - pickerRect.height - 6) + 'px';
+  } else {
+    picker.style.top = rect.bottom + 6 + 'px';
+  }
 }
 
 function refreshMineHeader() {
@@ -3846,7 +3861,8 @@ function renderCraft(c) {
   inv.appendChild(invTitle);
   const craftInfo = document.createElement('div');
   craftInfo.id = 'craftInfo';
-  craftInfo.style.cssText = 'font-size:0.8rem;color:var(--text-secondary);text-align:center;min-height:1.2em;';
+  craftInfo.style.cssText = 'position:absolute;font-size:0.75rem;color:#fff;background:rgba(0,0,0,0.8);padding:3px 8px;border-radius:6px;pointer-events:none;white-space:nowrap;z-index:20;opacity:0;transition:opacity 0.15s;';
+  inv.style.position = 'relative';
   inv.appendChild(craftInfo);
   const invGrid = document.createElement('div');
   invGrid.className = 'craft-inv-grid';
@@ -4156,7 +4172,19 @@ function updateCraftUI() {
       e.stopPropagation();
       craftSelected = (craftSelected === b.id) ? null : b.id;
       const info = document.getElementById('craftInfo');
-      if (info) info.textContent = craftSelected === b.id ? b.emoji + ' ' + b.name + ' (' + getBlockCount(b.id) + '個)' : '';
+      if (info) {
+        if (craftSelected === b.id) {
+          info.textContent = b.emoji + ' ' + b.name + ' (' + getBlockCount(b.id) + '個)';
+          info.style.opacity = '1';
+          const itemRect = item.getBoundingClientRect();
+          const parentRect = info.parentElement.getBoundingClientRect();
+          info.style.left = (itemRect.left - parentRect.left + itemRect.width / 2) + 'px';
+          info.style.top = (itemRect.top - parentRect.top - 28) + 'px';
+          info.style.transform = 'translateX(-50%)';
+        } else {
+          info.style.opacity = '0';
+        }
+      }
       updateCraftUI();
     });
     invGrid.appendChild(item);
@@ -4169,6 +4197,7 @@ function doCraft() {
   playCraftSfx();
   // Clear the grid (blocks already deducted when placed)
   craftGrid = [null,null,null, null,null,null, null,null,null];
+  saveGame(); // persist cleared grid before learn gate to prevent material loss on refresh
 
   const finishCraft = () => {
     if (match.type === 'pickaxe' || match.type === 'axe' || match.type === 'sword') {
