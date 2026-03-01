@@ -120,6 +120,7 @@ body::before {
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
   background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   border-top: 1px solid rgba(0,0,0,0.08);
+  transform: translateZ(0); -webkit-transform: translateZ(0); /* iOS fixed positioning fix */
   display: flex; justify-content: center;
   padding: 0 4px; padding-bottom: env(safe-area-inset-bottom, 0);
   box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
@@ -160,7 +161,7 @@ body::before {
 .section-empty span { font-size: 0.85rem; }
 .app-footer {
   text-align: center; font-size: 0.7rem; color: var(--text-muted);
-  padding: 24px 16px 12px; line-height: 1.6;
+  padding: 24px 16px 80px; line-height: 1.6;
   margin-top: auto;
 }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
@@ -1006,7 +1007,7 @@ body::before {
 <body>
 
 <div class="header" id="appHeader">
-  <h1>Feelings Fun! 🎭 <span style="font-size:0.45em;font-weight:400;color:#636E72;vertical-align:middle;">Week 1 · v3.6.0</span></h1>
+  <h1>Feelings Fun! 🎭 <span style="font-size:0.45em;font-weight:400;color:#636E72;vertical-align:middle;">Week 1 · v3.6.1</span></h1>
   <div class="score-bar">
     <div class="score-item" id="starBar"><span>⭐</span> <span id="stars">0</span></div>
     <div class="score-item" id="streakBar"><span>🔥</span> <span id="streak">0</span></div>
@@ -1112,7 +1113,7 @@ body::before {
       </div>
     </div>
     <div id="engineStatus" style="text-align:center;font-size:0.8rem;color:#B2BEC3;margin-top:12px;font-family:'Nunito',sans-serif;">🔍 偵測中...</div>
-    <div style="text-align:center;font-size:0.7rem;color:#B2BEC3;margin-top:8px;font-family:'Nunito',sans-serif;">v3.6.0</div>
+    <div style="text-align:center;font-size:0.7rem;color:#B2BEC3;margin-top:8px;font-family:'Nunito',sans-serif;">v3.6.1</div>
   </div>
 </div>
 
