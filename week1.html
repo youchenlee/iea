@@ -2330,7 +2330,7 @@ function buildSentenceCard(s, i) {
   card.appendChild(createEl('div', 'sc-en', s.en));
   card.appendChild(createEl('div', 'sc-zh', s.zh));
   card.appendChild(buildCardBottom(count,
-    () => { card.classList.add('speaking'); setTimeout(() => card.classList.remove('speaking'), 1200); speak(s.en, 'slow'); },
+    () => { card.classList.add('speaking'); setTimeout(() => card.classList.remove('speaking'), 1200); speak(s.en); },
     () => trackRead('sentences', i, card)
   ));
   card.addEventListener('click', () => trackRead('sentences', i, card));
