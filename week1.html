@@ -1182,6 +1182,7 @@ body::before {
     <div class="settings-section">
       <div class="settings-label">🔊 語速 Speed</div>
       <div class="speed-toggle">
+        <button class="speed-btn" data-speed="slower" id="speedSlower">🐌 Slower</button>
         <button class="speed-btn" data-speed="slow" id="speedSlow">🐢 Slow</button>
         <button class="speed-btn active" data-speed="normal" id="speedNormal">🐇 Normal</button>
       </div>
@@ -1836,10 +1837,10 @@ function speak(text, forceSpeed) {
   synth.cancel();
 
   const speed = forceSpeed || speechSpeed;
-  const slow = speed === 'slow';
+  const rateMap = { slower: 0.4, slow: 0.6, normal: 0.85 };
   const u = new SpeechSynthesisUtterance(text);
   u.lang = 'en-US';
-  u.rate = slow ? 0.6 : 0.85;
+  u.rate = rateMap[speed] || 0.85;
   u.pitch = 1.05;
   const pick = pickBestVoice(synth.getVoices());
   if (pick) u.voice = pick;
@@ -1855,11 +1856,10 @@ function speakWordThenSentence(word, sentence) {
   if (!synth) return;
   synth.cancel();
 
-  const speed = speechSpeed;
-  const slow = speed === 'slow';
+  const rateMap2 = { slower: 0.4, slow: 0.6, normal: 0.85 };
   const u = new SpeechSynthesisUtterance(word);
   u.lang = 'en-US';
-  u.rate = slow ? 0.6 : 0.85;
+  u.rate = rateMap2[speechSpeed] || 0.85;
   u.pitch = 1.05;
   const pick = pickBestVoice(synth.getVoices());
   if (pick) u.voice = pick;
@@ -2361,8 +2361,9 @@ function buildDialogueCard(d, i) {
       const synth = window.speechSynthesis;
       if (synth) {
         synth.cancel();
-        const uq = new SpeechSynthesisUtterance(d.q); uq.lang = 'en-US'; uq.rate = 0.65;
-        const ua = new SpeechSynthesisUtterance(d.a); ua.lang = 'en-US'; ua.rate = 0.65;
+        const listenRate = ({ slower: 0.4, slow: 0.6, normal: 0.65 })[speechSpeed] || 0.65;
+        const uq = new SpeechSynthesisUtterance(d.q); uq.lang = 'en-US'; uq.rate = listenRate;
+        const ua = new SpeechSynthesisUtterance(d.a); ua.lang = 'en-US'; ua.rate = listenRate;
         uq.onend = () => setTimeout(() => { synth.speak(ua); }, 600);
         ua.onend = () => card.classList.remove('speaking');
         synth.speak(uq);
