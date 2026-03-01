@@ -1837,7 +1837,7 @@ function speak(text, forceSpeed) {
   synth.cancel();
 
   const speed = forceSpeed || speechSpeed;
-  const rateMap = { slower: 0.2, slow: 0.5, normal: 0.85 };
+  const rateMap = { slower: 0.1, slow: 0.5, normal: 0.9 };
   const u = new SpeechSynthesisUtterance(text);
   u.lang = 'en-US';
   u.rate = rateMap[speed] || 0.85;
@@ -1856,7 +1856,7 @@ function speakWordThenSentence(word, sentence) {
   if (!synth) return;
   synth.cancel();
 
-  const rateMap2 = { slower: 0.2, slow: 0.5, normal: 0.85 };
+  const rateMap2 = { slower: 0.1, slow: 0.5, normal: 0.9 };
   const u = new SpeechSynthesisUtterance(word);
   u.lang = 'en-US';
   u.rate = rateMap2[speechSpeed] || 0.85;
@@ -2361,7 +2361,7 @@ function buildDialogueCard(d, i) {
       const synth = window.speechSynthesis;
       if (synth) {
         synth.cancel();
-        const listenRate = ({ slower: 0.2, slow: 0.5, normal: 0.85 })[speechSpeed] || 0.85;
+        const listenRate = ({ slower: 0.1, slow: 0.5, normal: 0.9 })[speechSpeed] || 0.85;
         const uq = new SpeechSynthesisUtterance(d.q); uq.lang = 'en-US'; uq.rate = listenRate;
         const ua = new SpeechSynthesisUtterance(d.a); ua.lang = 'en-US'; ua.rate = listenRate;
         uq.onend = () => setTimeout(() => { synth.speak(ua); }, 600);
