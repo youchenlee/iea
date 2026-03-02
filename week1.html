@@ -566,6 +566,8 @@ body::before {
   position: relative;
   user-select: none;
 }
+.mine-cell { image-rendering: pixelated; background-size: cover; background-position: center; }
+.mine-cell img { image-rendering: pixelated; }
 .mine-cell:hover:not(.mined):not(.locked) { transform: scale(1.12); z-index: 2; box-shadow: 0 0 8px rgba(255,255,255,0.5); }
 
 .mine-cell.unexposed { opacity: 0.85; cursor: default; }
@@ -575,9 +577,15 @@ body::before {
   cursor: default; pointer-events: auto;
 }
 .mine-cell.mined {
-  background: rgba(135,206,235,0.25) !important;
+  background-color: rgba(135,206,235,0.25);
+  background-image: none;
   border-color: transparent;
   box-shadow: none;
+}
+.mine-cell.mined.ghost {
+  background-image: var(--ghost-tex) !important;
+  background-size: cover;
+  background-position: center;
 }
 .mine-cell.locked {
   cursor: not-allowed;
@@ -807,13 +815,17 @@ body::before {
 
 /* ===== BUILD (integrated into mine) ===== */
 .mine-cell.build-placed {
-  background: rgba(255,255,255,0.65) !important; border-color: rgba(0,0,0,0.1) !important;
+  background-color: rgba(255,255,255,0.65) !important; border-color: rgba(0,0,0,0.1) !important;
+  background-size: cover; background-position: center; image-rendering: pixelated;
   box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important; cursor: pointer;
   pointer-events: auto !important;
 }
 .mine-cell.build-placed:hover { transform: scale(1.12); box-shadow: 0 0 8px rgba(255,80,80,0.4) !important; }
 .mine-cell.build-player {
   pointer-events: auto !important;
+}
+.mine-cell.ghost {
+  background-size: cover; background-position: center;
 }
 .mine-cell.ghost::after {
   content: attr(data-hint); position: absolute; inset: 0;
@@ -1074,7 +1086,7 @@ body::before {
 <body>
 
 <div class="header" id="appHeader">
-  <h1>Feelings Fun! 🎭 <span style="font-size:0.45em;font-weight:400;color:#636E72;vertical-align:middle;">Week 1 · v3.7.0</span></h1>
+  <h1>Feelings Fun! 🎭 <span style="font-size:0.45em;font-weight:400;color:#636E72;vertical-align:middle;">Week 1 · v3.8.0</span></h1>
   <div class="score-bar">
     <div class="score-item" id="starBar"><span>⭐</span> <span id="stars">0</span></div>
     <div class="score-item" id="streakBar"><span>🔥</span> <span id="streak">0</span></div>
@@ -1168,6 +1180,7 @@ body::before {
 
   <footer class="app-footer">
     感謝 iEA 美語學院的優良教材，本站為學生家長參考教材內容自製的輔助學習工具。
+    <br>Pixel art: <a href="https://github.com/Athemis/PixelPerfectionCE" target="_blank" rel="noopener">Pixel Perfection CE</a> (CC-BY-SA-4.0) &amp; <a href="https://github.com/deathcap/ProgrammerArt" target="_blank" rel="noopener">ProgrammerArt</a> (CC-BY-4.0)
   </footer>
 </div>
 
@@ -1195,7 +1208,7 @@ body::before {
       </div>
     </div>
     <div id="engineStatus" style="text-align:center;font-size:0.8rem;color:#B2BEC3;margin-top:12px;font-family:'Nunito',sans-serif;">🔍 偵測中...</div>
-    <div style="text-align:center;font-size:0.7rem;color:#B2BEC3;margin-top:8px;font-family:'Nunito',sans-serif;">v3.7.0</div>
+    <div style="text-align:center;font-size:0.7rem;color:#B2BEC3;margin-top:8px;font-family:'Nunito',sans-serif;">v3.8.0</div>
   </div>
 </div>
 
@@ -1364,6 +1377,156 @@ const blocks = [
   { id: 'diamond_legs',    name: '鑽石褲子', emoji: '👖', tier: 0, weight: 0 },
   { id: 'diamond_boots',   name: '鑽石鞋子', emoji: '👢', tier: 0, weight: 0 },
 ];
+
+// Pixel art texture map: game item id → relative image path
+// Sources: Pixel Perfection CE (CC-BY-SA-4.0), ProgrammerArt (CC-BY-4.0)
+const TEX = {
+  // Mineable blocks
+  dirt: 'textures/blocks/dirt.png',
+  wood: 'textures/blocks/wood.png',
+  sand: 'textures/blocks/sand.png',
+  gravel: 'textures/blocks/gravel.png',
+  stone: 'textures/blocks/stone.png',
+  obsidian: 'textures/blocks/obsidian.png',
+  // Ores (shown as ore blocks)
+  iron: 'textures/blocks/iron_ore.png',
+  copper: 'textures/blocks/copper_ore.png',
+  gold: 'textures/blocks/gold_ore.png',
+  // Items that drop directly from mining
+  coal: 'textures/items/coal.png',
+  redstone: 'textures/items/redstone.png',
+  lapis: 'textures/items/lapis.png',
+  diamond: 'textures/items/diamond.png',
+  emerald: 'textures/items/emerald.png',
+  // Animal drops
+  leather: 'textures/items/leather.png',
+  pork: 'textures/items/porkchop.png',
+  chicken_meat: 'textures/items/chicken_meat.png',
+  feather: 'textures/items/feather.png',
+  // Hostile mob drops
+  rotten_flesh: 'textures/items/rotten_flesh.png',
+  bone: 'textures/items/bone.png',
+  gunpowder: 'textures/items/gunpowder.png',
+  string: 'textures/items/string.png',
+  ender_pearl: 'textures/items/ender_pearl.png',
+  // Smelted / cooked items
+  iron_ingot: 'textures/items/iron_ingot.png',
+  gold_ingot: 'textures/items/gold_ingot.png',
+  copper_ingot: 'textures/items/copper_ingot.png',
+  cooked_pork: 'textures/items/cooked_porkchop.png',
+  cooked_chicken: 'textures/items/cooked_chicken.png',
+  glass: 'textures/blocks/glass.png',
+  brick: 'textures/blocks/bricks.png',
+  // Craftable items
+  stick: 'textures/items/stick.png',
+  furnace: 'textures/blocks/furnace.png',
+  bed: 'textures/items/bed.png',
+  torch: 'textures/items/torch.png',
+  ladder: 'textures/items/ladder.png',
+  door: 'textures/items/door.png',
+  fence: 'textures/items/fence.png',
+  bookshelf: 'textures/blocks/bookshelf.png',
+  painting: 'textures/items/painting.png',
+  tnt: 'textures/blocks/tnt.png',
+  bow: 'textures/items/bow.png',
+  arrow: 'textures/items/arrow.png',
+  boat: 'textures/items/boat.png',
+  bucket: 'textures/items/bucket.png',
+  compass: 'textures/items/compass.png',
+  clock: 'textures/items/clock.png',
+  _player: 'textures/items/player.png',
+  // Tools — pickaxes
+  wood_pick: 'textures/tools/wood_pick.png',
+  stone_pick: 'textures/tools/stone_pick.png',
+  iron_pick: 'textures/tools/iron_pick.png',
+  gold_pick: 'textures/tools/gold_pick.png',
+  diamond_pick: 'textures/tools/diamond_pick.png',
+  // Tools — axes
+  wood_axe: 'textures/tools/wood_axe.png',
+  stone_axe: 'textures/tools/stone_axe.png',
+  iron_axe: 'textures/tools/iron_axe.png',
+  gold_axe: 'textures/tools/gold_axe.png',
+  diamond_axe: 'textures/tools/diamond_axe.png',
+  // Tools — swords
+  wood_sword: 'textures/tools/wood_sword.png',
+  stone_sword: 'textures/tools/stone_sword.png',
+  iron_sword: 'textures/tools/iron_sword.png',
+  gold_sword: 'textures/tools/gold_sword.png',
+  diamond_sword: 'textures/tools/diamond_sword.png',
+  // Armor — leather
+  leather_helmet: 'textures/armor/leather_helmet.png',
+  leather_chest: 'textures/armor/leather_chest.png',
+  leather_legs: 'textures/armor/leather_legs.png',
+  leather_boots: 'textures/armor/leather_boots.png',
+  // Armor — iron
+  iron_helmet: 'textures/armor/iron_helmet.png',
+  iron_chest: 'textures/armor/iron_chest.png',
+  iron_legs: 'textures/armor/iron_legs.png',
+  iron_boots: 'textures/armor/iron_boots.png',
+  // Armor — gold
+  gold_helmet: 'textures/armor/gold_helmet.png',
+  gold_chest: 'textures/armor/gold_chest.png',
+  gold_legs: 'textures/armor/gold_legs.png',
+  gold_boots: 'textures/armor/gold_boots.png',
+  // Armor — diamond
+  diamond_helmet: 'textures/armor/diamond_helmet.png',
+  diamond_chest: 'textures/armor/diamond_chest.png',
+  diamond_legs: 'textures/armor/diamond_legs.png',
+  diamond_boots: 'textures/armor/diamond_boots.png',
+};
+
+// For mine grid cells: override item drops to show ore textures
+const TEX_MINE = {
+  coal: 'textures/blocks/coal_ore.png',
+  redstone: 'textures/blocks/redstone_ore.png',
+  lapis: 'textures/blocks/lapis_ore.png',
+  diamond: 'textures/blocks/diamond_ore.png',
+  emerald: 'textures/blocks/emerald_ore.png',
+};
+
+// Set mine cell background to pixel texture (or emoji fallback)
+function setCellTex(el, id, useMineOre) {
+  const src = (useMineOre && TEX_MINE[id]) || TEX[id];
+  if (src) {
+    el.textContent = '';
+    el.style.backgroundImage = `url(${src})`;
+  } else {
+    const b = blocks.find(b => b.id === id);
+    el.textContent = b ? b.emoji : '?';
+    el.style.backgroundImage = '';
+  }
+}
+
+// Clear mine cell texture
+function clearCellTex(el) {
+  el.textContent = '';
+  el.style.backgroundImage = '';
+}
+
+// Returns an <img> element for the given item id, or emoji text node as fallback
+function itemImg(id, size = 16) {
+  if (TEX[id]) {
+    const img = document.createElement('img');
+    img.src = TEX[id];
+    img.alt = id;
+    img.width = size;
+    img.height = size;
+    img.style.cssText = 'image-rendering:pixelated;vertical-align:middle;';
+    img.draggable = false;
+    return img;
+  }
+  const b = blocks.find(b => b.id === id);
+  return document.createTextNode(b ? b.emoji : '?');
+}
+
+// Returns inline HTML string for use in innerHTML contexts
+function itemImgHTML(id, size = 16) {
+  if (TEX[id]) {
+    return `<img src="${TEX[id]}" alt="${id}" width="${size}" height="${size}" style="image-rendering:pixelated;vertical-align:middle;" draggable="false">`;
+  }
+  const b = blocks.find(b => b.id === id);
+  return b ? b.emoji : '?';
+}
 
 const pickaxes = [
   { id: 'hands',        name: '手',     emoji: '✋', maxTier: 0, durability: Infinity, recipe: null, pattern: null },
@@ -2780,7 +2943,8 @@ function resetCellProgress(el) {
 
 function showMineResult(msg, toolBroke) {
   const el = document.getElementById('mineResult');
-  el.textContent = msg;
+  // msg contains trusted internal strings with <img> tags for pixel textures
+  el.innerHTML = msg;
   el.classList.remove('tool-broke');
   if (toolBroke) {
     // Force reflow to restart animation
@@ -2888,7 +3052,7 @@ function cancelMineHold(resetBar) {
     if (resetBar && elapsed < 250 && !cd.mined) {
       let info = '';
       if (cd.animal) info = cd.animal.emoji + ' ' + cd.animal.name;
-      else if (cd.block) info = cd.block.emoji + ' ' + cd.block.name;
+      else if (cd.block) info = itemImgHTML(cd.block.id, 16) + ' ' + cd.block.name;
       if (info) showMineResult(info, false);
     }
   }
@@ -3026,7 +3190,7 @@ function initMine() {
             // Remove placed block
             delete buildGrid[key];
             inventory[existing] = (inventory[existing] || 0) + 1;
-            cd.el.textContent = '';
+            clearCellTex(cd.el);
             cd.el.classList.remove('build-placed');
             cd.el.classList.add('mined');
             playRemoveSfx();
@@ -3038,21 +3202,21 @@ function initMine() {
             buildPlayerPos = { r: row, c: col };
             document.querySelectorAll('.mine-cell.build-player').forEach(el => {
               el.classList.remove('build-player');
-              el.textContent = '';
+              clearCellTex(el);
             });
-            cd.el.textContent = '🧍';
+            setCellTex(cd.el, '_player', false);
             cd.el.classList.add('build-player');
             playPlaceSfx();
             return;
           }
           if (!buildSelected || buildSelected === '_player') return;
+          if (buildPlayerPos && buildPlayerPos.r === row && buildPlayerPos.c === col) return;
           if (getBlockCount(buildSelected) <= 0) return;
           const doPlace = () => {
             buildGrid[key] = buildSelected;
             inventory[buildSelected] = (inventory[buildSelected] || 1) - 1;
             if (inventory[buildSelected] <= 0) delete inventory[buildSelected];
-            const b = blocks.find(x => x.id === buildSelected);
-            cd.el.textContent = b ? b.emoji : '?';
+            setCellTex(cd.el, buildSelected, false);
             cd.el.classList.remove('mined');
             cd.el.classList.add('build-placed');
             playPlaceSfx();
@@ -3139,13 +3303,12 @@ function initMine() {
       const key = mr + ',' + mc;
       const placedId = buildGrid[key];
       if (placedId && cd.mined) {
-        const b = blocks.find(x => x.id === placedId);
-        cd.el.textContent = b ? b.emoji : '?';
+        setCellTex(cd.el, placedId, false);
         cd.el.classList.remove('mined');
         cd.el.classList.add('build-placed');
       }
       if (buildPlayerPos && buildPlayerPos.r === mr && buildPlayerPos.c === mc && cd.mined) {
-        cd.el.textContent = '🧍';
+        setCellTex(cd.el, '_player', false);
         cd.el.classList.add('build-player');
       }
     }
@@ -3192,7 +3355,7 @@ function renderMineBuildPalette(container) {
   placeable.forEach(b => {
     const item = document.createElement('div');
     item.className = 'mine-sidebar-item' + (buildSelected === b.id ? ' selected' : '');
-    item.appendChild(document.createTextNode(b.emoji));
+    item.appendChild(itemImg(b.id, 28));
     const countSpan = document.createElement('span');
     countSpan.className = 'count';
     countSpan.textContent = getBlockCount(b.id);
@@ -3200,7 +3363,7 @@ function renderMineBuildPalette(container) {
     item.title = b.name + ' (' + getBlockCount(b.id) + ')';
     item.addEventListener('click', () => {
       buildSelected = (buildSelected === b.id) ? null : b.id;
-      if (buildSelected === b.id) showMineResult(b.emoji + ' ' + b.name + ' (' + getBlockCount(b.id) + '個)', false);
+      if (buildSelected === b.id) showMineResult(itemImgHTML(b.id, 16) + ' ' + b.name + ' (' + getBlockCount(b.id) + '個)', false);
       refreshBuildPalette();
     });
     container.appendChild(item);
@@ -3209,11 +3372,11 @@ function renderMineBuildPalette(container) {
   // Player avatar button
   const playerItem = document.createElement('div');
   playerItem.className = 'mine-sidebar-item' + (buildSelected === '_player' ? ' selected' : '');
-  playerItem.appendChild(document.createTextNode('🧍'));
+  playerItem.appendChild(itemImg('_player', 28));
   playerItem.title = '放置自己';
   playerItem.addEventListener('click', () => {
     buildSelected = (buildSelected === '_player') ? null : '_player';
-    if (buildSelected === '_player') showMineResult('🧍 放置自己', false);
+    if (buildSelected === '_player') showMineResult(itemImgHTML('_player', 16) + ' 放置自己', false);
     refreshBuildPalette();
   });
   container.appendChild(playerItem);
@@ -3262,23 +3425,36 @@ function refreshBuildPalette() {
 
 function updateGhostHints() {
   const selectedBlock = buildSelected && buildSelected !== '_player' ? blocks.find(b => b.id === buildSelected) : null;
-  const hintEmoji = selectedBlock ? selectedBlock.emoji : '';
+  const hintEmoji = selectedBlock && !TEX[selectedBlock.id] ? selectedBlock.emoji : '';
+  const hintTex = selectedBlock && TEX[selectedBlock.id] ? TEX[selectedBlock.id] : '';
   for (let r = 0; r < mineData.length; r++) {
     for (let c = 0; c < mineData[r].length; c++) {
       const cd = mineData[r][c];
       if (!cd) continue;
       const key = r + ',' + c;
       if (cd.mined && !buildGrid[key]) {
-        if (hintEmoji) {
+        if (selectedBlock) {
           cd.el.classList.add('ghost');
-          cd.el.setAttribute('data-hint', hintEmoji);
+          if (hintTex) {
+            cd.el.style.setProperty('--ghost-tex', `url(${hintTex})`);
+            cd.el.style.opacity = '0.35';
+            cd.el.removeAttribute('data-hint');
+          } else {
+            cd.el.setAttribute('data-hint', hintEmoji);
+            cd.el.style.removeProperty('--ghost-tex');
+            cd.el.style.opacity = '';
+          }
         } else {
           cd.el.classList.remove('ghost');
           cd.el.removeAttribute('data-hint');
+          cd.el.style.removeProperty('--ghost-tex');
+          cd.el.style.opacity = '';
         }
       } else {
         cd.el.classList.remove('ghost');
         cd.el.removeAttribute('data-hint');
+        cd.el.style.removeProperty('--ghost-tex');
+        cd.el.style.opacity = '';
       }
     }
   }
@@ -3306,15 +3482,14 @@ function attackAnimal(cellData) {
   updateGemDisplay();
   cellData.mined = true;
   cellData.el.classList.add('mined');
-  cellData.el.textContent = '';
+  clearCellTex(cellData.el);
   const brokeName = useTool(activeSword);
 
   let msg = animal.emoji + ' 擊敗' + animal.name + '！獲得：';
   animal.drops.forEach(drop => {
     const count = drop.min + Math.floor(Math.random() * (drop.max - drop.min + 1));
     addBlock(drop.id, count);
-    const b = blocks.find(x => x.id === drop.id);
-    msg += ' ' + b.emoji + b.name + ' x' + count;
+    msg += ' ' + itemImgHTML(drop.id, 16) + blocks.find(x => x.id === drop.id).name + ' x' + count;
   });
   if (brokeName) msg += '\n💥 ' + brokeName + ' 壞掉了！';
 
@@ -3339,7 +3514,7 @@ function chopTree(cellData) {
   updateGemDisplay();
   cellData.mined = true;
   cellData.el.classList.add('mined');
-  cellData.el.textContent = '';
+  clearCellTex(cellData.el);
   const activeTool = getEquippedTool();
   const isAxe = activeTool && activeTool.woodBonus;
   const woodCount = isAxe ? activeTool.woodBonus : 1;
@@ -3347,10 +3522,10 @@ function chopTree(cellData) {
   const stickDrop = Math.random() < 0.5 ? 1 : 0;
   if (stickDrop) addBlock('stick', stickDrop);
   const brokeName = isAxe ? useTool(activeTool) : null;
-  const axeMsg = woodCount > 1 ? ` (🪓 斧頭加成 x${woodCount})` : '';
-  const stickMsg = stickDrop ? ` + 🥢 木棍 x${stickDrop}` : '';
+  const axeMsg = woodCount > 1 ? ` (${itemImgHTML(activeTool.id, 14)} 斧頭加成 x${woodCount})` : '';
+  const stickMsg = stickDrop ? ` + ${itemImgHTML('stick', 14)} 木棍 x${stickDrop}` : '';
   const breakMsg = brokeName ? `\n💥 ${brokeName} 壞掉了！` : '';
-  showMineResult(`🪵 木頭 x${woodCount}${stickMsg}${axeMsg}${breakMsg}`, !!brokeName);
+  showMineResult(`${itemImgHTML('wood', 16)} 木頭 x${woodCount}${stickMsg}${axeMsg}${breakMsg}`, !!brokeName);
   if (brokeName) refreshToolChips();
   updateExposure();
   applyAnimalGravity();
@@ -3383,13 +3558,18 @@ function mineMountainCell(row, col, cellData) {
   updateGemDisplay();
   cellData.mined = true;
   cellData.el.classList.add('mined');
-  cellData.el.textContent = '';
+  clearCellTex(cellData.el);
   const reveal = document.createElement('span');
   reveal.className = 'block-reveal';
-  reveal.textContent = cellData.block.emoji;
+  if (TEX[cellData.block.id]) {
+    const revealImg = itemImg(cellData.block.id, 28);
+    reveal.appendChild(revealImg);
+  } else {
+    reveal.textContent = cellData.block.emoji;
+  }
   cellData.el.appendChild(reveal);
-  // Fade out emoji after animation (only if cell is still mined — animal gravity may have claimed it)
-  setTimeout(() => { if (cellData.mined && !cellData.animal) cellData.el.textContent = ''; }, 800);
+  // Fade out reveal after animation (only if cell is still mined — animal gravity may have claimed it)
+  setTimeout(() => { if (cellData.mined && !cellData.animal) clearCellTex(cellData.el); }, 800);
 
   addBlock(cellData.block.id);
 
@@ -3399,7 +3579,7 @@ function mineMountainCell(row, col, cellData) {
   const b = cellData.block;
   const rarity = b.tier >= 4 ? ' ✨ 稀有！' : b.tier >= 3 ? ' 不錯！' : '';
   const breakMsg = brokeName ? `\n💥 ${brokeName} 壞掉了！` : '';
-  showMineResult(`${b.emoji} 挖到 ${b.name}！${rarity}${breakMsg}（擁有 ${getBlockCount(b.id)} 個）`, !!brokeName);
+  showMineResult(`${itemImgHTML(b.id, 16)} 挖到 ${b.name}！${rarity}${breakMsg}（擁有 ${getBlockCount(b.id)} 個）`, !!brokeName);
 
   if (brokeName) refreshToolChips();
   if (b.tier >= 4) doConfetti();
@@ -3459,7 +3639,7 @@ function applyAnimalGravity() {
       cell.animal = null;
       const capturedOldEl = oldEl;
       setTimeout(() => {
-        capturedOldEl.textContent = '';
+        clearCellTex(capturedOldEl);
         capturedOldEl.style.transform = '';
         capturedOldEl.style.opacity = '';
         capturedOldEl.classList.add('mined');
@@ -3537,7 +3717,11 @@ function renderToolChips(container) {
     label.textContent = s.category;
     const emoji = document.createElement('div');
     emoji.className = 'tool-slot-emoji';
-    emoji.textContent = s.equip ? s.equip.emoji : s.fallbackEmoji;
+    if (s.equip && TEX[s.equip.id]) {
+      emoji.appendChild(itemImg(s.equip.id, 24));
+    } else {
+      emoji.textContent = s.equip ? s.equip.emoji : s.fallbackEmoji;
+    }
     const name = document.createElement('div');
     name.className = 'tool-slot-name';
     name.textContent = s.equip ? s.equip.name : s.fallbackName;
@@ -3598,7 +3782,11 @@ function openToolPicker(chipEl, type) {
     // Build option content with safe DOM methods
     const emojiSpan = document.createElement('span');
     emojiSpan.className = 'opt-emoji';
-    emojiSpan.textContent = t.emoji;
+    if (!isHands && TEX[t.id]) {
+      emojiSpan.appendChild(itemImg(t.id, 24));
+    } else {
+      emojiSpan.textContent = t.emoji;
+    }
     opt.appendChild(emojiSpan);
     opt.appendChild(document.createTextNode(' ' + t.name));
     if (info) { const s = document.createElement('span'); s.className = 'opt-info'; s.textContent = info; opt.appendChild(s); }
@@ -3680,7 +3868,11 @@ function openArmorPicker(cellEl, slot) {
     const countText = o.count ? ' x' + o.count : '';
     const emojiSpan = document.createElement('span');
     emojiSpan.className = 'opt-emoji';
-    emojiSpan.textContent = o.emoji;
+    if (o.id !== '__unequip__' && TEX[o.id]) {
+      emojiSpan.appendChild(itemImg(o.id, 24));
+    } else {
+      emojiSpan.textContent = o.emoji;
+    }
     opt.appendChild(emojiSpan);
     opt.appendChild(document.createTextNode(' ' + o.name + countText));
     opt.addEventListener('click', (e) => {
@@ -3733,9 +3925,9 @@ function renderCharacter(container, size) {
   display.className = 'character-display' + (size === 'small' ? ' small' : '');
 
   const getEquip = (slot, fallback) => {
-    if (!equipped[slot]) return { emoji: fallback, name: null, empty: true };
+    if (!equipped[slot]) return { id: null, emoji: fallback, name: null, empty: true };
     const b = blocks.find(x => x.id === equipped[slot]);
-    return b ? { emoji: b.emoji, name: b.name, empty: false } : { emoji: fallback, name: null, empty: true };
+    return b ? { id: b.id, emoji: b.emoji, name: b.name, empty: false } : { id: null, emoji: fallback, name: null, empty: true };
   };
 
   const tool = getEquippedTool();
@@ -3752,18 +3944,18 @@ function renderCharacter(container, size) {
   //    _   褲    _
   //    _   鞋    _
   const grid = [
-    { emoji: '',           label: '',                              action: null },
-    { emoji: helmet.emoji, label: helmet.name || '頭', empty: helmet.empty, action: { type: 'armor', slot: 'helmet' } },
-    { emoji: '',           label: '',                              action: null },
-    { emoji: weapon ? weapon.emoji : '✋', label: weapon ? weapon.name : '武器', empty: !weapon, action: { type: 'tool', toolType: 'weapon' } },
-    { emoji: chest.emoji,  label: chest.name || '衣', empty: chest.empty,  action: { type: 'armor', slot: 'chest' } },
-    { emoji: tool ? tool.emoji : '✋',    label: tool ? tool.name : '工具', empty: !tool, action: { type: 'tool', toolType: 'tool' } },
-    { emoji: '',           label: '',                              action: null },
-    { emoji: legs.emoji,   label: legs.name || '褲', empty: legs.empty,   action: { type: 'armor', slot: 'legs' } },
-    { emoji: '',           label: '',                              action: null },
-    { emoji: '',           label: '',                              action: null },
-    { emoji: boots.emoji,  label: boots.name || '鞋', empty: boots.empty, action: { type: 'armor', slot: 'boots' } },
-    { emoji: '',           label: '',                              action: null },
+    { id: null,           emoji: '',           label: '',                              action: null },
+    { id: helmet.id,      emoji: helmet.emoji, label: helmet.name || '頭', empty: helmet.empty, action: { type: 'armor', slot: 'helmet' } },
+    { id: null,           emoji: '',           label: '',                              action: null },
+    { id: weapon ? weapon.id : null, emoji: weapon ? weapon.emoji : '✋', label: weapon ? weapon.name : '武器', empty: !weapon, action: { type: 'tool', toolType: 'weapon' } },
+    { id: chest.id,       emoji: chest.emoji,  label: chest.name || '衣', empty: chest.empty,  action: { type: 'armor', slot: 'chest' } },
+    { id: tool ? tool.id : null, emoji: tool ? tool.emoji : '✋',    label: tool ? tool.name : '工具', empty: !tool, action: { type: 'tool', toolType: 'tool' } },
+    { id: null,           emoji: '',           label: '',                              action: null },
+    { id: legs.id,        emoji: legs.emoji,   label: legs.name || '褲', empty: legs.empty,   action: { type: 'armor', slot: 'legs' } },
+    { id: null,           emoji: '',           label: '',                              action: null },
+    { id: null,           emoji: '',           label: '',                              action: null },
+    { id: boots.id,       emoji: boots.emoji,  label: boots.name || '鞋', empty: boots.empty, action: { type: 'armor', slot: 'boots' } },
+    { id: null,           emoji: '',           label: '',                              action: null },
   ];
 
   grid.forEach(cell => {
@@ -3772,7 +3964,11 @@ function renderCharacter(container, size) {
     const hasContent = cell.emoji || cell.action;
     if (hasContent) {
       if (cell.emoji) {
-        el.textContent = cell.emoji;
+        if (cell.id && TEX[cell.id]) {
+          el.appendChild(itemImg(cell.id, small ? 20 : 28));
+        } else {
+          el.textContent = cell.emoji;
+        }
         if (cell.empty) el.style.opacity = '0.3';
       } else if (cell.action) {
         el.classList.add('empty-slot');
@@ -3930,13 +4126,17 @@ function initFurnaceTab() {
 
     const inputSpan = document.createElement('span');
     inputSpan.className = 'furnace-recipe-input';
-    inputSpan.textContent = inputBlock.emoji + ' ' + inputBlock.name + ' (' + haveInput + ')';
+    inputSpan.appendChild(itemImg(recipe.input, 16));
+    inputSpan.appendChild(document.createTextNode(' ' + inputBlock.name + ' (' + haveInput + ')'));
     const arrowSpan = document.createElement('span');
     arrowSpan.className = 'furnace-recipe-arrow';
-    arrowSpan.textContent = '+ ' + fuelBlock.emoji + ' (' + haveFuel + ') ➡️';
+    arrowSpan.appendChild(document.createTextNode('+ '));
+    arrowSpan.appendChild(itemImg(recipe.fuel, 16));
+    arrowSpan.appendChild(document.createTextNode(' (' + haveFuel + ') ➡️'));
     const outputSpan = document.createElement('span');
     outputSpan.className = 'furnace-recipe-output';
-    outputSpan.textContent = outputBlock.emoji + ' ' + recipe.name;
+    outputSpan.appendChild(itemImg(recipe.output, 16));
+    outputSpan.appendChild(document.createTextNode(' ' + recipe.name));
     row.appendChild(inputSpan);
     row.appendChild(arrowSpan);
     row.appendChild(outputSpan);
@@ -3946,11 +4146,14 @@ function initFurnaceTab() {
         selectedRecipe = recipe;
         recipeList.querySelectorAll('.furnace-recipe-row').forEach(r => r.classList.remove('selected'));
         row.classList.add('selected');
-        inputSlot.textContent = inputBlock.emoji;
+        inputSlot.textContent = '';
+        inputSlot.appendChild(itemImg(recipe.input, 28));
         inputSlot.style.opacity = '1';
-        fuelSlot.textContent = fuelBlock.emoji;
+        fuelSlot.textContent = '';
+        fuelSlot.appendChild(itemImg(recipe.fuel, 28));
         fuelSlot.style.opacity = '1';
-        outputSlot.textContent = outputBlock.emoji;
+        outputSlot.textContent = '';
+        outputSlot.appendChild(itemImg(recipe.output, 28));
         smeltBtn.disabled = false;
         status.textContent = inputBlock.name + ' + ' + fuelBlock.name + ' → ' + recipe.name;
       });
@@ -3976,7 +4179,8 @@ function initFurnaceTab() {
     addBlock(selectedRecipe.output);
     playCraftSfx();
     doConfetti();
-    status.textContent = '✅ 熔煉成功！獲得 ' + selectedRecipe.emoji + ' ' + selectedRecipe.name;
+    // Trusted internal string with pixel art img tags
+    status.innerHTML = '✅ 熔煉成功！獲得 ' + itemImgHTML(selectedRecipe.output, 16) + ' ' + selectedRecipe.name;
     saveGame();
     setTimeout(() => initFurnaceTab(), 800);
   });
@@ -3998,7 +4202,8 @@ function initFurnaceTab() {
       const row = document.createElement('div');
       row.className = 'furnace-eat-row';
       const label = document.createElement('span');
-      label.textContent = b.emoji + ' ' + b.name + ' x' + count;
+      label.appendChild(itemImg(id, 16));
+      label.appendChild(document.createTextNode(' ' + b.name + ' x' + count));
       row.appendChild(label);
       const eatBtn = document.createElement('button');
       eatBtn.className = 'speak-btn small primary';
@@ -4053,7 +4258,11 @@ function renderEncyclopedia(c) {
 
     const emoji = document.createElement('div');
     emoji.className = 'block-emoji';
-    emoji.textContent = owned ? b.emoji : '❓';
+    if (owned && TEX[b.id]) {
+      emoji.appendChild(itemImg(b.id, 32));
+    } else {
+      emoji.textContent = owned ? b.emoji : '❓';
+    }
     const name = document.createElement('div');
     name.className = 'block-name';
     name.textContent = owned ? b.name : '???';
@@ -4281,8 +4490,7 @@ function renderRecipeBook(c) {
         const cell = document.createElement('div');
         cell.className = 'recipe-mini-slot';
         if (slot) {
-          const b = blocks.find(x => x.id === slot);
-          if (b) cell.textContent = b.emoji;
+          cell.appendChild(itemImg(slot, 16));
         }
         miniGrid.appendChild(cell);
       });
@@ -4295,7 +4503,7 @@ function renderRecipeBook(c) {
 
       const result = document.createElement('div');
       result.className = 'recipe-result';
-      result.textContent = r.emoji;
+      result.appendChild(itemImg(r.itemId, 24));
       card.appendChild(result);
 
       const info = document.createElement('div');
@@ -4309,11 +4517,11 @@ function renderRecipeBook(c) {
       const needsEl = document.createElement('div');
       needsEl.className = 'recipe-needs';
       Object.entries(r.needs).forEach(([id, count], idx) => {
-        const b = blocks.find(x => x.id === id);
         const have = getBlockCount(id);
         const span = document.createElement('span');
         span.className = have >= count ? 'has' : 'need';
-        span.textContent = (b ? b.emoji : id) + ' ' + have + '/' + count;
+        span.appendChild(itemImg(id, 14));
+        span.appendChild(document.createTextNode(' ' + have + '/' + count));
         if (idx > 0) needsEl.appendChild(document.createTextNode('  '));
         needsEl.appendChild(span);
       });
@@ -4420,8 +4628,7 @@ function updateCraftUI() {
     slot.textContent = '';
     slot.classList.toggle('filled', craftGrid[i] !== null);
     if (craftGrid[i]) {
-      const b = blocks.find(x => x.id === craftGrid[i]);
-      if (b) slot.textContent = b.emoji;
+      slot.appendChild(itemImg(craftGrid[i], 28));
     }
   }
 
@@ -4430,7 +4637,11 @@ function updateCraftUI() {
   const resultSlot = document.getElementById('craftResultSlot');
   const craftBtn = document.getElementById('craftBtn');
   if (resultSlot) {
-    resultSlot.textContent = match ? match.emoji : '';
+    resultSlot.textContent = '';
+    if (match) {
+      const resultId = match.item.outputId || match.item.id;
+      resultSlot.appendChild(itemImg(resultId, 28));
+    }
     resultSlot.classList.toggle('matched', !!match);
   }
   if (craftBtn) craftBtn.disabled = !match;
@@ -4445,7 +4656,7 @@ function updateCraftUI() {
     const item = document.createElement('div');
     item.className = 'craft-inv-item' + (craftSelected === b.id ? ' selected' : '');
     item.title = b.name;
-    item.textContent = b.emoji;
+    item.appendChild(itemImg(b.id, 24));
     const countEl = document.createElement('span');
     countEl.className = 'inv-count';
     countEl.textContent = count;
@@ -4470,7 +4681,8 @@ function updateCraftUI() {
       const info = document.getElementById('craftInfo');
       if (info) {
         if (craftSelected === b.id) {
-          info.textContent = b.emoji + ' ' + b.name + ' (' + getBlockCount(b.id) + '個)';
+          // Trusted internal string with pixel art img tags
+          info.innerHTML = itemImgHTML(b.id, 16) + ' ' + b.name + ' (' + getBlockCount(b.id) + '個)';
           info.style.opacity = '1';
           const itemRect = item.getBoundingClientRect();
           const parentRect = info.parentElement.getBoundingClientRect();
@@ -4516,7 +4728,17 @@ function doCraft() {
 
 
 
-function screenshotBuild() {
+// Preload an image and return a promise
+function loadTexImg(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null); // fallback to emoji on error
+    img.src = src;
+  });
+}
+
+async function screenshotBuild() {
   if (mineData.length === 0) return;
   const cellSize = 24;
   const maxWidth = mineData[0].length;
@@ -4525,6 +4747,26 @@ function screenshotBuild() {
   cvs.width = maxWidth * cellSize;
   cvs.height = rows * cellSize;
   const ctx = cvs.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+
+  // Preload all needed textures
+  const texCache = {};
+  const needed = new Set();
+  if (buildPlayerPos && TEX['_player']) needed.add('_player');
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < maxWidth; c++) {
+      const cd = mineData[r][c];
+      if (!cd) continue;
+      const placedId = buildGrid[r + ',' + c];
+      if (placedId && TEX[placedId]) needed.add(placedId);
+      if (!cd.mined && cd.block && TEX_MINE[cd.block.id]) needed.add('_mine_' + cd.block.id);
+      if (!cd.mined && cd.block && TEX[cd.block.id]) needed.add(cd.block.id);
+    }
+  }
+  await Promise.all([...needed].map(async id => {
+    const src = id.startsWith('_mine_') ? TEX_MINE[id.slice(6)] : TEX[id];
+    if (src) texCache[id] = await loadTexImg(src);
+  }));
 
   // Sky background
   ctx.fillStyle = '#87CEEB';
@@ -4544,12 +4786,17 @@ function screenshotBuild() {
       if (placedId) {
         ctx.fillStyle = '#FFFFFF';
         ctx.fillRect(x, y, cellSize, cellSize);
-        const b = blocks.find(bl => bl.id === placedId);
-        if (b) {
-          ctx.font = (cellSize * 0.7) + 'px serif';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText(b.emoji, x + cellSize / 2, y + cellSize / 2);
+        const texImg = texCache[placedId];
+        if (texImg) {
+          ctx.drawImage(texImg, x, y, cellSize, cellSize);
+        } else {
+          const b = blocks.find(bl => bl.id === placedId);
+          if (b) {
+            ctx.font = (cellSize * 0.7) + 'px serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(b.emoji, x + cellSize / 2, y + cellSize / 2);
+          }
         }
       } else if (cellData.mined) {
         ctx.fillStyle = 'rgba(135,206,235,0.4)';
@@ -4565,16 +4812,27 @@ function screenshotBuild() {
         ctx.textBaseline = 'middle';
         ctx.fillText(cellData.treeEmoji, x + cellSize / 2, y + cellSize / 2);
       } else {
-        ctx.fillStyle = tierBg[cellData.tier] || '#8B6F47';
-        ctx.fillRect(x, y, cellSize, cellSize);
+        // Unmined block — draw ore texture or tier color
+        const mineTexImg = texCache['_mine_' + (cellData.block ? cellData.block.id : '')] || (cellData.block ? texCache[cellData.block.id] : null);
+        if (mineTexImg) {
+          ctx.drawImage(mineTexImg, x, y, cellSize, cellSize);
+        } else {
+          ctx.fillStyle = tierBg[cellData.tier] || '#8B6F47';
+          ctx.fillRect(x, y, cellSize, cellSize);
+        }
       }
 
       // Player avatar
       if (buildPlayerPos && buildPlayerPos.r === r && buildPlayerPos.c === c) {
-        ctx.font = (cellSize * 0.8) + 'px serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('🧍', x + cellSize / 2, y + cellSize / 2);
+        const playerImg = texCache['_player'];
+        if (playerImg) {
+          ctx.drawImage(playerImg, x, y, cellSize, cellSize);
+        } else {
+          ctx.font = (cellSize * 0.8) + 'px serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('🧍', x + cellSize / 2, y + cellSize / 2);
+        }
       }
     }
   }
