@@ -1,0 +1,67 @@
+// weeks/week1.js — Week 1: Feelings & Sight Words
+window.WEEK_DATA = {
+  title: 'Feelings Fun!',
+  titleEmoji: '🎭',
+
+  feelings: [
+    { word: 'happy',   zh: '開心的', emoji: '😊', color: '#FFD93D' },
+    { word: 'sad',     zh: '難過的', emoji: '😢', color: '#74B9FF' },
+    { word: 'angry',   zh: '憤怒的', emoji: '😠', color: '#FF6B6B' },
+    { word: 'excited', zh: '興奮的', emoji: '🤩', color: '#FF85CA' },
+    { word: 'silly',   zh: '可笑的', emoji: '🤪', color: '#A29BFE' },
+    { word: 'tired',   zh: '累的',   emoji: '😴', color: '#B2BEC3' },
+    { word: 'scared',  zh: '害怕的', emoji: '😨', color: '#81ECEC' },
+    { word: 'bored',   zh: '無聊的', emoji: '😑', color: '#FFEAA7' },
+    { word: 'sick',    zh: '不舒服的', emoji: '🤒', color: '#55EFC4' },
+    { word: 'proud',   zh: '驕傲的', emoji: '😎', color: '#FD79A8' },
+    { word: 'brave',   zh: '勇敢的', emoji: '💪', color: '#E17055' },
+    { word: 'mad',     zh: '生氣的', emoji: '😤', color: '#D63031' },
+  ],
+
+  sightWords: [
+    { word: 'door',  zh: '門', sentence: 'Open the door.' },
+    { word: 'down',  zh: '下面', sentence: 'Sit down please.' },
+    { word: 'dress', zh: '洋裝', sentence: 'I like your dress.' },
+    { word: 'duck',  zh: '鴨子', sentence: 'Look at the duck!' },
+    { word: 'each',  zh: '每一個', sentence: 'Give one to each child.' },
+    { word: 'egg',   zh: '蛋', sentence: 'I eat an egg.' },
+    { word: 'every',  zh: '每個', sentence: 'Every day is special.' },
+    { word: 'over',   zh: '在…上方', sentence: 'The bird flew over the house.' },
+    { word: 'new',    zh: '新的', sentence: 'I got a new book.' },
+    { word: 'sound',  zh: '聲音', sentence: 'What is that sound?' },
+    { word: 'take',   zh: '拿', sentence: 'Please take one.' },
+    { word: 'only',   zh: '只有', sentence: 'I have only one.' },
+    { word: 'little', zh: '小的', sentence: 'The little cat is cute.' },
+    { word: 'work',   zh: '工作', sentence: 'We work together.' },
+    { word: 'know',   zh: '知道', sentence: 'I know the answer.' },
+    { word: 'place',  zh: '地方', sentence: 'This is a nice place.' },
+    { word: 'years',  zh: '年', sentence: 'I am six years old.' },
+  ],
+
+  sightColors: ['#FF6B6B','#A29BFE','#FFD93D','#00B894','#FF85CA','#74B9FF','#E17055'],
+
+  sentences: [
+    { en: 'My teacher tells us interesting stories every day.', zh: '我的老師每天都會跟我們分享有趣的故事。' },
+    { en: 'I get very excited.', zh: '我總是感到非常興奮。' },
+    { en: 'My friends think they are so silly.', zh: '只是我的朋友們覺得那些故事有些可笑。' },
+    { en: 'One story was about a duck with a dress that lays eggs behind a door because she is very scared of the angry goat in the barn.', zh: '有個故事是關於一隻穿著裙子的鴨子。因為穀倉裡有隻愛生氣的山羊，鴨子很怕那隻山羊，因此鴨子只能躲在門後面下蛋。' },
+    { en: 'I feel very sad for the duck.', zh: '我為那隻鴨子感到難過。' },
+    { en: 'Joe loves the story about the brave bear that got lost in the forest.', zh: '我的朋友Joe喜歡的故事是關於一隻在森林中迷路但卻非常勇敢的熊。' },
+    { en: 'He is so proud of the bear for never getting scared and helping other sick animals on his way.', zh: '那一隻熊不曾感到害怕而且一路上幫助其他生病的動物，他為那隻熊感到驕傲。' },
+    { en: 'Some of my classmates get very bored and feel sleepy in class if my teacher talks about the history of toys.', zh: '而當老師在課堂上談到關於玩具歷史的時候，部分同學只會感到無聊且想睡覺。' },
+    { en: 'They just want to play with them.', zh: '他們只想玩玩具。' },
+    { en: 'My teacher makes me feel loved and her stories make me feel so happy!', zh: '老師總是讓我感受他對學生們的愛，而且也讓我感到開心。' },
+  ],
+
+  dialogues: [
+    { q: 'What are those?', qzh: '那些是什麼？', a: 'They are my mom\'s shoes.', azh: '它們是我媽媽的鞋子。' },
+    { q: 'Are these your pants?', qzh: '這是你的長褲嗎？', a: 'Yes, they are.', azh: '是，它們是。' },
+    { q: 'Are those her books?', qzh: '那些是她的書嗎？', a: 'No, they aren\'t. They are mine.', azh: '不，不是。它們是我的。' },
+    { q: 'What color do you like?', qzh: '你喜歡什麼顏色？', a: 'I like blue.', azh: '我喜歡藍色。' },
+    { q: 'What color does your mom like?', qzh: '你媽媽喜歡什麼顏色？', a: 'She likes pink.', azh: '她喜歡粉紅色。' },
+    { q: 'Do you like carrots?', qzh: '你喜歡胡蘿蔔嗎？', a: 'Yes, I do. But my sister doesn\'t.', azh: '是，我喜歡。但我妹妹不喜歡。' },
+    { q: 'What can she do?', qzh: '她會做什麼？', a: 'She can ride horses.', azh: '她會騎馬。' },
+    { q: 'Can your dad speak English?', qzh: '你爸爸會說英文嗎？', a: 'No, he can\'t. But he can speak Japanese.', azh: '不，他不會。但是他會說日文。' },
+    { q: 'Can monkeys climb trees?', qzh: '猴子能爬樹嗎？', a: 'Yes, they can.', azh: '會，牠們會。' },
+  ],
+};
