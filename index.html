@@ -1091,7 +1091,7 @@ body::before {
 <body>
 
 <div class="header" id="appHeader">
-  <h1 id="appTitle">Feelings Fun! 🎭 <span style="font-size:0.45em;font-weight:400;color:#636E72;vertical-align:middle;">Week 1 · v3.8.0</span></h1>
+  <h1 id="appTitle">Feelings Fun! 🎭 <select id="weekSwitcher" style="font-size:0.45em;font-weight:600;color:#636E72;vertical-align:middle;border:1px solid #DFE6E9;border-radius:8px;padding:2px 4px;background:#fff;font-family:inherit;cursor:pointer;-webkit-text-fill-color:#636E72;"></select></h1>
   <div class="score-bar">
     <div class="score-item" id="starBar"><span>⭐</span> <span id="stars">0</span></div>
     <div class="score-item" id="streakBar"><span>🔥</span> <span id="streak">0</span></div>
@@ -1227,7 +1227,21 @@ const isCheat = new URLSearchParams(window.location.search).get('cheat') === '1'
 document.title = WEEK_DATA.title + ' ' + WEEK_DATA.titleEmoji;
 var h1 = document.getElementById('appTitle');
 h1.firstChild.textContent = WEEK_DATA.title + ' ' + WEEK_DATA.titleEmoji + ' ';
-h1.querySelector('span').textContent = 'Week ' + weekNum + ' · v3.8.0';
+// Week switcher dropdown
+var totalWeeks = 2;
+var sel = document.getElementById('weekSwitcher');
+for (var i = 1; i <= totalWeeks; i++) {
+  var opt = document.createElement('option');
+  opt.value = i;
+  opt.textContent = 'Week ' + i;
+  if (String(i) === weekNum) opt.selected = true;
+  sel.appendChild(opt);
+}
+sel.addEventListener('change', function() {
+  var url = new URL(location.href);
+  url.searchParams.set('week', sel.value);
+  location.href = url.toString();
+});
 const SAVE_KEY = 'mineGame_week' + weekNum;
 
 // ===== DATA =====
