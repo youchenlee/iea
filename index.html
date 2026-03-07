@@ -1118,9 +1118,9 @@ body::before {
   <div class="nav-spacer"></div>
 
   <div id="learn" class="section active">
-    <h3 class="learn-section-title">😊 Feelings 情緒</h3>
+    <h3 class="learn-section-title" id="feelingsTitle">😊 Feelings 情緒</h3>
     <div class="feelings-grid" id="feelingsGrid"></div>
-    <div class="sentence-practice">
+    <div class="sentence-practice" id="feelingsPractice">
       <h3>🗣️ Practice Sentences 造句練習</h3>
       <div class="sentence-display" id="sentenceDisplay">I feel <span class="hl">happy</span>. 😊</div>
       <div class="btn-row">
@@ -2208,7 +2208,8 @@ function showLearnGate() {
   content.appendChild(header);
 
   // Pick quiz type: 0 = feelings (emoji→word), 1 = sight word (zh→en)
-  const quizType = Math.random() < 0.5 ? 0 : 1;
+  const hasFeelings = feelings.length > 0;
+  const quizType = hasFeelings ? (Math.random() < 0.5 ? 0 : 1) : 1;
   let correctItem, prompt, allItems, correctAnswer;
 
   if (quizType === 0) {
@@ -2353,6 +2354,12 @@ window.addEventListener('scroll', () => {
 }, { passive: true });
 
 // ===== NAV =====
+// Hide Match/Quiz tabs when no feelings data
+if (!feelings.length) {
+  document.querySelectorAll('.nav-tab').forEach(t => {
+    if (t.dataset.tab === 'match' || t.dataset.tab === 'quiz') t.style.display = 'none';
+  });
+}
 document.querySelectorAll('.nav-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
@@ -2375,6 +2382,10 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
 function initLearn() {
   const grid = document.getElementById('feelingsGrid');
   grid.innerHTML = '';
+  if (!feelings.length) {
+    document.getElementById('feelingsTitle').style.display = 'none';
+    document.getElementById('feelingsPractice').style.display = 'none';
+  }
   feelings.forEach(f => {
     const card = document.createElement('div');
     card.className = 'feeling-card';
@@ -2440,6 +2451,10 @@ function createEl(tag, className, textContent) {
 let currentReadUnit = 'sentences';
 
 function initRead() {
+  // Hide dialogue toggle if no dialogues
+  if (!dialogues.length) {
+    document.querySelector('.read-unit-toggle').style.display = 'none';
+  }
   // Unit toggle listeners (only bind once)
   document.querySelectorAll('.read-unit-btn').forEach(btn => {
     btn.addEventListener('click', () => {
