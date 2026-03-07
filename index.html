@@ -6,10 +6,8 @@
 <title>Feelings Fun! 🎭</title>
 <script>
   var weekNum = new URLSearchParams(location.search).get('week') || '1';
-  var s = document.createElement('script');
-  s.src = 'weeks/week' + weekNum + '.js';
-  s.async = false;
-  document.head.appendChild(s);
+  if (!/^\d+$/.test(weekNum)) weekNum = '1';
+  document.write('<scr' + 'ipt src="weeks/week' + weekNum + '.js"></scr' + 'ipt>');
 </script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap');
@@ -1093,7 +1091,7 @@ body::before {
 <body>
 
 <div class="header" id="appHeader">
-  <h1>Feelings Fun! 🎭 <span style="font-size:0.45em;font-weight:400;color:#636E72;vertical-align:middle;">Week 1 · v3.8.0</span></h1>
+  <h1 id="appTitle">Feelings Fun! 🎭 <span style="font-size:0.45em;font-weight:400;color:#636E72;vertical-align:middle;">Week 1 · v3.8.0</span></h1>
   <div class="score-bar">
     <div class="score-item" id="starBar"><span>⭐</span> <span id="stars">0</span></div>
     <div class="score-item" id="streakBar"><span>🔥</span> <span id="streak">0</span></div>
@@ -1227,6 +1225,9 @@ body::before {
 // ===== CHEAT =====
 const isCheat = new URLSearchParams(window.location.search).get('cheat') === '1';
 document.title = WEEK_DATA.title + ' ' + WEEK_DATA.titleEmoji;
+var h1 = document.getElementById('appTitle');
+h1.firstChild.textContent = WEEK_DATA.title + ' ' + WEEK_DATA.titleEmoji + ' ';
+h1.querySelector('span').textContent = 'Week ' + weekNum + ' · v3.8.0';
 const SAVE_KEY = 'mineGame_week' + weekNum;
 
 // ===== DATA =====
