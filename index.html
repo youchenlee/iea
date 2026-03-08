@@ -333,12 +333,26 @@ body::before {
   background: var(--surface); border: 2px solid var(--border); transition: all 0.3s;
 }
 .sentence-card .sc-dot.filled { background: var(--success); border-color: var(--success); }
-.sentence-card .sc-listen-btn {
+.sentence-card .sc-listen-btn, .sentence-card .sc-repeat-btn {
   padding: 6px 14px; border-radius: var(--radius-pill); border: 2px solid var(--accent);
   background: transparent; color: var(--accent-dark); font-family: var(--font-display);
   font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
 }
-.sentence-card .sc-listen-btn:hover { background: var(--accent); color: white; }
+.sentence-card .sc-listen-btn:hover, .sentence-card .sc-repeat-btn:hover { background: var(--accent); color: white; }
+.sentence-card .sc-repeat-btn { border-color: #FF85CA; color: #D63384; }
+.sentence-card .sc-repeat-btn:hover { background: #FF85CA; color: white; }
+.sentence-card .sc-btns { display: flex; gap: 6px; }
+.sc-word { transition: all 0.2s; border-radius: 4px; padding: 0 2px; }
+.sc-word.highlight { background: #FFD93D; color: #2D3436; transform: scale(1.05); display: inline-block; }
+.sc-your-turn {
+  text-align: center; padding: 12px; margin-top: 8px;
+  font-family: var(--font-display); font-size: 1.1rem; font-weight: 700;
+  color: #FF85CA; animation: yourTurnPulse 1s ease-in-out infinite;
+}
+@keyframes yourTurnPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}
 @media (max-width: 600px) {
   .sentence-card .sc-en { font-size: 1rem; }
 }
@@ -1225,7 +1239,7 @@ body::before {
   <div id="read" class="section">
     <div class="read-header">
       <h3>📗 Sentence Reading 朗讀練習</h3>
-      <p>點卡片朗讀，每句唸 3 次就過關！</p>
+      <p>🔊 Listen 聽＋跟讀 🎤 跟讀模式：先聽再跟唸！每句 3 次過關</p>
       <div class="read-unit-toggle">
         <button class="read-unit-btn active" data-unit="sentences">📖 Unit 1 Sentences</button>
         <button class="read-unit-btn" data-unit="dialogues">💬 Q&amp;A Dialogues</button>
@@ -2195,6 +2209,116 @@ function speakWordByWord(text, synth) {
   return emitter;
 }
 
+// Karaoke-style speak with word highlighting
+function speakWithHighlight(text, card) {
+  const synth = window.speechSynthesis;
+  if (!synth) return;
+  synth.cancel();
+
+  card.classList.add('speaking');
+  const wordSpans = card.querySelectorAll('.sc-word');
+
+  const speed = speechSpeed;
+  if (speed === 'slower') {
+    // Word-by-word mode with highlighting
+    const textWords = text.split(/\s+/).filter(Boolean);
+    const pick = pickBestVoice(synth.getVoices());
+    let idx = 0;
+    function nextWord() {
+      wordSpans.forEach(s => s.classList.remove('highlight'));
+      if (idx >= textWords.length) {
+        card.classList.remove('speaking');
+        return;
+      }
+      if (wordSpans[idx]) wordSpans[idx].classList.add('highlight');
+      const u = new SpeechSynthesisUtterance(textWords[idx]);
+      u.lang = 'en-US'; u.rate = 0.55; u.pitch = 1.05;
+      if (pick) u.voice = pick;
+      u.onend = () => { idx++; setTimeout(nextWord, 400); };
+      u.onerror = () => { idx++; setTimeout(nextWord, 400); };
+      synth.speak(u);
+    }
+    nextWord();
+    return;
+  }
+
+  const rateMap = { slow: 0.5, normal: 0.9 };
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US';
+  u.rate = rateMap[speed] || 0.9;
+  u.pitch = 1.05;
+  const pick = pickBestVoice(synth.getVoices());
+  if (pick) u.voice = pick;
+
+  // Use boundary events for karaoke highlighting
+  let wordIdx = 0;
+  u.onboundary = (e) => {
+    if (e.name === 'word') {
+      wordSpans.forEach(s => s.classList.remove('highlight'));
+      if (wordSpans[wordIdx]) wordSpans[wordIdx].classList.add('highlight');
+      wordIdx++;
+    }
+  };
+  u.onend = () => {
+    wordSpans.forEach(s => s.classList.remove('highlight'));
+    card.classList.remove('speaking');
+  };
+  u.onerror = () => {
+    wordSpans.forEach(s => s.classList.remove('highlight'));
+    card.classList.remove('speaking');
+  };
+  synth.speak(u);
+}
+
+// Repeat-after-me: play slowly, pause, show "Your turn!", count as read
+function doRepeatAfterMe(text, card, onComplete) {
+  const synth = window.speechSynthesis;
+  if (!synth) return;
+  synth.cancel();
+
+  card.classList.add('speaking');
+  const wordSpans = card.querySelectorAll('.sc-word');
+
+  // Remove any existing "your turn" prompt
+  const oldPrompt = card.querySelector('.sc-your-turn');
+  if (oldPrompt) oldPrompt.remove();
+
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US';
+  u.rate = 0.5; // always slow for repeat mode
+  u.pitch = 1.05;
+  const pick = pickBestVoice(synth.getVoices());
+  if (pick) u.voice = pick;
+
+  // Karaoke highlighting during model playback
+  let wordIdx = 0;
+  u.onboundary = (e) => {
+    if (e.name === 'word') {
+      wordSpans.forEach(s => s.classList.remove('highlight'));
+      if (wordSpans[wordIdx]) wordSpans[wordIdx].classList.add('highlight');
+      wordIdx++;
+    }
+  };
+
+  u.onend = () => {
+    wordSpans.forEach(s => s.classList.remove('highlight'));
+    // Show "Your turn!" prompt
+    const prompt = createEl('div', 'sc-your-turn', '🎤 換你說！Your turn!');
+    card.appendChild(prompt);
+    // After 4 seconds, count as a read and clean up
+    setTimeout(() => {
+      prompt.remove();
+      card.classList.remove('speaking');
+      if (onComplete) onComplete();
+    }, 4000);
+  };
+  u.onerror = () => {
+    wordSpans.forEach(s => s.classList.remove('highlight'));
+    card.classList.remove('speaking');
+  };
+  synth.speak(u);
+}
+
 // Speak word first, then sentence after a pause
 function speakWordThenSentence(word, sentence) {
   const synth = window.speechSynthesis;
@@ -2671,16 +2795,23 @@ function buildCardShell(id, done) {
   return card;
 }
 
-function buildCardBottom(count, listenFn, readFn) {
+function buildCardBottom(count, listenFn, readFn, repeatFn) {
   const bottom = createEl('div', 'sc-bottom');
   const dots = createEl('div', 'sc-dots');
   for (let d = 0; d < SENTENCE_GOAL; d++) {
     dots.appendChild(createEl('div', 'sc-dot' + (d < count ? ' filled' : '')));
   }
   bottom.appendChild(dots);
+  const btns = createEl('div', 'sc-btns');
   const listenBtn = createEl('button', 'sc-listen-btn', '🔊 Listen');
   listenBtn.addEventListener('click', (e) => { e.stopPropagation(); readFn(); });
-  bottom.appendChild(listenBtn);
+  btns.appendChild(listenBtn);
+  if (repeatFn) {
+    const repeatBtn = createEl('button', 'sc-repeat-btn', '🎤 跟讀');
+    repeatBtn.addEventListener('click', (e) => { e.stopPropagation(); repeatFn(); });
+    btns.appendChild(repeatBtn);
+  }
+  bottom.appendChild(btns);
   bottom.appendChild(createEl('div', 'sc-count', count >= SENTENCE_GOAL ? '✅' : `${count}/${SENTENCE_GOAL}`));
   return bottom;
 }
@@ -2689,11 +2820,22 @@ function buildSentenceCard(s, i) {
   const count = sentenceReadCount[i];
   const card = buildCardShell(`sc-${i}`, count >= SENTENCE_GOAL);
   card.appendChild(createEl('div', 'sc-number', `#${i + 1}`));
-  card.appendChild(createEl('div', 'sc-en', s.en));
+
+  // Wrap each word in a span for karaoke highlighting
+  const enDiv = createEl('div', 'sc-en');
+  const words = s.en.split(/(\s+)/); // keep whitespace as separators
+  words.forEach(w => {
+    if (/^\s+$/.test(w)) { enDiv.appendChild(document.createTextNode(w)); return; }
+    const span = createEl('span', 'sc-word', w);
+    enDiv.appendChild(span);
+  });
+  card.appendChild(enDiv);
   card.appendChild(createEl('div', 'sc-zh', s.zh));
+
   card.appendChild(buildCardBottom(count,
-    () => { card.classList.add('speaking'); setTimeout(() => card.classList.remove('speaking'), 1200); speak(s.en); },
-    () => trackRead('sentences', i, card)
+    () => speakWithHighlight(s.en, card),
+    () => trackRead('sentences', i, card),
+    () => doRepeatAfterMe(s.en, card, () => trackRead('sentences', i, card, true))
   ));
   card.addEventListener('click', () => trackRead('sentences', i, card));
   return card;
@@ -2732,18 +2874,16 @@ function buildDialogueCard(d, i) {
         });
       } else { card.classList.remove('speaking'); }
     },
-    () => trackRead('dialogues', i, card)
+    () => trackRead('dialogues', i, card),
+    () => doRepeatAfterMe(d.q + ' ' + d.a, card, () => trackRead('dialogues', i, card, true))
   ));
   card.addEventListener('click', () => trackRead('dialogues', i, card));
   return card;
 }
 
-function trackRead(unit, i, card) {
+function trackRead(unit, i, card, skipSpeak) {
   const counts = unit === 'sentences' ? sentenceReadCount : dialogueReadCount;
   const data = unit === 'sentences' ? sentences[i] : dialogues[i];
-  card.classList.add('speaking');
-  const text = unit === 'sentences' ? data.en : (data.q + ' ' + data.a);
-  const u = speak(text);
   let incremented = false;
   const increment = () => {
     if (incremented) return;
@@ -2759,6 +2899,10 @@ function trackRead(unit, i, card) {
       saveGame();
     }
   };
+  if (skipSpeak) { increment(); return; }
+  card.classList.add('speaking');
+  const text = unit === 'sentences' ? data.en : (data.q + ' ' + data.a);
+  const u = speak(text);
   if (u && u.addEventListener) { u.addEventListener('end', increment); setTimeout(increment, 15000); }
   else { increment(); }
 }
