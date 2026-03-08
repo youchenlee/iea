@@ -1258,6 +1258,8 @@ const SENTENCE_GOAL = 3;
 
 const dialogues = WEEK_DATA.dialogues;
 let dialogueReadCount = new Array(dialogues.length).fill(0);
+let enchantments = {};
+let fishingRodDurability = 0;
 
 // ===== MINING DATA =====
 const blocks = [
@@ -1316,6 +1318,25 @@ const blocks = [
   { id: 'bucket',  name: '桶',   emoji: '🪣', tier: 0, weight: 0 },
   { id: 'compass', name: '指南針', emoji: '🧭', tier: 0, weight: 0 },
   { id: 'clock',   name: '時鐘', emoji: '🕐', tier: 0, weight: 0 },
+  // Food ingredients
+  { id: 'wheat',          name: '小麥',   emoji: '🌾', tier: 0, weight: 0 },
+  { id: 'sugar',          name: '糖',     emoji: '🍬', tier: 0, weight: 0 },
+  { id: 'egg',            name: '蛋',     emoji: '🥚', tier: 0, weight: 0 },
+  { id: 'mushroom',       name: '蘑菇',   emoji: '🍄', tier: 0, weight: 0 },
+  { id: 'bowl',           name: '碗',     emoji: '🥣', tier: 0, weight: 0 },
+  // Food items
+  { id: 'bread',          name: '麵包',   emoji: '🍞', tier: 0, weight: 0 },
+  { id: 'cake',           name: '蛋糕',   emoji: '🎂', tier: 0, weight: 0 },
+  { id: 'cookie',         name: '餅乾',   emoji: '🍪', tier: 0, weight: 0 },
+  { id: 'mushroom_stew',  name: '蘑菇湯', emoji: '🍲', tier: 0, weight: 0 },
+  { id: 'golden_apple',   name: '金蘋果', emoji: '🍎', tier: 0, weight: 0 },
+  { id: 'raw_fish',       name: '生魚',   emoji: '🐟', tier: 0, weight: 0 },
+  { id: 'cooked_fish',    name: '烤魚',   emoji: '🍣', tier: 0, weight: 0 },
+  // Enchanting & Fishing
+  { id: 'book',             name: '書',     emoji: '📖', tier: 0, weight: 0 },
+  { id: 'enchanting_table', name: '附魔台', emoji: '🔮', tier: 0, weight: 0 },
+  { id: 'fishing_rod',      name: '釣魚竿', emoji: '🎣', tier: 0, weight: 0 },
+  { id: 'fish_junk',        name: '垃圾',   emoji: '🧦', tier: 0, weight: 0 },
   // Tools (tier 0, weight 0 = never mined, only crafted)
   { id: 'wood_pick',    name: '木鎬',   emoji: '⛏️', tier: 0, weight: 0 },
   { id: 'stone_pick',   name: '石鎬',   emoji: '⛏️', tier: 0, weight: 0 },
@@ -1546,7 +1567,7 @@ const axes = [
 const animals = [
   { id: 'cow',     name: '牛',  emoji: '🐄', drops: [{ id: 'leather', min: 1, max: 2 }] },
   { id: 'pig',     name: '豬',  emoji: '🐷', drops: [{ id: 'pork', min: 1, max: 1 }] },
-  { id: 'chicken', name: '雞',  emoji: '🐔', drops: [{ id: 'chicken_meat', min: 1, max: 1 }, { id: 'feather', min: 1, max: 1 }] },
+  { id: 'chicken', name: '雞',  emoji: '🐔', drops: [{ id: 'chicken_meat', min: 1, max: 1 }, { id: 'feather', min: 1, max: 1 }, { id: 'egg', min: 0, max: 1 }] },
   { id: 'sheep',   name: '羊',  emoji: '🐑', drops: [{ id: 'wool', min: 1, max: 2 }] },
 ];
 
@@ -1691,6 +1712,18 @@ const craftRecipes = [
   { id: 'clock', name: '時鐘', emoji: '🕐', outputId: 'clock', outputCount: 1,
     needs: { gold_ingot: 4, redstone: 1 },
     pattern: [null,'gold_ingot',null, 'gold_ingot','redstone','gold_ingot', null,'gold_ingot',null] },
+  // Food recipes
+  { id: 'bread', name: '麵包', emoji: '🍞', outputId: 'bread', outputCount: 1, needs: { wheat: 3 }, shapeless: true },
+  { id: 'cookie', name: '餅乾', emoji: '🍪', outputId: 'cookie', outputCount: 8, needs: { wheat: 2, coal: 1 }, shapeless: true },
+  { id: 'cake', name: '蛋糕', emoji: '🎂', outputId: 'cake', outputCount: 1, needs: { wheat: 3, sugar: 2, egg: 1 }, shapeless: true },
+  { id: 'mushroom_stew', name: '蘑菇湯', emoji: '🍲', outputId: 'mushroom_stew', outputCount: 1, needs: { mushroom: 1, bowl: 1 }, shapeless: true },
+  { id: 'golden_apple', name: '金蘋果', emoji: '🍎', outputId: 'golden_apple', outputCount: 1, needs: { gold_ingot: 8, emerald: 1 }, shapeless: false, pattern: ['gold_ingot','gold_ingot','gold_ingot', 'gold_ingot','emerald','gold_ingot', 'gold_ingot','gold_ingot','gold_ingot'] },
+  { id: 'bowl', name: '碗', emoji: '🥣', outputId: 'bowl', outputCount: 4, needs: { wood: 3 }, shapeless: false, pattern: ['wood',null,'wood', null,'wood',null, null,null,null] },
+  { id: 'sugar', name: '糖', emoji: '🍬', outputId: 'sugar', outputCount: 2, needs: { gravel: 1 }, shapeless: true },
+  // Utility recipes
+  { id: 'book', name: '書', emoji: '📖', outputId: 'book', outputCount: 1, needs: { leather: 3 }, shapeless: true },
+  { id: 'enchanting_table', name: '附魔台', emoji: '🔮', outputId: 'enchanting_table', outputCount: 1, needs: { obsidian: 4, diamond: 2, book: 1 }, shapeless: false, pattern: [null,'book',null, 'diamond','obsidian','diamond', 'obsidian','obsidian','obsidian'] },
+  { id: 'fishing_rod', name: '釣魚竿', emoji: '🎣', outputId: 'fishing_rod', outputCount: 1, needs: { stick: 3, string: 2 }, shapeless: false, pattern: [null,null,'stick', null,'stick','string', 'stick',null,'string'] },
 ];
 
 const smeltRecipes = [
@@ -1701,13 +1734,39 @@ const smeltRecipes = [
   { input: 'chicken_meat', fuel: 'coal', output: 'cooked_chicken', name: '烤雞肉', emoji: '🍗' },
   { input: 'sand',         fuel: 'coal', output: 'glass',    name: '玻璃', emoji: '🪟' },
   { input: 'clay',         fuel: 'coal', output: 'brick',    name: '磚塊', emoji: '🧱' },
+  { input: 'raw_fish',     fuel: 'coal', output: 'cooked_fish', name: '烤魚', emoji: '🍣' },
 ];
 
 // Cooked food effects: item id → stamina gained
 const foodEffects = {
   cooked_pork: 3,
   cooked_chicken: 2,
+  cooked_fish: 2,
+  bread: 3,
+  cookie: 1,
+  cake: 5,
+  mushroom_stew: 4,
+  golden_apple: 10,
 };
+
+const enchantmentDefs = [
+  { id: 'efficiency', name: '效率', emoji: '⚡', desc: '挖礦速度 +50%', maxLevel: 3, cost: [5, 10, 20] },
+  { id: 'unbreaking', name: '耐久', emoji: '🛡️', desc: '耐久度 +50%', maxLevel: 3, cost: [5, 10, 20] },
+  { id: 'fortune',    name: '幸運', emoji: '🍀', desc: '50% 雙倍掉落', maxLevel: 3, cost: [10, 20, 40] },
+];
+
+const fishingLootTable = [
+  { id: 'raw_fish',  weight: 50 },
+  { id: 'wheat',     weight: 10 },
+  { id: 'mushroom',  weight: 8 },
+  { id: 'bone',      weight: 8 },
+  { id: 'string',    weight: 7 },
+  { id: 'fish_junk', weight: 15 },
+  { id: 'diamond',   weight: 3 },
+  { id: 'emerald',   weight: 5 },
+  { id: 'book',      weight: 8 },
+  { id: 'egg',       weight: 6 },
+];
 
 
 const tierColors = ['#8B7355', '#A0A0A0', '#C0C0C0', '#FFD700', '#B9F2FF'];
@@ -1820,7 +1879,7 @@ function serializeMineData() {
 }
 
 function saveGame() {
-  localStorage.setItem(SAVE_KEY, JSON.stringify({ gems, inventory, buildGrid, buildPlayerPos, stars, streak, craftGrid, toolDurability, discovered: [...discovered], equipped, selectedTools, sightEarned: [...sightEarned], _houseMigrated: true, mineGrid: serializeMineData(), sentenceReadCount, dialogueReadCount, speechSpeed }));
+  localStorage.setItem(SAVE_KEY, JSON.stringify({ gems, inventory, buildGrid, buildPlayerPos, stars, streak, craftGrid, toolDurability, discovered: [...discovered], equipped, selectedTools, sightEarned: [...sightEarned], _houseMigrated: true, mineGrid: serializeMineData(), sentenceReadCount, dialogueReadCount, speechSpeed, enchantments, fishingRodDurability }));
 }
 
 function loadGame() {
@@ -1885,6 +1944,8 @@ function loadGame() {
         b.classList.toggle('active', b.dataset.speed === speechSpeed);
       });
     }
+    if (d.enchantments) enchantments = d.enchantments;
+    if (d.fishingRodDurability) fishingRodDurability = d.fishingRodDurability;
     stars = d.stars || 0;
     streak = d.streak || 0;
     document.getElementById('stars').textContent = Math.floor(stars);
