@@ -1144,6 +1144,7 @@ body::before {
       <div class="read-progress-bar"><div class="read-progress-fill" id="readProgressFill" style="width:0%"></div></div>
     </div>
     <div class="sentence-cards" id="sentenceCards"></div>
+    <button class="reset-btn" id="resetRead" style="display:none;">🔄 再練一次 Practice Again +⚡</button>
   </div>
 
   <div id="match" class="section">
@@ -1160,8 +1161,8 @@ body::before {
   </div>
 
   <div id="sight" class="section">
+    <button class="reset-btn" id="resetSight" style="display:none;margin-bottom:12px;">🔄 全部完成！再練一次 +⚡</button>
     <div class="sight-words-area" id="sightWordsArea"></div>
-    <button class="reset-btn" id="resetSight" style="display:none;">🔄 再練一次 Practice Again +⚡</button>
   </div>
 
   <div id="mine" class="section">
@@ -2480,6 +2481,7 @@ function initRead() {
     });
   });
   renderReadCards();
+  updateReadProgress();
 }
 
 function renderReadCards() {
@@ -2595,9 +2597,13 @@ function updateReadProgress() {
   const counts = currentReadUnit === 'sentences' ? sentenceReadCount : dialogueReadCount;
   const total = currentReadUnit === 'sentences' ? sentences.length : dialogues.length;
   const done = counts.filter(c => c >= SENTENCE_GOAL).length;
-  const pct = Math.round((done / total) * 100);
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
   const fill = document.getElementById('readProgressFill');
   if (fill) fill.style.width = pct + '%';
+  // Show reset when all done
+  var allSentDone = sentenceReadCount.every(c => c >= SENTENCE_GOAL);
+  var allDialDone = !dialogues.length || dialogueReadCount.every(c => c >= SENTENCE_GOAL);
+  document.getElementById('resetRead').style.display = (allSentDone && allDialDone) ? '' : 'none';
 }
 
 function selectFeeling(word) {
@@ -2709,6 +2715,14 @@ document.getElementById('resetSight').addEventListener('click', () => {
   saveGame();
   document.getElementById('resetSight').style.display = 'none';
   initSightWords();
+});
+document.getElementById('resetRead').addEventListener('click', () => {
+  sentenceReadCount.fill(0);
+  dialogueReadCount.fill(0);
+  saveGame();
+  document.getElementById('resetRead').style.display = 'none';
+  renderReadCards();
+  updateReadProgress();
 });
 
 // ===== QUIZ =====
