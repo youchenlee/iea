@@ -1086,6 +1086,95 @@ body::before {
   display: flex; align-items: center; justify-content: space-between;
   padding: 8px 0; font-family: var(--font-body);
 }
+
+/* ===== ENCHANTING ===== */
+.enchant-section {
+  background: var(--card-bg); border-radius: var(--radius); padding: 16px;
+  box-shadow: var(--shadow-sm); margin-top: 16px;
+}
+.enchant-tool-display {
+  text-align: center; padding: 12px; margin-bottom: 12px;
+  background: var(--surface); border-radius: var(--radius-sm);
+}
+.enchant-tool-display .tool-name { font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; }
+.enchant-list { display: flex; flex-direction: column; gap: 8px; }
+.enchant-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 12px; background: var(--surface); border-radius: var(--radius-sm);
+  transition: background 0.15s;
+}
+.enchant-row:hover { background: #E8E6FF; }
+.enchant-info { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+.enchant-name-row { display: flex; align-items: center; gap: 4px; }
+.enchant-name { font-family: var(--font-display); font-weight: 600; }
+.enchant-desc { font-size: 0.8rem; color: var(--text-secondary); }
+.enchant-level { font-size: 0.85rem; color: var(--accent-dark); font-weight: 700; margin-left: 4px; }
+.enchant-btn {
+  padding: 6px 14px; border: none; border-radius: var(--radius-pill);
+  font-family: var(--font-display); font-weight: 600; font-size: 0.85rem;
+  cursor: pointer; transition: all 0.15s;
+  background: var(--accent); color: #fff;
+}
+.enchant-btn:hover { background: var(--accent-dark); transform: scale(1.05); }
+.enchant-btn:disabled { background: var(--text-muted); cursor: not-allowed; transform: none; }
+.enchant-btn.maxed { background: var(--success); cursor: default; }
+.enchanted-glow {
+  filter: drop-shadow(0 0 4px rgba(162, 155, 254, 0.7));
+  animation: enchantGlow 2s ease-in-out infinite;
+}
+@keyframes enchantGlow {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(162, 155, 254, 0.5)); }
+  50% { filter: drop-shadow(0 0 8px rgba(162, 155, 254, 0.9)); }
+}
+
+/* ===== FISHING ===== */
+.fishing-section {
+  background: var(--card-bg); border-radius: var(--radius); padding: 16px;
+  box-shadow: var(--shadow-sm); margin-top: 16px;
+}
+.fishing-pond {
+  position: relative; text-align: center; padding: 24px 0;
+  background: linear-gradient(180deg, #87CEEB 0%, #3B82C4 40%, #1E5F99 100%);
+  border-radius: var(--radius-sm); margin: 12px 0; overflow: hidden;
+  min-height: 120px;
+}
+.fishing-pond .water-line {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 60%;
+  background: linear-gradient(180deg, rgba(30,95,153,0.3), rgba(30,95,153,0.8));
+}
+.fishing-rod-display { font-size: 3rem; position: relative; z-index: 1; }
+.fishing-rod-display.casting { animation: castRod 1s ease-in-out; }
+@keyframes castRod {
+  0% { transform: rotate(0deg); }
+  30% { transform: rotate(-30deg); }
+  60% { transform: rotate(10deg); }
+  100% { transform: rotate(0deg); }
+}
+.fishing-catch {
+  position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+  font-size: 2rem; z-index: 2; opacity: 0;
+}
+.fishing-catch.show {
+  animation: catchPop 1s ease-out forwards;
+}
+@keyframes catchPop {
+  0% { opacity: 0; transform: translateX(-50%) translateY(20px) scale(0.5); }
+  50% { opacity: 1; transform: translateX(-50%) translateY(-10px) scale(1.2); }
+  100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+.fishing-cast-btn {
+  display: block; margin: 12px auto 0; padding: 10px 28px;
+  border: none; border-radius: var(--radius-pill);
+  font-family: var(--font-display); font-weight: 600; font-size: 1rem;
+  cursor: pointer; transition: all 0.15s;
+  background: #3B82C4; color: #fff;
+}
+.fishing-cast-btn:hover { background: #1E5F99; transform: scale(1.05); }
+.fishing-cast-btn:disabled { background: var(--text-muted); cursor: not-allowed; transform: none; }
+.fishing-durability {
+  text-align: center; font-size: 0.85rem; color: var(--text-secondary);
+  margin-top: 8px;
+}
 </style>
 </head>
 <body>
@@ -1167,10 +1256,12 @@ body::before {
 
   <div id="mine" class="section">
     <div id="mineArea"></div>
+    <div id="fishingArea"></div>
   </div>
 
   <div id="craft" class="section">
     <div id="craftArea"></div>
+    <div id="enchantArea"></div>
   </div>
 
   <div id="furnace" class="section">
@@ -1750,9 +1841,9 @@ const foodEffects = {
 };
 
 const enchantmentDefs = [
-  { id: 'efficiency', name: '效率', emoji: '⚡', desc: '挖礦速度 +50%', maxLevel: 3, cost: [5, 10, 20] },
-  { id: 'unbreaking', name: '耐久', emoji: '🛡️', desc: '耐久度 +50%', maxLevel: 3, cost: [5, 10, 20] },
-  { id: 'fortune',    name: '幸運', emoji: '🍀', desc: '50% 雙倍掉落', maxLevel: 3, cost: [10, 20, 40] },
+  { id: 'efficiency', name: '效率', emoji: '⚡', desc: '每級挖礦加速 15%', maxLevel: 3, cost: [5, 10, 20] },
+  { id: 'unbreaking', name: '耐久', emoji: '🛡️', desc: '每級 25% 機率不扣耐久', maxLevel: 3, cost: [5, 10, 20] },
+  { id: 'fortune',    name: '幸運', emoji: '🍀', desc: '每級 15% 機率雙倍掉落', maxLevel: 3, cost: [10, 20, 40] },
 ];
 
 const fishingLootTable = [
@@ -1842,6 +1933,12 @@ function getEffectiveSwordHoldTime() {
 function useTool(tool) {
   if (!tool || tool.durability === Infinity) return null;
   if (toolDurability[tool.id] === undefined) toolDurability[tool.id] = tool.durability;
+  // Unbreaking enchantment: chance to skip durability loss
+  const unbLvl = getEnchantLevel(tool.id, 'unbreaking');
+  if (unbLvl > 0 && Math.random() < unbLvl * 0.25) {
+    saveGame();
+    return null; // skipped durability loss
+  }
   toolDurability[tool.id]--;
   if (toolDurability[tool.id] <= 0) {
     // Tool broke
@@ -1852,6 +1949,9 @@ function useTool(tool) {
     // If more of same tool, set durability for next one
     if (getBlockCount(tool.id) > 0) {
       toolDurability[tool.id] = tool.durability;
+    } else {
+      // No more of this tool — clear enchantments
+      delete enchantments[tool.id];
     }
     saveGame();
     return tool.name;
@@ -1945,7 +2045,7 @@ function loadGame() {
       });
     }
     if (d.enchantments) enchantments = d.enchantments;
-    if (d.fishingRodDurability) fishingRodDurability = d.fishingRodDurability;
+    if (d.fishingRodDurability !== undefined) fishingRodDurability = d.fishingRodDurability;
     stars = d.stars || 0;
     streak = d.streak || 0;
     document.getElementById('stars').textContent = Math.floor(stars);
@@ -1965,6 +2065,11 @@ function updateGemDisplay() {
   if (el) el.textContent = gems;
   const bar = document.getElementById('gemBar');
   if (bar) { bar.classList.remove('pop'); void bar.offsetWidth; bar.classList.add('pop'); }
+}
+
+function updateStarDisplay() {
+  const el = document.getElementById('stars');
+  if (el) el.textContent = Math.floor(stars);
 }
 
 function getBlockCount(id) { return inventory[id] || 0; }
@@ -2451,7 +2556,7 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
     if (tab.dataset.tab === 'quiz') { if (quizIndex === 0 || quizIndex >= quizQuestions.length) initQuiz(); }
     if (tab.dataset.tab === 'read') { if (!document.getElementById('sentenceCards').children.length) initRead(); }
     if (tab.dataset.tab === 'sight') { if (!document.getElementById('sightWordsArea').children.length) initSightWords(); }
-    if (tab.dataset.tab === 'mine') { if (!mineData.length) initMine(); else refreshMineHeader(); }
+    if (tab.dataset.tab === 'mine') { if (!mineData.length) initMine(); else refreshMineHeader(); initFishingSection(); }
     if (tab.dataset.tab === 'craft') initCraftTab();
     if (tab.dataset.tab === 'furnace') initFurnaceTab();
     if (tab.dataset.tab === 'equip') initEquipTab();
@@ -3058,8 +3163,14 @@ function getMineHoldDuration(cellData) {
   const pick = pickaxes[pickLevel];
   if (cellData.tier > pick.maxTier) return Infinity;
   const tierDiff = cellData.tier - pickLevel;
-  if (tierDiff <= 0) return 800;
-  return 800 + tierDiff * 600;
+  let duration = tierDiff <= 0 ? 800 : 800 + tierDiff * 600;
+  // Efficiency enchantment: -15% per level
+  const tool = getEquippedTool();
+  if (tool) {
+    const effLvl = getEnchantLevel(tool.id, 'efficiency');
+    if (effLvl > 0) duration *= Math.max(0.3, 1 - effLvl * 0.15);
+  }
+  return Math.round(duration);
 }
 
 function startMineHold(cellData) {
@@ -3426,6 +3537,7 @@ function initMine() {
   savedMineGrid = null; // consumed — future initMine calls generate fresh
   updateExposure();
   updateMineRefreshBtn();
+  initFishingSection();
 }
 
 function renderMineBuildPalette(container) {
@@ -3658,15 +3770,22 @@ function mineMountainCell(row, col, cellData) {
   // Fade out reveal after animation (only if cell is still mined — animal gravity may have claimed it)
   setTimeout(() => { if (cellData.mined && !cellData.animal) clearCellTex(cellData.el); }, 800);
 
-  addBlock(cellData.block.id);
-
+  // Fortune enchantment: chance for double drop
   const activePick = getEquippedTool();
+  let dropCount = 1;
+  if (activePick) {
+    const fortuneLvl = getEnchantLevel(activePick.id, 'fortune');
+    if (fortuneLvl > 0 && Math.random() < fortuneLvl * 0.15) dropCount = 2;
+  }
+  addBlock(cellData.block.id, dropCount);
+
   const brokeName = useTool(activePick);
 
   const b = cellData.block;
+  const fortuneMsg = dropCount > 1 ? ' 🍀×2!' : '';
   const rarity = b.tier >= 4 ? ' ✨ 稀有！' : b.tier >= 3 ? ' 不錯！' : '';
   const breakMsg = brokeName ? `\n💥 ${brokeName} 壞掉了！` : '';
-  showMineResult(`${itemImgHTML(b.id, 16)} 挖到 ${b.name}！${rarity}${breakMsg}（擁有 ${getBlockCount(b.id)} 個）`, !!brokeName);
+  showMineResult(`${itemImgHTML(b.id, 16)} 挖到 ${b.name}！${fortuneMsg}${rarity}${breakMsg}（擁有 ${getBlockCount(b.id)} 個）`, !!brokeName);
 
   if (brokeName) refreshToolChips();
   if (b.tier >= 4) doConfetti();
@@ -3805,13 +3924,23 @@ function renderToolChips(container) {
     const emoji = document.createElement('div');
     emoji.className = 'tool-slot-emoji';
     if (s.equip && TEX[s.equip.id]) {
-      emoji.appendChild(itemImg(s.equip.id, 24));
+      const img = itemImg(s.equip.id, 24);
+      if (enchantments[s.equip.id]) img.classList.add('enchanted-glow');
+      emoji.appendChild(img);
     } else {
       emoji.textContent = s.equip ? s.equip.emoji : s.fallbackEmoji;
     }
     const name = document.createElement('div');
     name.className = 'tool-slot-name';
-    name.textContent = s.equip ? s.equip.name : s.fallbackName;
+    let toolLabel = s.equip ? s.equip.name : s.fallbackName;
+    if (s.equip && enchantments[s.equip.id]) {
+      const enchNames = Object.keys(enchantments[s.equip.id]).map(e => {
+        const def = enchantmentDefs.find(d => d.id === e);
+        return def ? def.emoji : '';
+      }).join('');
+      if (enchNames) toolLabel += ' ' + enchNames;
+    }
+    name.textContent = toolLabel;
     slot.appendChild(label);
     slot.appendChild(emoji);
     slot.appendChild(name);
@@ -4089,6 +4218,7 @@ function initCraftTab() {
   const area = document.getElementById('craftArea');
   area.textContent = '';
   renderCraft(area);
+  initEnchantTab();
 }
 
 function initFurnaceTab() {
@@ -4804,6 +4934,7 @@ function doCraft() {
       addBlock(match.item.outputId);
     } else if (match.type === 'item') {
       addBlock(match.item.outputId, match.item.outputCount);
+      if (match.item.outputId === 'fishing_rod' && fishingRodDurability <= 0) fishingRodDurability = 30;
     }
     saveGame();
     doConfetti();
@@ -4814,6 +4945,231 @@ function doCraft() {
 }
 
 
+
+// ===== ENCHANTING =====
+function initEnchantTab() {
+  const area = document.getElementById('enchantArea');
+  area.textContent = '';
+
+  if (getBlockCount('enchanting_table') < 1) return; // silently hide if no table
+
+  const section = document.createElement('div');
+  section.className = 'enchant-section';
+
+  const title = document.createElement('h3');
+  title.className = 'section-title';
+  title.textContent = '🔮 附魔 Enchant';
+  section.appendChild(title);
+
+  // Get current equipped tool
+  const tool = getEquippedTool();
+  if (!tool) {
+    const msg = document.createElement('div');
+    msg.className = 'section-empty';
+    msg.textContent = '先到裝備頁裝備工具再來附魔！';
+    section.appendChild(msg);
+    area.appendChild(section);
+    return;
+  }
+
+  // Tool display
+  const toolDisplay = document.createElement('div');
+  toolDisplay.className = 'enchant-tool-display';
+  const toolIcon = itemImg(tool.id, 32);
+  if (enchantments[tool.id]) toolIcon.classList.add('enchanted-glow');
+  toolDisplay.appendChild(toolIcon);
+  const toolName = document.createElement('div');
+  toolName.className = 'tool-name';
+  toolName.textContent = tool.name;
+  toolDisplay.appendChild(toolName);
+  section.appendChild(toolDisplay);
+
+  // Enchantment options
+  const list = document.createElement('div');
+  list.className = 'enchant-list';
+
+  enchantmentDefs.forEach(def => {
+    const toolEnch = enchantments[tool.id] || {};
+    const currentLevel = toolEnch[def.id] || 0;
+    const isMaxed = currentLevel >= def.maxLevel;
+    const cost = isMaxed ? 0 : def.cost[currentLevel];
+
+    const row = document.createElement('div');
+    row.className = 'enchant-row';
+
+    const info = document.createElement('div');
+    info.className = 'enchant-info';
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'enchant-name';
+    nameSpan.textContent = def.emoji + ' ' + def.name;
+    const nameRow = document.createElement('div');
+    nameRow.className = 'enchant-name-row';
+    nameRow.appendChild(nameSpan);
+    if (currentLevel > 0) {
+      const lvl = document.createElement('span');
+      lvl.className = 'enchant-level';
+      lvl.textContent = ' Lv.' + currentLevel;
+      nameRow.appendChild(lvl);
+    }
+    info.appendChild(nameRow);
+    const desc = document.createElement('div');
+    desc.className = 'enchant-desc';
+    desc.textContent = def.desc;
+    info.appendChild(desc);
+
+    const btn = document.createElement('button');
+    btn.className = 'enchant-btn' + (isMaxed ? ' maxed' : '');
+    if (isMaxed) {
+      btn.textContent = '✓ MAX';
+      btn.disabled = true;
+    } else {
+      btn.textContent = '⭐ ' + cost;
+      btn.disabled = stars < cost;
+      btn.addEventListener('click', () => {
+        if (stars < cost) return;
+        stars -= cost;
+        if (!enchantments[tool.id]) enchantments[tool.id] = {};
+        enchantments[tool.id][def.id] = currentLevel + 1;
+        updateStarDisplay();
+        playCraftSfx();
+        doConfetti();
+        saveGame();
+        initEnchantTab();
+      });
+    }
+
+    row.appendChild(info);
+    row.appendChild(btn);
+    list.appendChild(row);
+  });
+
+  section.appendChild(list);
+  area.appendChild(section);
+}
+
+function getEnchantLevel(toolId, enchId) {
+  return (enchantments[toolId] && enchantments[toolId][enchId]) || 0;
+}
+
+// ===== FISHING =====
+function initFishingSection() {
+  const area = document.getElementById('fishingArea');
+  area.textContent = '';
+
+  if (getBlockCount('fishing_rod') < 1) return;
+
+  const section = document.createElement('div');
+  section.className = 'fishing-section';
+
+  const title = document.createElement('h3');
+  title.className = 'section-title';
+  title.textContent = '🎣 釣魚 Fish';
+  section.appendChild(title);
+
+  // Pond
+  const pond = document.createElement('div');
+  pond.className = 'fishing-pond';
+  const waterLine = document.createElement('div');
+  waterLine.className = 'water-line';
+  pond.appendChild(waterLine);
+  const rodDisplay = document.createElement('div');
+  rodDisplay.className = 'fishing-rod-display';
+  rodDisplay.id = 'fishingRod';
+  rodDisplay.textContent = '🎣';
+  pond.appendChild(rodDisplay);
+  const catchEl = document.createElement('div');
+  catchEl.className = 'fishing-catch';
+  catchEl.id = 'fishingCatch';
+  pond.appendChild(catchEl);
+  section.appendChild(pond);
+
+  // Durability
+  const durText = document.createElement('div');
+  durText.className = 'fishing-durability';
+  durText.id = 'fishingDurability';
+  durText.textContent = '耐久度: ' + fishingRodDurability + '/30';
+  section.appendChild(durText);
+
+  // Cast button
+  const castBtn = document.createElement('button');
+  castBtn.className = 'fishing-cast-btn';
+  castBtn.id = 'fishingCastBtn';
+  castBtn.textContent = '🎣 拋竿！（⚡1）';
+  castBtn.disabled = gems < 1 || fishingRodDurability <= 0;
+  castBtn.addEventListener('click', doFish);
+  section.appendChild(castBtn);
+
+  area.appendChild(section);
+}
+
+function doFish() {
+  if (gems < 1 || fishingRodDurability <= 0) return;
+  const castBtn = document.getElementById('fishingCastBtn');
+  if (castBtn.disabled) return;
+  castBtn.disabled = true;
+
+  if (!isCheat) gems--;
+  updateGemDisplay();
+
+  // Cast animation
+  const rod = document.getElementById('fishingRod');
+  rod.classList.add('casting');
+
+  // Weighted random loot
+  const totalWeight = fishingLootTable.reduce((s, e) => s + e.weight, 0);
+  let roll = Math.random() * totalWeight;
+  let caught = fishingLootTable[0];
+  for (const entry of fishingLootTable) {
+    roll -= entry.weight;
+    if (roll <= 0) { caught = entry; break; }
+  }
+
+  // Fortune enchantment — check equipped tool (fishing rod itself doesn't have fortune, but allow it)
+  let amount = 1;
+
+  // Durability
+  fishingRodDurability--;
+  if (fishingRodDurability <= 0) {
+    // Rod broke
+    inventory['fishing_rod'] = (inventory['fishing_rod'] || 1) - 1;
+    if (inventory['fishing_rod'] <= 0) delete inventory['fishing_rod'];
+    playToolBreakSfx();
+  }
+
+  setTimeout(() => {
+    rod.classList.remove('casting');
+
+    // Show catch
+    addBlock(caught.id, amount);
+    const block = blocks.find(b => b.id === caught.id);
+    const catchEl = document.getElementById('fishingCatch');
+    catchEl.textContent = '';
+    catchEl.appendChild(itemImg(caught.id, 32));
+    catchEl.classList.remove('show');
+    void catchEl.offsetWidth;
+    catchEl.classList.add('show');
+
+    // Result message
+    const rarity = caught.weight <= 5 ? ' ✨ 稀有！' : '';
+    showMineResult(itemImgHTML(caught.id, 16) + ' 釣到 ' + (block ? block.name : caught.id) + '！' + rarity + '（擁有 ' + getBlockCount(caught.id) + ' 個）', fishingRodDurability <= 0);
+
+    if (caught.weight <= 5) doConfetti();
+
+    // Update UI
+    const durEl = document.getElementById('fishingDurability');
+    if (durEl) durEl.textContent = '耐久度: ' + fishingRodDurability + '/30';
+
+    saveGame();
+
+    if (fishingRodDurability <= 0) {
+      // Rebuild the section to show it's gone
+      setTimeout(() => initFishingSection(), 500);
+    } else {
+      const btn = document.getElementById('fishingCastBtn');
+      if (btn) btn.disabled = gems < 1;
+    }
+  }, 1000);
+}
 
 // Preload an image and return a promise
 function loadTexImg(src) {
