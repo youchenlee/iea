@@ -1161,6 +1161,7 @@ body::before {
 
   <div id="sight" class="section">
     <div class="sight-words-area" id="sightWordsArea"></div>
+    <button class="reset-btn" id="resetSight" style="display:none;">🔄 再練一次 Practice Again +⚡</button>
   </div>
 
   <div id="mine" class="section">
@@ -2703,6 +2704,12 @@ function matchClick(item) {
 }
 
 document.getElementById('resetMatch').addEventListener('click', initMatch);
+document.getElementById('resetSight').addEventListener('click', () => {
+  sightEarned.clear();
+  saveGame();
+  document.getElementById('resetSight').style.display = 'none';
+  initSightWords();
+});
 
 // ===== QUIZ =====
 function initQuiz() {
@@ -2844,12 +2851,22 @@ function initSightWords() {
       e.stopPropagation();
       sightEarned.add(sw.word);
       addGems(1);
+      saveGame();
       btn.remove();
       card.classList.add('earned');
       playIcon.textContent = '✅';
+      // Show reset button when all words earned
+      if (sightEarned.size >= sightWords.length) {
+        document.getElementById('resetSight').style.display = '';
+      }
     });
     area.appendChild(card);
   });
+
+  // Show reset button if already all earned
+  if (sightEarned.size >= sightWords.length) {
+    document.getElementById('resetSight').style.display = '';
+  }
 
   const extra = document.createElement('div');
   extra.className = 'sentence-practice';
