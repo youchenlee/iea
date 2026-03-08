@@ -2509,7 +2509,7 @@ function buildCardBottom(count, listenFn, readFn) {
   }
   bottom.appendChild(dots);
   const listenBtn = createEl('button', 'sc-listen-btn', '🔊 Listen');
-  listenBtn.addEventListener('click', (e) => { e.stopPropagation(); listenFn(); });
+  listenBtn.addEventListener('click', (e) => { e.stopPropagation(); readFn(); });
   bottom.appendChild(listenBtn);
   bottom.appendChild(createEl('div', 'sc-count', count >= SENTENCE_GOAL ? '✅' : `${count}/${SENTENCE_GOAL}`));
   return bottom;
