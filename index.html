@@ -1475,6 +1475,10 @@ function clearCellTex(el) {
   el.textContent = '';
   el.style.backgroundImage = '';
 }
+function markMined(el) {
+  el.classList.add('mined');
+  el.classList.remove('tier1','tier2','tier3','tier4','tier5');
+}
 
 // Returns an <img> element for the given item id, or emoji text node as fallback
 function itemImg(id, size = 16) {
@@ -3214,7 +3218,7 @@ function initMine() {
             inventory[existing] = (inventory[existing] || 0) + 1;
             clearCellTex(cd.el);
             cd.el.classList.remove('build-placed');
-            cd.el.classList.add('mined');
+            markMined(cd.el);
             playRemoveSfx();
             saveGame();
             refreshBuildPalette();
@@ -3503,7 +3507,7 @@ function attackAnimal(cellData) {
   if (!isCheat) gems--;
   updateGemDisplay();
   cellData.mined = true;
-  cellData.el.classList.add('mined');
+  markMined(cellData.el);
   clearCellTex(cellData.el);
   const brokeName = useTool(activeSword);
 
@@ -3535,7 +3539,7 @@ function chopTree(cellData) {
   if (!isCheat) gems--;
   updateGemDisplay();
   cellData.mined = true;
-  cellData.el.classList.add('mined');
+  markMined(cellData.el);
   clearCellTex(cellData.el);
   const activeTool = getEquippedTool();
   const isAxe = activeTool && activeTool.woodBonus;
@@ -3579,7 +3583,7 @@ function mineMountainCell(row, col, cellData) {
   if (!isCheat) gems--;
   updateGemDisplay();
   cellData.mined = true;
-  cellData.el.classList.add('mined');
+  markMined(cellData.el);
   clearCellTex(cellData.el);
   const reveal = document.createElement('span');
   reveal.className = 'block-reveal';
@@ -3664,7 +3668,7 @@ function applyAnimalGravity() {
         clearCellTex(capturedOldEl);
         capturedOldEl.style.transform = '';
         capturedOldEl.style.opacity = '';
-        capturedOldEl.classList.add('mined');
+        markMined(capturedOldEl);
         capturedOldEl.classList.remove('animal', 'hostile');
       }, 350);
 
