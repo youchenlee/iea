@@ -2960,9 +2960,15 @@ function initMatch() {
   shuffle(pool).forEach(f => {
     const item = document.createElement('div');
     item.className = 'match-item emoji-item';
-    item.textContent = f.emoji;
     item.dataset.word = f.word;
     item.dataset.type = 'emoji';
+    const emojiSpan = document.createElement('span');
+    emojiSpan.textContent = f.emoji;
+    item.appendChild(emojiSpan);
+    const zhSpan = document.createElement('div');
+    zhSpan.style.cssText = 'font-size:0.7rem;color:var(--text-secondary);margin-top:2px;';
+    zhSpan.textContent = f.zh;
+    item.appendChild(zhSpan);
     item.addEventListener('click', () => matchClick(item));
     eCol.appendChild(item);
   });
