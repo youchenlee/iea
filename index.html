@@ -3081,7 +3081,7 @@ function renderQuiz() {
       <div class="quiz-question">這是什麼感覺？</div>
       <button class="speak-btn small primary" style="margin-bottom:16px" id="quizHint">🔊 聽提示</button>
       <div class="quiz-options">
-        ${q.options.map(o => `<button class="quiz-option" data-word="${o.word}">${o.word}</button>`).join('')}
+        ${q.options.map(o => `<button class="quiz-option" data-word="${o.word}">${o.word}<div style="font-size:0.75rem;color:var(--text-secondary);margin-top:2px">${o.zh}</div></button>`).join('')}
       </div>`;
   } else {
     c.innerHTML = `
