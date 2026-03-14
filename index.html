@@ -2929,10 +2929,11 @@ function trackRead(unit, i, card, skipSpeak) {
     card.classList.remove('speaking');
     if (counts[i] < SENTENCE_GOAL) {
       counts[i]++;
+      addGems(1);
       // Rebuild the card in place
       const fresh = unit === 'sentences' ? buildSentenceCard(data, i) : buildDialogueCard(data, i);
       card.replaceWith(fresh);
-      if (counts[i] >= SENTENCE_GOAL) addGems(2);
+      if (counts[i] >= SENTENCE_GOAL) addStars(1);
       updateReadProgress();
       saveGame();
     }
