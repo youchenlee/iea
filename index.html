@@ -1239,7 +1239,7 @@ body::before {
   <div id="read" class="section">
     <div class="read-header">
       <h3>📗 Sentence Reading 朗讀練習</h3>
-      <p>🔊 Listen 聽＋跟讀 🎤 跟讀模式：先聽再跟唸！每句 3 次過關</p>
+      <p>🔊 Listen 聽＋跟讀 🎤 跟讀模式：先聽再跟唸！每句 6 次過關</p>
       <div class="read-unit-toggle">
         <button class="read-unit-btn active" data-unit="sentences">📖 Unit 1 Sentences</button>
         <button class="read-unit-btn" data-unit="dialogues">💬 Q&amp;A Dialogues</button>
@@ -1335,15 +1335,31 @@ document.title = WEEK_DATA.title + ' ' + WEEK_DATA.titleEmoji;
 var h1 = document.getElementById('appTitle');
 h1.firstChild.textContent = WEEK_DATA.title + ' ' + WEEK_DATA.titleEmoji + ' ';
 // Week switcher dropdown
-var totalWeeks = 2;
+// Auto-detect available weeks by probing week JS files
 var sel = document.getElementById('weekSwitcher');
-for (var i = 1; i <= totalWeeks; i++) {
-  var opt = document.createElement('option');
-  opt.value = i;
-  opt.textContent = 'Week ' + i;
-  if (String(i) === weekNum) opt.selected = true;
-  sel.appendChild(opt);
-}
+(async function detectWeeks() {
+  var i = 1;
+  while (true) {
+    try {
+      var res = await fetch('weeks/week' + i + '.js', { method: 'HEAD' });
+      if (!res.ok) break;
+    } catch (e) { break; }
+    var opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = 'Week ' + i;
+    if (String(i) === weekNum) opt.selected = true;
+    sel.appendChild(opt);
+    i++;
+  }
+  // Fallback: if detection failed (e.g. CORS), ensure at least current week is shown
+  if (sel.options.length === 0) {
+    var opt = document.createElement('option');
+    opt.value = weekNum;
+    opt.textContent = 'Week ' + weekNum;
+    opt.selected = true;
+    sel.appendChild(opt);
+  }
+})();
 sel.addEventListener('change', function() {
   var url = new URL(location.href);
   url.searchParams.set('week', sel.value);
@@ -3248,19 +3264,38 @@ function initSightWords() {
     document.getElementById('resetSight').style.display = '';
   }
 
-  const extra = document.createElement('div');
-  extra.className = 'sentence-practice';
-  extra.style.marginTop = '8px';
-  extra.innerHTML = `
-    <h3>📌 Weekly Quote 每週佳句</h3>
-    <div class="sentence-display" style="font-size:1.3rem">"Life is better when you are happy." 😊</div>
-    <button class="speak-btn primary small" onclick="speak('Life is better when you are happy.')">🔊 Listen</button>
-    <div style="margin-top:18px">
-      <h3>🎵 Song & Rhyme</h3>
-      <div class="sentence-display" style="font-size:1.4rem;margin-top:8px">✨ Hakuna Matata ✨</div>
-      <button class="speak-btn secondary small" onclick="speak('Hakuna Matata! It means no worries!')">🔊 Listen</button>
-    </div>`;
-  area.appendChild(extra);
+  const quote = WEEK_DATA.weeklyQuote;
+  const song = WEEK_DATA.weeklySong;
+  if (quote || song) {
+    const extra = document.createElement('div');
+    extra.className = 'sentence-practice';
+    extra.style.marginTop = '8px';
+    if (quote) {
+      const qh3 = createEl('h3', '', '📌 Weekly Quote 每週佳句');
+      const qdisp = createEl('div', 'sentence-display');
+      qdisp.style.fontSize = '1.3rem';
+      qdisp.textContent = '"' + quote.en + '" ' + (quote.emoji || '');
+      const qbtn = createEl('button', 'speak-btn primary small', '🔊 Listen');
+      qbtn.addEventListener('click', () => speak(quote.en));
+      extra.appendChild(qh3);
+      extra.appendChild(qdisp);
+      extra.appendChild(qbtn);
+    }
+    if (song) {
+      const swrap = document.createElement('div');
+      swrap.style.marginTop = '18px';
+      swrap.appendChild(createEl('h3', '', '🎵 Song & Rhyme'));
+      const sdisp = createEl('div', 'sentence-display');
+      sdisp.style.cssText = 'font-size:1.4rem;margin-top:8px';
+      sdisp.textContent = '✨ ' + song.title + ' ✨';
+      const sbtn = createEl('button', 'speak-btn secondary small', '🔊 Listen');
+      sbtn.addEventListener('click', () => speak(song.line));
+      swrap.appendChild(sdisp);
+      swrap.appendChild(sbtn);
+      extra.appendChild(swrap);
+    }
+    area.appendChild(extra);
+  }
 }
 
 // ===== MINE =====

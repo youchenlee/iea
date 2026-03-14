@@ -98,5 +98,8 @@ window.WEEK_DATA = {
     { en: 'and her stories make me feel so happy!', zh: '而且她的故事讓我感到好開心！' },
   ],
 
+  weeklyQuote: { en: 'When I wanted sunshine, I got rain.', emoji: '🌧️' },
+  weeklySong: { title: "I'm a Believer", line: "Then I saw her face, now I'm a believer!" },
+
   dialogues: [],
 };

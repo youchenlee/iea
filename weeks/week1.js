@@ -40,18 +40,34 @@ window.WEEK_DATA = {
 
   sightColors: ['#FF6B6B','#A29BFE','#FFD93D','#00B894','#FF85CA','#74B9FF','#E17055'],
 
+  sentenceGroups: [
+    { title: '📖 Interesting Stories', count: 18 },
+  ],
+
   sentences: [
+    // Interesting Stories — split at natural breakpoints for young readers (18)
     { en: 'My teacher tells us interesting stories every day.', zh: '我的老師每天都會跟我們分享有趣的故事。' },
     { en: 'I get very excited.', zh: '我總是感到非常興奮。' },
     { en: 'My friends think they are so silly.', zh: '只是我的朋友們覺得那些故事有些可笑。' },
-    { en: 'One story was about a duck with a dress that lays eggs behind a door because she is very scared of the angry goat in the barn.', zh: '有個故事是關於一隻穿著裙子的鴨子。因為穀倉裡有隻愛生氣的山羊，鴨子很怕那隻山羊，因此鴨子只能躲在門後面下蛋。' },
+    { en: 'One story was about a duck with a dress', zh: '有個故事是關於一隻穿著裙子的鴨子，' },
+    { en: 'that lays eggs behind a door', zh: '她在門後面下蛋，' },
+    { en: 'because she is very scared of the angry goat in the barn.', zh: '因為她很怕穀倉裡那隻愛生氣的山羊。' },
     { en: 'I feel very sad for the duck.', zh: '我為那隻鴨子感到難過。' },
-    { en: 'Joe loves the story about the brave bear that got lost in the forest.', zh: '我的朋友Joe喜歡的故事是關於一隻在森林中迷路但卻非常勇敢的熊。' },
-    { en: 'He is so proud of the bear for never getting scared and helping other sick animals on his way.', zh: '那一隻熊不曾感到害怕而且一路上幫助其他生病的動物，他為那隻熊感到驕傲。' },
-    { en: 'Some of my classmates get very bored and feel sleepy in class if my teacher talks about the history of toys.', zh: '而當老師在課堂上談到關於玩具歷史的時候，部分同學只會感到無聊且想睡覺。' },
+    { en: 'Joe loves the story about the brave bear', zh: 'Joe喜歡那個關於勇敢的熊的故事，' },
+    { en: 'that got lost in the forest.', zh: '那隻熊在森林中迷路了。' },
+    { en: 'He is so proud of the bear', zh: '他為那隻熊感到驕傲，' },
+    { en: 'for never getting scared', zh: '因為牠從不害怕，' },
+    { en: 'and helping other sick animals on his way.', zh: '而且一路上幫助其他生病的動物。' },
+    { en: 'Some of my classmates get very bored', zh: '部分同學感到非常無聊，' },
+    { en: 'and feel sleepy in class', zh: '上課時想睡覺，' },
+    { en: 'if my teacher talks about the history of toys.', zh: '如果老師談到玩具歷史的時候。' },
     { en: 'They just want to play with them.', zh: '他們只想玩玩具。' },
-    { en: 'My teacher makes me feel loved and her stories make me feel so happy!', zh: '老師總是讓我感受他對學生們的愛，而且也讓我感到開心。' },
+    { en: 'My teacher makes me feel loved', zh: '老師讓我感受到他的愛，' },
+    { en: 'and her stories make me feel so happy!', zh: '而且她的故事讓我感到好開心！' },
   ],
+
+  weeklyQuote: { en: 'Life is better when you are happy.', emoji: '😊' },
+  weeklySong: { title: 'Hakuna Matata', line: 'Hakuna Matata! It means no worries!' },
 
   dialogues: [
     { q: 'What are those?', qzh: '那些是什麼？', a: 'They are my mom\'s shoes.', azh: '它們是我媽媽的鞋子。' },
