@@ -42,30 +42,60 @@ window.WEEK_DATA = {
 
   sightColors: ['#FF6B6B','#A29BFE','#FFD93D','#00B894','#FF85CA','#74B9FF','#E17055'],
 
+  sentenceGroups: [
+    { title: '🌾 Fun On The Farm', count: 9 },
+    { title: '💬 Sentence Patterns', count: 2 },
+    { title: '♫ I\'m a Believer', count: 13 },
+    { title: '📖 Interesting Stories', count: 18 },
+  ],
+
   sentences: [
-    // Unit 2: Fun On The Farm
+    // Fun On The Farm (9)
     { en: 'Andrew lived on a farm when he was a young boy.', zh: '當Andrew還是一個小男孩時，他曾住在農場裡。' },
     { en: 'He loved to fish far from the farm house.', zh: '他喜歡去距離農場稍微遠的地方釣魚。' },
-    { en: 'The first thing he did when he got hungry and thirsty at the river, would be to put his feet in the water.', zh: '當他在河邊感到飢餓又口渴時，他會先將腳泡進水裡。' },
+    { en: 'The first thing he did when he got hungry and thirsty at the river,', zh: '當他在河邊感到飢餓又口渴時，' },
+    { en: 'would be to put his feet in the water.', zh: '他會先將腳泡進水裡。' },
     { en: 'This made him feel not so hungry and thirsty any more.', zh: '這樣做會減緩他飢餓且口渴的感覺。' },
     { en: 'He would be a bit worried that a crab would find his toes tasty.', zh: '雖然如此，他還是有點擔心螃蟹會覺得他的腳指頭很好吃而偷偷咬他。' },
-    { en: 'He would suddenly jump out and run home very fast before his parents got worried.', zh: '他也總是會在父母開始擔心他安危前便跳上岸並跑回家。' },
+    { en: 'He would suddenly jump out and run home very fast', zh: '他總是會突然跳上岸並快速跑回家' },
+    { en: 'before his parents got worried.', zh: '在父母開始擔心之前。' },
     { en: 'He often fell down and hurt his knee.', zh: '他也常因跑步跌倒並膝蓋受傷。' },
-    // Sentence Patterns
+    // Sentence Patterns (2)
     { en: 'I get hungry if I don\'t eat.', zh: '我不吃就會感到飢餓。' },
     { en: 'I am nervous to speak English.', zh: '我講英文會緊張。' },
-    // I'm a Believer — Neil Diamond
+    // I'm a Believer — Neil Diamond (13)
     { en: 'I thought love was only true in fairy tales.', zh: '我以為愛情只存在於童話故事裡。' },
     { en: 'Meant for someone else, but not for me.', zh: '那是屬於別人的，不屬於我。' },
-    { en: 'Love was out to get me. That\'s the way it seemed.', zh: '愛情好像在跟我作對，至少看起來是這樣。' },
+    { en: 'Love was out to get me.', zh: '愛情好像在跟我作對。' },
+    { en: 'That\'s the way it seemed.', zh: '至少看起來是這樣。' },
     { en: 'Disappointment haunted all my dreams.', zh: '失望一直纏繞著我所有的夢。' },
     { en: 'Then I saw her face, now I\'m a believer.', zh: '然後我看見了她的臉，現在我相信了。' },
     { en: 'Not a trace, of doubt in my mind.', zh: '心中沒有一絲懷疑。' },
-    { en: 'I\'m in love, I\'m a believer. I couldn\'t leave her if I tried.', zh: '我戀愛了，我是個信徒。就算我試著離開也做不到。' },
+    { en: 'I\'m in love, I\'m a believer.', zh: '我戀愛了，我是個信徒。' },
+    { en: 'I couldn\'t leave her if I tried.', zh: '就算我試著離開也做不到。' },
     { en: 'I thought love was more or less a givin\' thing.', zh: '我以為愛情多多少少就是付出的事。' },
     { en: 'The more I gave, the less I got, oh yeah.', zh: '我付出得越多，得到的越少。' },
     { en: 'What\'s the use in tryin\'? All you get is pain.', zh: '嘗試有什麼用呢？你得到的只有痛苦。' },
     { en: 'When I wanted sunshine, I got rain.', zh: '當我想要陽光時，得到的卻是雨。' },
+    // Interesting Stories — 逐句朗讀（原文斷句）(18)
+    { en: 'My teacher tells us interesting stories every day.', zh: '我的老師每天都會跟我們分享有趣的故事。' },
+    { en: 'I get very excited.', zh: '我總是感到非常興奮。' },
+    { en: 'My friends think they are so silly.', zh: '只是我的朋友們覺得那些故事有些可笑。' },
+    { en: 'One story was about a duck with a dress', zh: '有個故事是關於一隻穿著裙子的鴨子，' },
+    { en: 'that lays eggs behind a door', zh: '她在門後面下蛋，' },
+    { en: 'because she is very scared of the angry goat in the barn.', zh: '因為她很怕穀倉裡那隻愛生氣的山羊。' },
+    { en: 'I feel very sad for the duck.', zh: '我為那隻鴨子感到難過。' },
+    { en: 'Joe loves the story about the brave bear', zh: 'Joe喜歡那個關於勇敢的熊的故事，' },
+    { en: 'that got lost in the forest.', zh: '那隻熊在森林中迷路了。' },
+    { en: 'He is so proud of the bear', zh: '他為那隻熊感到驕傲，' },
+    { en: 'for never getting scared', zh: '因為牠從不害怕，' },
+    { en: 'and helping other sick animals on his way.', zh: '而且一路上幫助其他生病的動物。' },
+    { en: 'Some of my classmates get very bored', zh: '部分同學感到非常無聊，' },
+    { en: 'and feel sleepy in class', zh: '上課時想睡覺，' },
+    { en: 'if my teacher talks about the history of toys.', zh: '如果老師談到玩具歷史的時候。' },
+    { en: 'They just want to play with them.', zh: '他們只想玩玩具。' },
+    { en: 'My teacher makes me feel loved', zh: '老師讓我感受到他的愛，' },
+    { en: 'and her stories make me feel so happy!', zh: '而且她的故事讓我感到好開心！' },
   ],
 
   dialogues: [],
