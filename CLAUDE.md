@@ -41,7 +41,7 @@ A single-file HTML educational game for kids learning English emotions vocabular
 - **Stacking contexts**: `.app` has `z-index: 1`. Pickers/modals must be appended to `.app` (not body) to avoid z-index trapping. The `.tool-slot:active { transform }` also creates stacking contexts.
 - **Tool picker**: Appended to `.app` with `position: fixed`, positioned via `getBoundingClientRect()`. Backdrop is sibling of picker inside `.app`.
 - **Save/load**: `localStorage` keyed per week (`mineGame_weekN`) with migration support
-- **TTS**: Web Speech API with voice detection, speed toggle (slow/normal), mute toggle
+- **TTS**: Primary: pre-generated Edge TTS (Ana Neural) MP3s in `audio/`, fallback: Web Speech API. Speed via `Audio.playbackRate`. Build: `python3 generate-audio.py`
 - **SFX**: Web Audio API (oscillators + noise buffers) for mine, craft, tool break sounds
 
 ## Conventions
