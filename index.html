@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Feelings Fun! 🎭</title>
 <script>
   var weekNum = new URLSearchParams(location.search).get('week') || '1';
@@ -42,6 +42,9 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
+button:focus-visible, .match-item:focus-visible, .quiz-option:focus-visible, .nav-tab:focus-visible {
+  outline: 2.5px solid var(--accent); outline-offset: 2px;
+}
 
 body {
   font-family: var(--font-body);
@@ -135,10 +138,10 @@ body::before {
 }
 .nav-tab {
   display: flex; flex-direction: column; align-items: center; gap: 1px;
-  padding: 6px 2px 4px; border: none; background: transparent;
-  font-family: var(--font-display); font-size: 0.6rem; font-weight: 600;
+  padding: 8px 2px 6px; border: none; background: transparent;
+  font-family: var(--font-display); font-size: 0.65rem; font-weight: 600;
   color: var(--text-secondary); cursor: pointer; transition: all 0.2s;
-  min-width: 0; flex: 1; position: relative;
+  min-width: 0; flex: 1; position: relative; min-height: 48px; justify-content: center;
 }
 .nav-tab .nav-icon { font-size: 1.25rem; line-height: 1.2; }
 .nav-tab .nav-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
@@ -410,7 +413,7 @@ body::before {
 .match-game { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
 .match-column h3 { font-family: var(--font-display); text-align: center; margin-bottom: 12px; color: var(--text-secondary); font-size: 1rem; }
 .match-item {
-  padding: 0 18px; height: 52px; border-radius: 14px; margin-bottom: 10px;
+  padding: 0 18px; min-height: 52px; border-radius: 14px; margin-bottom: 10px;
   cursor: pointer; transition: all 0.3s;
   font-family: var(--font-display); font-size: 1.1rem; font-weight: 600;
   text-align: center; user-select: none;
@@ -443,7 +446,7 @@ body::before {
   box-shadow: var(--shadow-md); text-align: center;
 }
 .quiz-progress { display: flex; gap: 6px; justify-content: center; margin-bottom: 20px; }
-.quiz-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--border); transition: all 0.3s; }
+.quiz-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--border); transition: all 0.3s; }
 .quiz-dot.done { background: var(--success); }
 .quiz-dot.current { background: var(--accent); transform: scale(1.3); }
 .quiz-dot.wrong-dot { background: var(--error); }
@@ -2612,7 +2615,7 @@ function handleLearnGateAnswer(isCorrect, correctWord, optGrid) {
       });
       document.getElementById('learnGateContent').appendChild(skipBtn);
     } else {
-      setTimeout(() => showLearnGate(), 1200);
+      setTimeout(() => showLearnGate(), 2500);
     }
   }
 }
@@ -2663,7 +2666,7 @@ function doConfetti() {
     p.style.height = size + 'px';
     box.appendChild(p);
   }
-  setTimeout(() => box.innerHTML = '', 3000);
+  setTimeout(() => { while (box.firstChild) box.firstChild.remove(); }, 3000);
 }
 
 // ===== HEADER HIDE ON SCROLL DOWN, SHOW ON SCROLL UP =====
@@ -3233,14 +3236,14 @@ function initSightWords() {
       }
       card.classList.add('speaking');
       speakWordThenSentence(sw.word, sw.sentence);
-      // Enable button after audio plays
+      // Enable button after audio finishes (word + pause + sentence ≈ 4-5s on slower)
       setTimeout(() => {
         card.classList.remove('speaking');
         if (sightEarned.has(sw.word)) return;
         btn.disabled = false;
         btn.style.opacity = '1';
         btn.style.animation = 'fadeIn 0.3s ease';
-      }, 2500);
+      }, 4500);
     });
 
     btn.addEventListener('click', (e) => {
