@@ -43,7 +43,7 @@ window.WEEK_DATA = {
   sightColors: ['#FF6B6B','#A29BFE','#FFD93D','#00B894','#FF85CA','#74B9FF','#E17055'],
 
   sentenceGroups: [
-    { title: '🌾 Fun On The Farm', count: 9 },
+    { title: '🌾 Fun On The Farm', count: 19 },
     { title: '💬 Sentence Patterns', count: 2 },
     { title: '♫ I\'m a Believer', count: 13 },
     { title: '📖 Interesting Stories', count: 18 },
@@ -60,6 +60,16 @@ window.WEEK_DATA = {
     { en: 'He would suddenly jump out and run home very fast', zh: '他總是會突然跳上岸並快速跑回家' },
     { en: 'before his parents got worried.', zh: '在父母開始擔心之前。' },
     { en: 'He often fell down and hurt his knee.', zh: '他也常因跑步跌倒並膝蓋受傷。' },
+    { en: 'Ahh, the joys of fishing.', zh: '但受傷並不會影響釣魚的樂趣。' },
+    { en: 'Andrew imagined there was a big fire in the barn.', zh: 'Andrew有時會想像自家穀倉失火了。' },
+    { en: 'He would jump on his red bike and make crazy fire truck noises', zh: '他會跳上他紅色的腳踏車，把自己當成是開著消防車的消防員，車上警鈴大作，' },
+    { en: 'and \'whoosh\' past his family.', zh: '並從他家人身邊呼嘯而過。' },
+    { en: 'His mother felt very nervous when he rode his bike.', zh: '當Andrew在騎腳踏車時，他的母親會因為他騎這麼快而感到緊張。' },
+    { en: 'Dexter the dog was so confused.', zh: '而他的狗Dexter，則是一臉困惑。' },
+    { en: 'He would just jump up all surprised, wag his tail and run after him.', zh: '但他依然會跳起來，搖著尾巴去追Andrew陪他玩。' },
+    { en: 'His father would just shout, "You are the best fireman in the world!"', zh: '這時爸爸總會大叫：「你是世界上最棒的消防員！」' },
+    { en: 'This made Andrew feel so proud and happy.', zh: '這句話讓Andrew感到驕傲且開心。' },
+    { en: '"Thanks, Dad."', zh: '「謝謝你，爸爸。」' },
     // Sentence Patterns (2)
     { en: 'I get hungry if I don\'t eat.', zh: '我不吃就會感到飢餓。' },
     { en: 'I am nervous to speak English.', zh: '我講英文會緊張。' },
