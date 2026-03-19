@@ -15,16 +15,19 @@ window.WEEK_DATA = {
   ],
 
   sightWords: [
-    { word: 'fly',    zh: '飛',     sentence: 'Birds can fly high in the sky.' },
-    { word: 'for',    zh: '為了',   sentence: 'I do this for you.' },
-    { word: 'four',   zh: '四',     sentence: 'I have four fingers up.' },
-    { word: 'friend', zh: '朋友',   sentence: 'She is my best friend.' },
-    { word: 'from',   zh: '從',     sentence: 'I come from Taiwan.' },
-    { word: 'fun',    zh: '有趣',   sentence: 'This game is so much fun!' },
-    { word: 'funny',  zh: '好笑的', sentence: 'That joke was really funny.' },
+    { word: 'give it back',   zh: '把它還回來',     sentence: 'Give it back to me, please.' },
+    { word: 'just our thing', zh: '只是我們的事',   sentence: 'It is just our thing.' },
+    { word: 'they give most', zh: '他們給最多',     sentence: 'They give most of the food.' },
+    { word: 'after we go',    zh: '在我們走之後',   sentence: 'After we go home, we play.' },
+    { word: 'it is very',     zh: '它非常',         sentence: 'It is very hot today.' },
+    { word: 'back to you',    zh: '回到你那裡',     sentence: 'I will come back to you.' },
+    { word: 'get that thing', zh: '拿那個東西',     sentence: 'Go get that thing over there.' },
+    { word: 'most of us',     zh: '我們大多數人',   sentence: 'Most of us like to play.' },
+    { word: 'after the day',  zh: '在這天之後',     sentence: 'After the day is done, we rest.' },
+    { word: 'take one step',  zh: '踏出一步',       sentence: 'Take one step at a time.' },
   ],
 
-  sightColors: ['#FF6B6B','#A29BFE','#FFD93D','#00B894','#FF85CA','#74B9FF','#E17055'],
+  sightColors: ['#FF6B6B','#A29BFE','#FFD93D','#00B894','#FF85CA','#74B9FF','#E17055','#FD79A8','#00CEC9','#6C5CE7'],
 
   sentenceGroups: [
     { title: '👁️ Helen\'s Walk', count: 15 },
