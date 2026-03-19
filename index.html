@@ -356,8 +356,7 @@ body::before {
 .sentence-card .sc-repeat-btn { border-color: #FF85CA; color: #D63384; }
 .sentence-card .sc-repeat-btn:hover { background: #FF85CA; color: white; }
 .sentence-card .sc-btns { display: flex; gap: 6px; }
-.sc-word { transition: all 0.2s; border-radius: 4px; padding: 0 2px; }
-.sc-word.highlight { background: #FFD93D; color: #2D3436; transform: scale(1.05); display: inline-block; }
+.sc-word { border-radius: 4px; padding: 0 2px; }
 .sc-your-turn {
   text-align: center; padding: 14px; margin-top: 8px;
   font-family: var(--font-display); font-size: 1.3rem; font-weight: 700;
@@ -445,11 +444,6 @@ body::before {
   border-radius: 2px; animation: countdownBar 5s linear forwards;
 }
 @keyframes countdownBar { from { width: 100%; } to { width: 0%; } }
-/* Phrase chunk highlight */
-.sc-word.phrase-highlight {
-  background: #74B9FF44; border-radius: 4px; padding: 1px 3px;
-}
-
 .btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 .speak-btn {
   padding: 12px 28px;
@@ -2411,56 +2405,27 @@ function speak(text, forceSpeed) {
   return speakFallback(text, speed);
 }
 
-// Karaoke-style speak with word highlighting
+// Speak sentence (card gets speaking border while playing)
 function speakWithHighlight(text, card) {
   stopCurrentAudio();
   card.classList.add('speaking');
-  const wordSpans = card.querySelectorAll('.sc-word');
   const speed = speechSpeed;
+  const done = () => card.classList.remove('speaking');
 
   const entry = lookupAudio(text);
   if (entry && speed !== 'slower') {
-    // Play MP3 with estimated word timing for highlighting
     const audio = playMP3(entry, speed);
-    const numWords = wordSpans.length;
-
-    audio.onloadedmetadata = () => {
-      const effectiveDuration = audio.duration / audio.playbackRate;
-      const interval = effectiveDuration / Math.max(numWords, 1);
-      let wordIdx = 0;
-      const timer = setInterval(() => {
-        wordSpans.forEach(s => s.classList.remove('highlight'));
-        if (wordIdx < numWords) {
-          wordSpans[wordIdx].classList.add('highlight');
-          wordIdx++;
-        }
-      }, interval * 1000);
-
-      audio.onended = () => {
-        clearInterval(timer);
-        wordSpans.forEach(s => s.classList.remove('highlight'));
-        card.classList.remove('speaking');
-      };
-      audio.onerror = () => {
-        clearInterval(timer);
-        wordSpans.forEach(s => s.classList.remove('highlight'));
-        card.classList.remove('speaking');
-      };
-    };
+    audio.onended = done;
+    audio.onerror = done;
     return;
   }
 
   if (speed === 'slower') {
-    // Word-by-word mode with highlighting (MP3 per word or fallback)
+    // Word-by-word mode: play each word separately with a pause
     const textWords = text.split(/\s+/).filter(Boolean);
     let idx = 0;
     function nextWord() {
-      wordSpans.forEach(s => s.classList.remove('highlight'));
-      if (idx >= textWords.length) {
-        card.classList.remove('speaking');
-        return;
-      }
-      if (wordSpans[idx]) wordSpans[idx].classList.add('highlight');
+      if (idx >= textWords.length) { done(); return; }
       const wordEntry = lookupAudio(textWords[idx]);
       if (wordEntry) {
         const a = playMP3(wordEntry, 'slow');
@@ -2483,34 +2448,17 @@ function speakWithHighlight(text, card) {
     return;
   }
 
-  // Full fallback to SpeechSynthesis with boundary events
+  // Fallback to SpeechSynthesis
   const synth = window.speechSynthesis;
   if (!synth) return;
   synth.cancel();
-
   const rateMap = { slow: 0.5, normal: 0.9 };
   const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'en-US';
-  u.rate = rateMap[speed] || 0.9;
-  u.pitch = 1.05;
+  u.lang = 'en-US'; u.rate = rateMap[speed] || 0.9; u.pitch = 1.05;
   const pick = pickBestVoice(synth.getVoices());
   if (pick) u.voice = pick;
-  let wordIdx = 0;
-  u.onboundary = (e) => {
-    if (e.name === 'word') {
-      wordSpans.forEach(s => s.classList.remove('highlight'));
-      if (wordSpans[wordIdx]) wordSpans[wordIdx].classList.add('highlight');
-      wordIdx++;
-    }
-  };
-  u.onend = () => {
-    wordSpans.forEach(s => s.classList.remove('highlight'));
-    card.classList.remove('speaking');
-  };
-  u.onerror = () => {
-    wordSpans.forEach(s => s.classList.remove('highlight'));
-    card.classList.remove('speaking');
-  };
+  u.onend = done;
+  u.onerror = done;
   synth.speak(u);
 }
 
@@ -2518,7 +2466,6 @@ function speakWithHighlight(text, card) {
 function doRepeatAfterMe(text, card, onComplete) {
   stopCurrentAudio();
   card.classList.add('speaking');
-  const wordSpans = card.querySelectorAll('.sc-word');
 
   // Remove any existing "your turn" prompt
   const oldPrompt = card.querySelector('.sc-your-turn');
@@ -2527,7 +2474,6 @@ function doRepeatAfterMe(text, card, onComplete) {
   const entry = lookupAudio(text);
 
   function showYourTurn() {
-    wordSpans.forEach(s => s.classList.remove('highlight'));
     const prompt = createEl('div', 'sc-your-turn', '🎤 Your turn! Say it!');
     const timerBar = createEl('div', 'sc-your-turn-bar');
     const timerFill = createEl('div', 'sc-your-turn-fill');
@@ -2542,24 +2488,9 @@ function doRepeatAfterMe(text, card, onComplete) {
   }
 
   if (entry) {
-    const audio = playMP3(entry, 'slow'); // Always slow for repeat mode
-    const numWords = wordSpans.length;
-
-    audio.onloadedmetadata = () => {
-      const effectiveDuration = audio.duration / audio.playbackRate;
-      const interval = effectiveDuration / Math.max(numWords, 1);
-      let wordIdx = 0;
-      const timer = setInterval(() => {
-        wordSpans.forEach(s => s.classList.remove('highlight'));
-        if (wordIdx < numWords) {
-          wordSpans[wordIdx].classList.add('highlight');
-          wordIdx++;
-        }
-      }, interval * 1000);
-
-      audio.onended = () => { clearInterval(timer); showYourTurn(); };
-      audio.onerror = () => { clearInterval(timer); showYourTurn(); };
-    };
+    const audio = playMP3(entry, 'slow');
+    audio.onended = showYourTurn;
+    audio.onerror = showYourTurn;
     return;
   }
 
@@ -2567,26 +2498,12 @@ function doRepeatAfterMe(text, card, onComplete) {
   const synth = window.speechSynthesis;
   if (!synth) return;
   synth.cancel();
-
   const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'en-US';
-  u.rate = 0.5;
-  u.pitch = 1.05;
+  u.lang = 'en-US'; u.rate = 0.5; u.pitch = 1.05;
   const pick = pickBestVoice(synth.getVoices());
   if (pick) u.voice = pick;
-  let wordIdx = 0;
-  u.onboundary = (e) => {
-    if (e.name === 'word') {
-      wordSpans.forEach(s => s.classList.remove('highlight'));
-      if (wordSpans[wordIdx]) wordSpans[wordIdx].classList.add('highlight');
-      wordIdx++;
-    }
-  };
-  u.onend = () => showYourTurn();
-  u.onerror = () => {
-    wordSpans.forEach(s => s.classList.remove('highlight'));
-    card.classList.remove('speaking');
-  };
+  u.onend = showYourTurn;
+  u.onerror = () => card.classList.remove('speaking');
   synth.speak(u);
 }
 
