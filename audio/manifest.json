@@ -1,6 +1,22 @@
 {
+  "after the day": {
+    "file": "2eb20b1e9c.mp3",
+    "timings": []
+  },
+  "after we go": {
+    "file": "f2de576836.mp3",
+    "timings": []
+  },
+  "amazed": {
+    "file": "682c8cebb3.mp3",
+    "timings": []
+  },
   "angry": {
     "file": "6e6b4c3e0c.mp3",
+    "timings": []
+  },
+  "back to you": {
+    "file": "e741500993.mp3",
     "timings": []
   },
   "bored": {
@@ -17,6 +33,14 @@
   },
   "crazy": {
     "file": "297aae72cc.mp3",
+    "timings": []
+  },
+  "curious": {
+    "file": "821ae63dbe.mp3",
+    "timings": []
+  },
+  "disgusted": {
+    "file": "6910e52132.mp3",
     "timings": []
   },
   "door": {
@@ -55,60 +79,64 @@
     "file": "7b849a50da.mp3",
     "timings": []
   },
-  "far": {
-    "file": "17d965747c.mp3",
+  "fly": {
+    "file": "af17bc3b4a.mp3",
     "timings": []
   },
-  "farm": {
-    "file": "e67ed91b51.mp3",
+  "for": {
+    "file": "d55669822f.mp3",
     "timings": []
   },
-  "fast": {
-    "file": "31d4541b8e.mp3",
+  "four": {
+    "file": "8cbad96ace.mp3",
     "timings": []
   },
-  "father": {
-    "file": "0de959beaa.mp3",
+  "friend": {
+    "file": "3af00c6cad.mp3",
     "timings": []
   },
-  "feet": {
-    "file": "e03f906348.mp3",
+  "from": {
+    "file": "d98a07f849.mp3",
     "timings": []
   },
-  "find": {
-    "file": "ea170e2caf.mp3",
+  "fun": {
+    "file": "77004ea213.mp3",
     "timings": []
   },
-  "fire": {
-    "file": "015f28b9df.mp3",
+  "funny": {
+    "file": "8704daa9d5.mp3",
     "timings": []
   },
-  "fireman": {
-    "file": "4fe814abb1.mp3",
+  "get that thing": {
+    "file": "eb49e86169.mp3",
     "timings": []
   },
-  "first": {
-    "file": "8b04d5e377.mp3",
+  "give it back": {
+    "file": "2cd40bcd87.mp3",
     "timings": []
   },
-  "fish": {
-    "file": "83e4a96aed.mp3",
+  "grateful": {
+    "file": "f6bc81b1fa.mp3",
     "timings": []
   },
   "happy": {
     "file": "56ab24c15b.mp3",
     "timings": []
   },
-  "heart": {
-    "file": "3189934774.mp3",
-    "timings": []
-  },
   "hungry": {
     "file": "a6e43300cd.mp3",
     "timings": []
   },
-  "hurt": {
-    "file": "c0bb722d28.mp3",
+  "it is very": {
+    "file": "fa65baa5e1.mp3",
+    "timings": []
+  },
+  "jealous": {
+    "file": "1339103d98.mp3",
+    "timings": []
+  },
+  "just our thing": {
+    "file": "900f37de36.mp3",
     "timings": []
   },
   "know": {
@@ -119,8 +147,20 @@
     "file": "aae6635e04.mp3",
     "timings": []
   },
+  "lonely": {
+    "file": "7e49f5a0a9.mp3",
+    "timings": []
+  },
+  "loving": {
+    "file": "6bfd92047e.mp3",
+    "timings": []
+  },
   "mad": {
     "file": "7538ebc37a.mp3",
+    "timings": []
+  },
+  "most of us": {
+    "file": "0abfaa3837.mp3",
     "timings": []
   },
   "nervous": {
@@ -137,6 +177,10 @@
   },
   "over": {
     "file": "3b759a9ca8.mp3",
+    "timings": []
+  },
+  "peaceful": {
+    "file": "8d783d0bf9.mp3",
     "timings": []
   },
   "place": {
@@ -179,6 +223,14 @@
     "file": "600d6af0f3.mp3",
     "timings": []
   },
+  "take one step": {
+    "file": "60aaa84b5d.mp3",
+    "timings": []
+  },
+  "they give most": {
+    "file": "0139f1159b.mp3",
+    "timings": []
+  },
   "thirsty": {
     "file": "52def7c94d.mp3",
     "timings": []
@@ -203,12 +255,20 @@
     "file": "f1d4c19d42.mp3",
     "timings": []
   },
-  "a little place.": {
-    "file": "9f8c2f095c.mp3",
+  "after the day is done, we rest.": {
+    "file": "bf7ab13184.mp3",
+    "timings": []
+  },
+  "after we go home, we play.": {
+    "file": "ee78615511.mp3",
     "timings": []
   },
   "ahh, the joys of fishing.": {
     "file": "8951335383.mp3",
+    "timings": []
+  },
+  "and i hung my head and cried.": {
+    "file": "27583f010a.mp3",
     "timings": []
   },
   "andrew imagined there was a big fire in the barn.": {
@@ -227,20 +287,12 @@
     "file": "2808456f3e.mp3",
     "timings": []
   },
-  "back to work.": {
-    "file": "442aacabf8.mp3",
-    "timings": []
-  },
-  "be careful with fire.": {
-    "file": "7a07fefcd9.mp3",
+  "birds can fly high in the sky.": {
+    "file": "f6ca95f48e.mp3",
     "timings": []
   },
   "can monkeys climb trees?": {
     "file": "1a40f8cfbc.mp3",
-    "timings": []
-  },
-  "can you find it?": {
-    "file": "56dd3fcb8c.mp3",
     "timings": []
   },
   "can your dad speak english?": {
@@ -259,40 +311,44 @@
     "file": "d0c4e8c862.mp3",
     "timings": []
   },
+  "every day is a gift — for those who know how to see.": {
+    "file": "9402bfddc6.mp3",
+    "timings": []
+  },
   "every day is special.": {
     "file": "215d2fd635.mp3",
+    "timings": []
+  },
+  "finally, she used her tongue to taste a red berry from a bush.": {
+    "file": "0cd30f02c6.mp3",
+    "timings": []
+  },
+  "first, she used her eyes to see the bright blue sky.": {
+    "file": "f3b5ebcd52.mp3",
+    "timings": []
+  },
+  "give it back to me, please.": {
+    "file": "eae9215ec7.mp3",
     "timings": []
   },
   "give one to each child.": {
     "file": "169ed54203.mp3",
     "timings": []
   },
+  "go get that thing over there.": {
+    "file": "ae5da52468.mp3",
+    "timings": []
+  },
   "hakuna matata! it means no worries!": {
     "file": "c375db2647.mp3",
-    "timings": []
-  },
-  "he can run very fast.": {
-    "file": "72aefe970c.mp3",
-    "timings": []
-  },
-  "he hurt his knee.": {
-    "file": "b0db4ba871.mp3",
     "timings": []
   },
   "he is so proud of the bear": {
     "file": "f8746d48de.mp3",
     "timings": []
   },
-  "he lived on a farm.": {
-    "file": "34b3486cff.mp3",
-    "timings": []
-  },
   "he loved to fish far from the farm house.": {
     "file": "2013180d2e.mp3",
-    "timings": []
-  },
-  "he loved to fish.": {
-    "file": "f421b6a291.mp3",
     "timings": []
   },
   "he often fell down and hurt his knee.": {
@@ -315,6 +371,14 @@
     "file": "9c815dc618.mp3",
     "timings": []
   },
+  "helen felt so grateful for her five senses.": {
+    "file": "cf38642dd4.mp3",
+    "timings": []
+  },
+  "helen went for a walk with her friend one sunny morning.": {
+    "file": "deb4296932.mp3",
+    "timings": []
+  },
   "his father would just shout, \"you are the best fireman in the world!\"": {
     "file": "98c8cb2bc1.mp3",
     "timings": []
@@ -331,12 +395,20 @@
     "file": "44213ac46f.mp3",
     "timings": []
   },
-  "i came in first!": {
-    "file": "844d8c0fe1.mp3",
+  "i come from taiwan.": {
+    "file": "78839ba8fb.mp3",
     "timings": []
   },
   "i couldn\\": {
     "file": "16f510afaa.mp3",
+    "timings": []
+  },
+  "i do this for you.": {
+    "file": "7e4fce2a62.mp3",
+    "timings": []
+  },
+  "i dreamed i held you in my arms.": {
+    "file": "b8325b8431.mp3",
     "timings": []
   },
   "i eat an egg.": {
@@ -359,16 +431,20 @@
     "file": "c246182ef3.mp3",
     "timings": []
   },
+  "i have four fingers up.": {
+    "file": "8dfb7a0112.mp3",
+    "timings": []
+  },
   "i have only one.": {
     "file": "92f1d562f8.mp3",
     "timings": []
   },
-  "i know the answer.": {
-    "file": "60364e282b.mp3",
+  "i hear with my ears.": {
+    "file": "b57f2fdcc2.mp3",
     "timings": []
   },
-  "i know you.": {
-    "file": "79cdceb7b5.mp3",
+  "i know the answer.": {
+    "file": "60364e282b.mp3",
     "timings": []
   },
   "i like blue.": {
@@ -379,8 +455,16 @@
     "file": "6d3fd1b993.mp3",
     "timings": []
   },
-  "i love you with all my heart.": {
-    "file": "f1d15b0d74.mp3",
+  "i see with my eyes.": {
+    "file": "ac24482832.mp3",
+    "timings": []
+  },
+  "i smell with my nose.": {
+    "file": "f88f6c79f0.mp3",
+    "timings": []
+  },
+  "i taste with my tongue.": {
+    "file": "b70cb5cdbf.mp3",
     "timings": []
   },
   "i thought love was more or less a givin\\": {
@@ -391,12 +475,28 @@
     "file": "f2d4ba295e.mp3",
     "timings": []
   },
+  "i touch with my hands.": {
+    "file": "3691955824.mp3",
+    "timings": []
+  },
+  "i will come back to you.": {
+    "file": "dfa141aa19.mp3",
+    "timings": []
+  },
   "i\\": {
     "file": "856cf2ceaa.mp3",
     "timings": []
   },
-  "it is far away.": {
-    "file": "1e0579d33a.mp3",
+  "it is just our thing.": {
+    "file": "40deb1fc50.mp3",
+    "timings": []
+  },
+  "it is very hot today.": {
+    "file": "03c942462b.mp3",
+    "timings": []
+  },
+  "it was sweet and a little funny tasting.": {
+    "file": "7ad560f1dc.mp3",
     "timings": []
   },
   "joe loves the story about the brave bear": {
@@ -419,8 +519,8 @@
     "file": "234b451af7.mp3",
     "timings": []
   },
-  "my father is kind.": {
-    "file": "af1a96f83b.mp3",
+  "most of us like to play.": {
+    "file": "15fc494213.mp3",
     "timings": []
   },
   "my friends think they are so silly.": {
@@ -433,6 +533,10 @@
   },
   "my teacher tells us interesting stories every day.": {
     "file": "2054dd3ee3.mp3",
+    "timings": []
+  },
+  "next, she used her nose to smell the flowers by the path.": {
+    "file": "a9029b06cb.mp3",
     "timings": []
   },
   "no, he can\\": {
@@ -451,32 +555,44 @@
     "file": "7d2edea8ec.mp3",
     "timings": []
   },
-  "only this can.": {
-    "file": "85c33b9ecb.mp3",
-    "timings": []
-  },
   "open the door.": {
     "file": "48c8291432.mp3",
     "timings": []
   },
-  "over the hill.": {
-    "file": "5c76408fcd.mp3",
+  "please don\\": {
+    "file": "4c13459d36.mp3",
     "timings": []
   },
   "please take one.": {
     "file": "626cc03b33.mp3",
     "timings": []
   },
-  "put your feet in the water.": {
-    "file": "f8c77ce8cf.mp3",
-    "timings": []
-  },
   "she can ride horses.": {
     "file": "aa79ac4e4b.mp3",
     "timings": []
   },
+  "she is my best friend.": {
+    "file": "6e497f7d6b.mp3",
+    "timings": []
+  },
   "she likes pink.": {
     "file": "7d4c7d9521.mp3",
+    "timings": []
+  },
+  "she said, \"every day is a gift — for those who know how to see.\"": {
+    "file": "468d5dd208.mp3",
+    "timings": []
+  },
+  "she saw four birds fly from the big tree.": {
+    "file": "04d1d76c6e.mp3",
+    "timings": []
+  },
+  "she used all five senses to enjoy the world around her.": {
+    "file": "50acdf9215.mp3",
+    "timings": []
+  },
+  "she used her hands to touch the soft green leaves.": {
+    "file": "7e5e43ece2.mp3",
     "timings": []
   },
   "sit down please.": {
@@ -487,8 +603,12 @@
     "file": "e9e5a5f86f.mp3",
     "timings": []
   },
-  "take it back.": {
-    "file": "4794a7cd66.mp3",
+  "take one step at a time.": {
+    "file": "3312b3d3ee.mp3",
+    "timings": []
+  },
+  "that joke was really funny.": {
+    "file": "c84d5e0761.mp3",
     "timings": []
   },
   "that\\": {
@@ -499,12 +619,20 @@
     "file": "a4b78ee094.mp3",
     "timings": []
   },
-  "the fireman is brave.": {
-    "file": "2cf80d4857.mp3",
+  "the birds that flew past made her feel amazed.": {
+    "file": "ab810c2d3c.mp3",
     "timings": []
   },
   "the first thing he did when he got hungry and thirsty at the river,": {
     "file": "a3d7e2c2b4.mp3",
+    "timings": []
+  },
+  "the flower smelled sweet and made her feel peaceful.": {
+    "file": "ff83b7f1e2.mp3",
+    "timings": []
+  },
+  "the leaves felt smooth and cool.": {
+    "file": "04fb9b15cf.mp3",
     "timings": []
   },
   "the little cat is cute.": {
@@ -515,16 +643,36 @@
     "file": "163c02743c.mp3",
     "timings": []
   },
+  "the other night, dear, as i lay sleeping.": {
+    "file": "e8b00956d6.mp3",
+    "timings": []
+  },
+  "the singing was so beautiful and fun to listen to.": {
+    "file": "f12bc308a6.mp3",
+    "timings": []
+  },
   "then i saw her face, now i\\": {
     "file": "21f135c7a6.mp3",
+    "timings": []
+  },
+  "then she used her ears to hear the birds sing.": {
+    "file": "1d78e0c8ac.mp3",
     "timings": []
   },
   "they are my mom\\": {
     "file": "11bbd19f7e.mp3",
     "timings": []
   },
+  "they give most of the food.": {
+    "file": "47ddfaf7c3.mp3",
+    "timings": []
+  },
   "they just want to play with them.": {
     "file": "98973d9d86.mp3",
+    "timings": []
+  },
+  "this game is so much fun!": {
+    "file": "89e803e22f.mp3",
     "timings": []
   },
   "this is a nice place.": {
@@ -559,16 +707,16 @@
     "file": "8e7661442e.mp3",
     "timings": []
   },
-  "what is a sound?": {
-    "file": "d5964eb104.mp3",
-    "timings": []
-  },
   "what is that sound?": {
     "file": "eb007967e1.mp3",
     "timings": []
   },
   "what\\": {
     "file": "554fad02bd.mp3",
+    "timings": []
+  },
+  "when i awoke, dear, i was mistaken.": {
+    "file": "45077fe0d1.mp3",
     "timings": []
   },
   "when i wanted sunshine, i got rain.": {
@@ -585,6 +733,18 @@
   },
   "yes, they can.": {
     "file": "9a4530eaae.mp3",
+    "timings": []
+  },
+  "you are my sunshine, my only sunshine.": {
+    "file": "bfc98b2b49.mp3",
+    "timings": []
+  },
+  "you make me happy when skies are grey.": {
+    "file": "1efd5f3666.mp3",
+    "timings": []
+  },
+  "you\\": {
+    "file": "669378e7e3.mp3",
     "timings": []
   },
   "and \\": {
