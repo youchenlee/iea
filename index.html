@@ -137,13 +137,13 @@ body::before {
   display: flex; width: 100%; max-width: 600px; justify-content: space-around;
 }
 .nav-tab {
-  display: flex; flex-direction: column; align-items: center; gap: 1px;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
   padding: 8px 2px 6px; border: none; background: transparent;
-  font-family: var(--font-display); font-size: 0.65rem; font-weight: 600;
+  font-family: var(--font-display); font-size: 0.75rem; font-weight: 600;
   color: var(--text-secondary); cursor: pointer; transition: all 0.2s;
-  min-width: 0; flex: 1; position: relative; min-height: 48px; justify-content: center;
+  min-width: 0; flex: 1; position: relative; min-height: 54px; justify-content: center;
 }
-.nav-tab .nav-icon { font-size: 1.25rem; line-height: 1.2; }
+.nav-tab .nav-icon { font-size: 1.5rem; line-height: 1.2; }
 .nav-tab .nav-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 .nav-tab:hover { color: var(--text); }
 .nav-tab.active { color: var(--accent); font-weight: 700; }
@@ -152,16 +152,27 @@ body::before {
   height: 2.5px; border-radius: 0 0 2px 2px; background: var(--accent);
 }
 .nav-tab .stamina-hint { font-size: 0.5rem; opacity: 0.6; position: absolute; top: 2px; right: 4px; }
-.nav-spacer { height: 64px; } /* push content above fixed nav */
+.nav-spacer { height: 74px; } /* push content above fixed nav */
+/* Game sub-navigation */
+.game-sub-nav { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 16px; }
+.game-sub-tab {
+  padding: 10px 16px; border-radius: var(--radius-pill); border: 2px solid var(--border);
+  background: var(--surface); color: var(--text-secondary); font-family: var(--font-display);
+  font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+}
+.game-sub-tab.active { background: var(--accent); border-color: var(--accent); color: white; }
+.game-sub-tab:hover { border-color: var(--accent); }
+.game-panel { display: none; }
+.game-panel.active { display: block; }
 
 .section { display: none; animation: fadeIn 0.4s ease; }
 .section.active { display: block; }
 .section-title {
-  font-family: var(--font-display); font-size: 1.2rem; font-weight: 600;
+  font-family: var(--font-display); font-size: 1.35rem; font-weight: 600;
   color: var(--text); text-align: center; margin-bottom: 4px;
 }
 .section-subtitle {
-  font-size: 0.85rem; color: var(--text-secondary); text-align: center; margin-bottom: 12px;
+  font-size: 0.95rem; color: var(--text-secondary); text-align: center; margin-bottom: 12px;
 }
 .section-empty {
   text-align: center; color: var(--text-muted); padding: 40px 0;
@@ -196,7 +207,7 @@ body::before {
 .feeling-card:active { transform: scale(0.95); }
 .feeling-card .emoji { font-size: 2.8rem; margin-bottom: 8px; display: block; }
 .feeling-card .word { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; color: var(--text); }
-.feeling-card .chinese { font-size: 0.85rem; color: var(--text-secondary); margin-top: 2px; }
+.feeling-card .chinese { font-size: 0.95rem; color: var(--text-secondary); margin-top: 2px; }
 .feeling-card .speaker-hint {
   position: absolute; top: 8px; right: 8px;
   font-size: 1rem; opacity: 0.3; transition: opacity 0.2s;
@@ -273,21 +284,21 @@ body::before {
   font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; color: var(--text);
 }
 .sight-learn-card .sl-zh {
-  font-size: 0.85rem; color: var(--text-secondary); margin-top: 2px;
+  font-size: 0.95rem; color: var(--text-secondary); margin-top: 2px;
 }
 .sight-learn-card .sl-sentence {
-  font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; font-style: italic;
+  font-size: 0.85rem; color: var(--text-muted); margin-top: 6px; font-style: italic;
 }
 
 /* ===== READ (Sentence Reading) ===== */
 .read-header { text-align: center; margin-bottom: 16px; }
-.read-header h3 { font-family: var(--font-display); font-size: 1.3rem; color: var(--text); }
-.read-header p { font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px; }
+.read-header h3 { font-family: var(--font-display); font-size: 1.4rem; color: var(--text); }
+.read-header p { font-size: 0.95rem; color: var(--text-secondary); margin-top: 4px; }
 .read-unit-toggle { display: flex; gap: 8px; justify-content: center; margin: 10px 0 6px; flex-wrap: wrap; }
 .read-unit-btn {
-  padding: 7px 16px; border-radius: var(--radius-pill); border: 2px solid var(--border);
+  padding: 9px 18px; border-radius: var(--radius-pill); border: 2px solid var(--border);
   background: var(--surface); color: var(--text-secondary); font-family: var(--font-display);
-  font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
 }
 .read-unit-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
 .sc-qa { display: flex; flex-direction: column; gap: 6px; }
@@ -298,8 +309,8 @@ body::before {
 }
 .sc-qa-label.q { background: #74B9FF33; color: #0984e3; }
 .sc-qa-label.a { background: #00B89433; color: #00b894; }
-.sc-qa-text { font-family: var(--font-display); font-size: 1rem; font-weight: 600; color: var(--text); line-height: 1.4; }
-.sc-qa-zh { font-size: 0.78rem; color: var(--text-secondary); margin-top: 1px; padding-left: 36px; }
+.sc-qa-text { font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; color: var(--text); line-height: 1.4; }
+.sc-qa-zh { font-size: 0.85rem; color: var(--text-secondary); margin-top: 1px; padding-left: 36px; }
 .read-progress-bar { width: 100%; height: 8px; background: var(--surface); border-radius: 4px; margin-top: 8px; overflow: hidden; }
 .read-progress-fill { height: 100%; background: linear-gradient(90deg, var(--success), #55EFC4); border-radius: 4px; transition: width 0.4s ease; }
 .sentence-cards { display: flex; flex-direction: column; gap: 14px; }
@@ -318,11 +329,11 @@ body::before {
   color: var(--text-muted); margin-bottom: 6px;
 }
 .sentence-card .sc-en {
-  font-family: var(--font-display); font-size: 1.1rem; font-weight: 600;
+  font-family: var(--font-display); font-size: 1.25rem; font-weight: 600;
   color: var(--text); line-height: 1.5;
 }
 .sentence-card .sc-zh {
-  font-size: 0.85rem; color: var(--text-secondary); margin-top: 6px;
+  font-size: 0.95rem; color: var(--text-secondary); margin-top: 6px;
 }
 .sentence-card .sc-bottom {
   display: flex; align-items: center; justify-content: space-between; margin-top: 10px;
@@ -337,9 +348,9 @@ body::before {
 }
 .sentence-card .sc-dot.filled { background: var(--success); border-color: var(--success); }
 .sentence-card .sc-listen-btn, .sentence-card .sc-repeat-btn {
-  padding: 6px 14px; border-radius: var(--radius-pill); border: 2px solid var(--accent);
+  padding: 8px 16px; border-radius: var(--radius-pill); border: 2px solid var(--accent);
   background: transparent; color: var(--accent-dark); font-family: var(--font-display);
-  font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
 }
 .sentence-card .sc-listen-btn:hover, .sentence-card .sc-repeat-btn:hover { background: var(--accent); color: white; }
 .sentence-card .sc-repeat-btn { border-color: #FF85CA; color: #D63384; }
@@ -348,8 +359,8 @@ body::before {
 .sc-word { transition: all 0.2s; border-radius: 4px; padding: 0 2px; }
 .sc-word.highlight { background: #FFD93D; color: #2D3436; transform: scale(1.05); display: inline-block; }
 .sc-your-turn {
-  text-align: center; padding: 12px; margin-top: 8px;
-  font-family: var(--font-display); font-size: 1.1rem; font-weight: 700;
+  text-align: center; padding: 14px; margin-top: 8px;
+  font-family: var(--font-display); font-size: 1.3rem; font-weight: 700;
   color: #FF85CA; animation: yourTurnPulse 1s ease-in-out infinite;
 }
 @keyframes yourTurnPulse {
@@ -357,7 +368,9 @@ body::before {
   50% { transform: scale(1.1); opacity: 0.8; }
 }
 @media (max-width: 600px) {
-  .sentence-card .sc-en { font-size: 1rem; }
+  .sentence-card .sc-en { font-size: 1.15rem; }
+  .sentence-card .sc-zh { font-size: 0.9rem; }
+  .sentence-card .sc-listen-btn, .sentence-card .sc-repeat-btn { font-size: 0.9rem; padding: 7px 14px; }
 }
 /* === Interactive Sentence Practice (Cloze + Reorder) === */
 .sc-quiz-area {
@@ -370,7 +383,7 @@ body::before {
   color: var(--accent-dark); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
 }
 .sc-cloze-text {
-  font-family: var(--font-display); font-size: 1.05rem; font-weight: 600;
+  font-family: var(--font-display); font-size: 1.15rem; font-weight: 600;
   color: var(--text); line-height: 1.6; margin-bottom: 10px;
 }
 .sc-cloze-blank {
@@ -379,9 +392,9 @@ body::before {
 }
 .sc-cloze-options { display: flex; gap: 8px; flex-wrap: wrap; }
 .sc-cloze-btn {
-  padding: 8px 18px; border-radius: 50px; border: 2px solid var(--border);
+  padding: 10px 20px; border-radius: 50px; border: 2px solid var(--border);
   background: var(--card-bg); color: var(--text); font-family: var(--font-display);
-  font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
 }
 .sc-cloze-btn:hover { border-color: var(--accent); background: var(--accent-light, #FFD93D33); }
 .sc-cloze-btn.correct {
@@ -406,9 +419,9 @@ body::before {
 }
 .sc-reorder-bank { display: flex; flex-wrap: wrap; gap: 6px; }
 .sc-reorder-word {
-  padding: 7px 14px; border-radius: 50px; border: 2px solid var(--accent);
+  padding: 9px 16px; border-radius: 50px; border: 2px solid var(--accent);
   background: var(--card-bg); color: var(--accent-dark); font-family: var(--font-display);
-  font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
   user-select: none; -webkit-user-select: none;
 }
 .sc-reorder-word:hover { background: var(--accent); color: white; }
@@ -1044,8 +1057,8 @@ body::before {
   .sight-learn-card .sl-word { font-size: 1.1rem; }
   .match-game { grid-template-columns: 1fr; }
   .quiz-options { grid-template-columns: 1fr; }
-  .nav-tab .nav-label { font-size: 0.55rem; }
-  .nav-tab .nav-icon { font-size: 1.1rem; }
+  .nav-tab .nav-label { font-size: 0.7rem; }
+  .nav-tab .nav-icon { font-size: 1.4rem; }
   .nav-tab .stamina-hint { display: none; }
   .sentence-display { font-size: 1.2rem; }
   .mountain-scroll-hint { display: block; }
@@ -1289,11 +1302,7 @@ body::before {
     <button class="nav-tab" data-tab="sight"><span class="nav-icon">👀</span><span class="nav-label">Sight</span><span class="stamina-hint">⚡</span></button>
     <button class="nav-tab" data-tab="match"><span class="nav-icon">🎯</span><span class="nav-label">Match</span><span class="stamina-hint">⚡</span></button>
     <button class="nav-tab" data-tab="quiz"><span class="nav-icon">🧠</span><span class="nav-label">Quiz</span><span class="stamina-hint">⚡</span></button>
-    <button class="nav-tab" data-tab="mine"><span class="nav-icon">⛏️</span><span class="nav-label">挖礦</span></button>
-    <button class="nav-tab" data-tab="craft"><span class="nav-icon">🔨</span><span class="nav-label">合成</span></button>
-    <button class="nav-tab" data-tab="furnace"><span class="nav-icon">🔥</span><span class="nav-label">熔爐</span></button>
-    <button class="nav-tab" data-tab="equip"><span class="nav-icon">👤</span><span class="nav-label">裝備</span></button>
-    <button class="nav-tab" data-tab="encyclopedia"><span class="nav-icon">📦</span><span class="nav-label">圖鑑</span></button>
+    <button class="nav-tab" data-tab="game"><span class="nav-icon">🎮</span><span class="nav-label">遊戲</span></button>
   </div>
 </nav>
 
@@ -1348,26 +1357,31 @@ body::before {
     <div class="sight-words-area" id="sightWordsArea"></div>
   </div>
 
-  <div id="mine" class="section">
-    <div id="mineArea"></div>
-    <div id="fishingArea"></div>
-  </div>
-
-  <div id="craft" class="section">
-    <div id="craftArea"></div>
-    <div id="enchantArea"></div>
-  </div>
-
-  <div id="furnace" class="section">
-    <div id="furnaceArea"></div>
-  </div>
-
-  <div id="equip" class="section">
-    <div id="equipArea"></div>
-  </div>
-
-  <div id="encyclopedia" class="section">
-    <div id="encyclopediaArea"></div>
+  <div id="game" class="section">
+    <div class="game-sub-nav">
+      <button class="game-sub-tab active" data-game="mine">⛏️ 挖礦</button>
+      <button class="game-sub-tab" data-game="craft">🔨 合成</button>
+      <button class="game-sub-tab" data-game="furnace">🔥 熔爐</button>
+      <button class="game-sub-tab" data-game="equip">👤 裝備</button>
+      <button class="game-sub-tab" data-game="encyclopedia">📦 圖鑑</button>
+    </div>
+    <div class="game-panel active" data-panel="mine">
+      <div id="mineArea"></div>
+      <div id="fishingArea"></div>
+    </div>
+    <div class="game-panel" data-panel="craft">
+      <div id="craftArea"></div>
+      <div id="enchantArea"></div>
+    </div>
+    <div class="game-panel" data-panel="furnace">
+      <div id="furnaceArea"></div>
+    </div>
+    <div class="game-panel" data-panel="equip">
+      <div id="equipArea"></div>
+    </div>
+    <div class="game-panel" data-panel="encyclopedia">
+      <div id="encyclopediaArea"></div>
+    </div>
   </div>
 
   <footer class="app-footer">
@@ -2951,11 +2965,27 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
     if (tab.dataset.tab === 'quiz') { if (quizIndex === 0 || quizIndex >= quizQuestions.length) initQuiz(); }
     if (tab.dataset.tab === 'read') { if (!document.getElementById('sentenceCards').children.length) initRead(); }
     if (tab.dataset.tab === 'sight') { if (!document.getElementById('sightWordsArea').children.length) initSightWords(); }
-    if (tab.dataset.tab === 'mine') { if (!mineData.length) initMine(); else refreshMineHeader(); initFishingSection(); }
-    if (tab.dataset.tab === 'craft') initCraftTab();
-    if (tab.dataset.tab === 'furnace') initFurnaceTab();
-    if (tab.dataset.tab === 'equip') initEquipTab();
-    if (tab.dataset.tab === 'encyclopedia') initEncyclopediaTab();
+    if (tab.dataset.tab === 'game') initGamePanel();
+  });
+});
+
+// ===== GAME SUB-TABS =====
+function initGamePanel() {
+  var active = document.querySelector('.game-sub-tab.active');
+  var panel = active ? active.dataset.game : 'mine';
+  if (panel === 'mine') { if (!mineData.length) initMine(); else refreshMineHeader(); initFishingSection(); }
+  if (panel === 'craft') initCraftTab();
+  if (panel === 'furnace') initFurnaceTab();
+  if (panel === 'equip') initEquipTab();
+  if (panel === 'encyclopedia') initEncyclopediaTab();
+}
+document.querySelectorAll('.game-sub-tab').forEach(function(st) {
+  st.addEventListener('click', function() {
+    document.querySelectorAll('.game-sub-tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.game-panel').forEach(function(p) { p.classList.remove('active'); });
+    st.classList.add('active');
+    document.querySelector('.game-panel[data-panel="' + st.dataset.game + '"]').classList.add('active');
+    initGamePanel();
   });
 });
 
