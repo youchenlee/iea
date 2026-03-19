@@ -359,6 +359,83 @@ body::before {
 @media (max-width: 600px) {
   .sentence-card .sc-en { font-size: 1rem; }
 }
+/* === Interactive Sentence Practice (Cloze + Reorder) === */
+.sc-quiz-area {
+  margin-top: 12px; padding: 14px; border-radius: 12px;
+  background: linear-gradient(135deg, #FFEAA720, #FFD93D15);
+  border: 2px dashed var(--accent); position: relative;
+}
+.sc-quiz-label {
+  font-family: var(--font-display); font-size: 0.75rem; font-weight: 700;
+  color: var(--accent-dark); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+}
+.sc-cloze-text {
+  font-family: var(--font-display); font-size: 1.05rem; font-weight: 600;
+  color: var(--text); line-height: 1.6; margin-bottom: 10px;
+}
+.sc-cloze-blank {
+  display: inline-block; min-width: 60px; border-bottom: 3px solid var(--accent);
+  text-align: center; margin: 0 2px; color: var(--accent); font-weight: 700;
+}
+.sc-cloze-options { display: flex; gap: 8px; flex-wrap: wrap; }
+.sc-cloze-btn {
+  padding: 8px 18px; border-radius: 50px; border: 2px solid var(--border);
+  background: var(--card-bg); color: var(--text); font-family: var(--font-display);
+  font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+}
+.sc-cloze-btn:hover { border-color: var(--accent); background: var(--accent-light, #FFD93D33); }
+.sc-cloze-btn.correct {
+  background: var(--success); border-color: var(--success); color: white;
+  animation: correctPop 0.4s ease;
+}
+.sc-cloze-btn.wrong {
+  background: #FF6B6B; border-color: #FF6B6B; color: white;
+  animation: shake 0.4s ease;
+}
+@keyframes correctPop { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
+@keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+/* Reorder puzzle */
+.sc-reorder-target {
+  min-height: 42px; padding: 8px; margin-bottom: 10px; border-radius: 10px;
+  background: var(--card-bg); border: 2px solid var(--border);
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+}
+.sc-reorder-target:empty::before {
+  content: 'Tap words in order...'; color: var(--text-muted);
+  font-family: var(--font-display); font-size: 0.85rem; font-style: italic;
+}
+.sc-reorder-bank { display: flex; flex-wrap: wrap; gap: 6px; }
+.sc-reorder-word {
+  padding: 7px 14px; border-radius: 50px; border: 2px solid var(--accent);
+  background: var(--card-bg); color: var(--accent-dark); font-family: var(--font-display);
+  font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  user-select: none; -webkit-user-select: none;
+}
+.sc-reorder-word:hover { background: var(--accent); color: white; }
+.sc-reorder-word.placed { opacity: 0.3; pointer-events: none; }
+.sc-reorder-word.in-target {
+  background: var(--accent); color: white; border-color: var(--accent);
+}
+.sc-reorder-word.in-target.wrong-pos { background: #FF6B6B; border-color: #FF6B6B; }
+.sc-reorder-complete {
+  text-align: center; padding: 8px; font-family: var(--font-display);
+  font-size: 1rem; font-weight: 700; color: var(--success);
+  animation: correctPop 0.5s ease;
+}
+/* Enhanced Your Turn */
+.sc-your-turn-bar {
+  width: 100%; height: 4px; background: var(--surface); border-radius: 2px;
+  margin-top: 6px; overflow: hidden;
+}
+.sc-your-turn-fill {
+  height: 100%; background: linear-gradient(90deg, #FF85CA, #A29BFE);
+  border-radius: 2px; animation: countdownBar 5s linear forwards;
+}
+@keyframes countdownBar { from { width: 100%; } to { width: 0%; } }
+/* Phrase chunk highlight */
+.sc-word.phrase-highlight {
+  background: #74B9FF44; border-radius: 4px; padding: 1px 3px;
+}
 
 .btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 .speak-btn {
@@ -2437,13 +2514,17 @@ function doRepeatAfterMe(text, card, onComplete) {
 
   function showYourTurn() {
     wordSpans.forEach(s => s.classList.remove('highlight'));
-    const prompt = createEl('div', 'sc-your-turn', '🎤 Your turn!');
+    const prompt = createEl('div', 'sc-your-turn', '🎤 Your turn! Say it!');
+    const timerBar = createEl('div', 'sc-your-turn-bar');
+    const timerFill = createEl('div', 'sc-your-turn-fill');
+    timerBar.appendChild(timerFill);
+    prompt.appendChild(timerBar);
     card.appendChild(prompt);
     setTimeout(() => {
       prompt.remove();
       card.classList.remove('speaking');
       if (onComplete) onComplete();
-    }, 4000);
+    }, 5000);
   }
 
   if (entry) {
@@ -3017,6 +3098,153 @@ function renderReadCards() {
   updateReadProgress();
 }
 
+// === INTERACTIVE SENTENCE PRACTICE ===
+const CLOZE_STOP_WORDS = new Set(['i','a','an','the','is','am','are','was','were','to','and','or','in','on','at','of','it','my','her','his','we','you','they','me','he','she']);
+const ACTIVE_THRESHOLD = 3; // passive reads before switching to active mode
+
+function pickClozeWord(sentence) {
+  const words = sentence.split(/\s+/).filter(Boolean);
+  // Pick a content word (not a stop word, not too short)
+  const candidates = words.filter(w => !CLOZE_STOP_WORDS.has(w.toLowerCase().replace(/[^a-z]/g,'')) && w.length > 2);
+  if (!candidates.length) return words[Math.floor(Math.random() * words.length)];
+  return candidates[Math.floor(Math.random() * candidates.length)];
+}
+
+function getDistractors(correctWord, count) {
+  const pool = new Set();
+  // Gather words from feelings and sight words
+  (WEEK_DATA.feelings || []).forEach(f => pool.add(f.word));
+  (WEEK_DATA.sightWords || []).forEach(s => {
+    s.word.split(/\s+/).forEach(w => { if (w.length > 2) pool.add(w); });
+  });
+  // Gather words from other sentences
+  (WEEK_DATA.sentences || []).forEach(s => {
+    s.en.split(/\s+/).forEach(w => {
+      const clean = w.replace(/[^a-zA-Z']/g, '');
+      if (clean.length > 2 && !CLOZE_STOP_WORDS.has(clean.toLowerCase())) pool.add(clean);
+    });
+  });
+  pool.delete(correctWord);
+  pool.delete(correctWord.replace(/[^a-zA-Z']/g, ''));
+  const arr = [...pool];
+  const result = [];
+  while (result.length < count && arr.length) {
+    const idx = Math.floor(Math.random() * arr.length);
+    result.push(arr.splice(idx, 1)[0]);
+  }
+  return result;
+}
+
+function buildClozeQuiz(s, i, card) {
+  const area = createEl('div', 'sc-quiz-area');
+  area.appendChild(createEl('div', 'sc-quiz-label', 'Fill in the blank'));
+
+  const blankWord = pickClozeWord(s.en);
+  const blankClean = blankWord.replace(/[^a-zA-Z']/g, '');
+
+  // Build sentence with blank
+  const textDiv = createEl('div', 'sc-cloze-text');
+  const words = s.en.split(/(\s+)/);
+  let replaced = false;
+  words.forEach(w => {
+    if (!replaced && w.replace(/[^a-zA-Z']/g, '').toLowerCase() === blankClean.toLowerCase()) {
+      const blank = createEl('span', 'sc-cloze-blank', '___');
+      textDiv.appendChild(blank);
+      replaced = true;
+    } else {
+      textDiv.appendChild(document.createTextNode(w));
+    }
+  });
+  area.appendChild(textDiv);
+
+  // Options
+  const distractors = getDistractors(blankClean, 2);
+  const options = shuffle([blankClean, ...distractors]);
+  const optDiv = createEl('div', 'sc-cloze-options');
+  options.forEach(opt => {
+    const btn = createEl('button', 'sc-cloze-btn', opt);
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (btn.classList.contains('correct') || btn.classList.contains('wrong')) return;
+      if (opt.toLowerCase() === blankClean.toLowerCase()) {
+        btn.classList.add('correct');
+        speak(s.en);
+        addGems(2);
+        setTimeout(() => trackRead('sentences', i, document.getElementById(`sc-${i}`), true), 800);
+      } else {
+        btn.classList.add('wrong');
+        setTimeout(() => btn.classList.remove('wrong'), 600);
+      }
+    });
+    optDiv.appendChild(btn);
+  });
+  area.appendChild(optDiv);
+  card.appendChild(area);
+}
+
+function buildReorderPuzzle(s, i, card) {
+  const area = createEl('div', 'sc-quiz-area');
+  area.appendChild(createEl('div', 'sc-quiz-label', 'Put in order'));
+
+  const target = createEl('div', 'sc-reorder-target');
+  area.appendChild(target);
+
+  const correctWords = s.en.split(/\s+/).filter(Boolean);
+  const shuffled = shuffle([...correctWords]);
+  const bank = createEl('div', 'sc-reorder-bank');
+  const placed = [];
+
+  shuffled.forEach((w, idx) => {
+    const chip = createEl('div', 'sc-reorder-word', w);
+    chip.dataset.idx = idx;
+    chip.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (chip.classList.contains('placed')) return;
+      // Add to target
+      chip.classList.add('placed');
+      const targetChip = createEl('div', 'sc-reorder-word in-target', w);
+      targetChip.dataset.srcIdx = idx;
+      // Click to remove from target
+      targetChip.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        targetChip.remove();
+        chip.classList.remove('placed');
+        placed.splice(placed.indexOf(w + '|' + idx), 1);
+      });
+      target.appendChild(targetChip);
+      placed.push(w + '|' + idx);
+      speak(w);
+
+      // Check if complete
+      if (target.children.length === correctWords.length) {
+        const attempt = [...target.children].map(c => c.textContent);
+        if (attempt.join(' ') === correctWords.join(' ')) {
+          // Correct!
+          const msg = createEl('div', 'sc-reorder-complete', 'Perfect! ✅');
+          area.appendChild(msg);
+          addGems(3);
+          speak(s.en);
+          setTimeout(() => trackRead('sentences', i, document.getElementById(`sc-${i}`), true), 1200);
+        } else {
+          // Mark wrong positions
+          [...target.children].forEach((c, ci) => {
+            if (c.textContent !== correctWords[ci]) c.classList.add('wrong-pos');
+          });
+          setTimeout(() => {
+            // Reset
+            [...target.children].forEach(c => c.remove());
+            bank.querySelectorAll('.sc-reorder-word').forEach(c => c.classList.remove('placed'));
+            placed.length = 0;
+          }, 1000);
+        }
+      }
+    });
+    bank.appendChild(chip);
+  });
+  area.appendChild(bank);
+  card.appendChild(area);
+}
+
 function buildCardShell(id, done) {
   const card = createEl('div', 'sentence-card' + (done ? ' done' : ''));
   card.id = id;
@@ -3066,6 +3294,16 @@ function buildSentenceCard(s, i) {
     () => doRepeatAfterMe(s.en, card, () => trackRead('sentences', i, card, true))
   ));
   card.addEventListener('click', () => trackRead('sentences', i, card));
+
+  // After ACTIVE_THRESHOLD passive reads, show interactive quiz
+  if (count >= ACTIVE_THRESHOLD && count < SENTENCE_GOAL) {
+    const quizType = (i + count) % 2 === 0 ? 'cloze' : 'reorder';
+    if (quizType === 'cloze') {
+      buildClozeQuiz(s, i, card);
+    } else {
+      buildReorderPuzzle(s, i, card);
+    }
+  }
   return card;
 }
 
