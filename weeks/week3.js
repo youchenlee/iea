@@ -30,12 +30,23 @@ window.WEEK_DATA = {
   sightColors: ['#FF6B6B','#A29BFE','#FFD93D','#00B894','#FF85CA','#74B9FF','#E17055','#FD79A8','#00CEC9','#6C5CE7'],
 
   sentenceGroups: [
+    { title: '📖 Special Friends', count: 9 },
     { title: '👁️ Helen\'s Walk', count: 15 },
     { title: '💬 Sentence Patterns', count: 5 },
     { title: '♫ You Are My Sunshine', count: 8 },
   ],
 
   sentences: [
+    // Special Friends Sentences — Unit 3 (9)
+    { en: 'Mum said I can have four friends over from school.', zh: '媽媽說過我可以從學校邀請四個小朋友來家裡玩。' },
+    { en: 'I have great ideas to have lots of fun.', zh: '而我對此已經想好了很多好玩的點子。' },
+    { en: 'Miles has a big kite that can fly high in the sky.', zh: 'Miles 有個風箏能在天空高高地飛。' },
+    { en: 'And today I can hear the wind outside.', zh: '今天我剛好聽見外面風的聲音。' },
+    { en: 'Listen to the wind howling.', zh: '聽著那呼嘯的風。' },
+    { en: 'Perfect day for kite flying.', zh: '今天是最適合放風箏的一天了。' },
+    { en: "Jess's grandma makes the best cookies.", zh: 'Jess 奶奶烤的餅乾是我吃過最棒的。' },
+    { en: 'I can already smell the sweetness through my nose and my mouth is watering.', zh: '我已經能聞到餅乾的香甜氣味而開始流口水了。' },
+    { en: 'Can you taste it?', zh: '你能感受到嗎？' },
     // Helen's Walk (15)
     { en: 'Helen went for a walk with her friend one sunny morning.', zh: 'Helen 在一個晴朗的早晨和她的朋友去散步。' },
     { en: 'She used all five senses to enjoy the world around her.', zh: '她用五種感官來感受周圍的世界。' },
