@@ -30,7 +30,7 @@ window.WEEK_DATA = {
   sightColors: ['#FF6B6B','#A29BFE','#FFD93D','#00B894','#FF85CA','#74B9FF','#E17055','#FD79A8','#00CEC9','#6C5CE7'],
 
   sentenceGroups: [
-    { title: '📖 Special Friends', count: 9 },
+    { title: '📖 Special Friends', count: 20 },
     { title: '👁️ Helen\'s Walk', count: 15 },
     { title: '💬 Sentence Patterns', count: 5 },
     { title: '♫ You Are My Sunshine', count: 8 },
@@ -47,6 +47,17 @@ window.WEEK_DATA = {
     { en: "Jess's grandma makes the best cookies.", zh: 'Jess 奶奶烤的餅乾是我吃過最棒的。' },
     { en: 'I can already smell the sweetness through my nose and my mouth is watering.', zh: '我已經能聞到餅乾的香甜氣味而開始流口水了。' },
     { en: 'Can you taste it?', zh: '你能感受到嗎？' },
+    { en: 'Sam is very creative.', zh: 'Sam 很有創意。' },
+    { en: 'He can make his own clay.', zh: '他會做黏土。' },
+    { en: 'It feels all squishy when you touch it.', zh: '黏土摸起來濕濕軟軟的。' },
+    { en: 'I love getting my hands dirty.', zh: '我喜歡把手用的髒髒的。' },
+    { en: 'If you touch the clay, it starts to sparkle and we can see all the glitter.', zh: '如果你多捏黏土，隨著不同角度它會看起來閃閃發亮呢。' },
+    { en: 'Helen loves to listen to music.', zh: 'Helen 喜歡聽音樂。' },
+    { en: "Her favorite song is 'The birds that flew.' Her music brings joy to our ears.", zh: '她最喜歡的歌是 The birds that flew。這首歌聽起來十分悅耳。' },
+    { en: 'We have a beautiful garden.', zh: '我家有座很漂亮的花園。' },
+    { en: 'I will show them the pretty flowers and the funny looking bugs.', zh: '我會帶他們去看美麗的花和長相有趣的蟲子。' },
+    { en: 'We are all a good fit.', zh: '我跟我的朋友們是最佳團隊！' },
+    { en: "Come on friends, let's have some fun!", zh: '來吧，朋友們！一起來玩吧！' },
     // Helen's Walk (15)
     { en: 'Helen went for a walk with her friend one sunny morning.', zh: 'Helen 在一個晴朗的早晨和她的朋友去散步。' },
     { en: 'She used all five senses to enjoy the world around her.', zh: '她用五種感官來感受周圍的世界。' },
