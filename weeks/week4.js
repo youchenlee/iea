@@ -52,7 +52,7 @@ window.WEEK_DATA = {
   sightColors: ['#FF6B6B','#A29BFE','#FFD93D','#00B894','#FF85CA','#74B9FF','#E17055','#FD79A8','#00CEC9','#6C5CE7','#55EFC4'],
 
   sentenceGroups: [
-    { title: '🏰 The Grumpy Old Giant', count: 16 },
+    { title: '🏰 The Grumpy Old Giant', count: 15 },
     { title: '👅 Taste & Touch', count: 5 },
   ],
 
