@@ -36,23 +36,34 @@ window.WEEK_DATA = {
     { word: 'glad',    zh: '開心的',   sentence: 'I am glad you are here.' },
     { word: 'go',      zh: '去',       sentence: 'Let us go to the garden.' },
     { word: 'goat',    zh: '山羊',     sentence: 'The goat eats the grass.' },
+    // Level 3 sight words
+    { word: 'name',    zh: '名字',     sentence: 'What is her name?' },
+    { word: 'good',    zh: '好的',     sentence: 'You are great and good.' },
+    { word: 'sentence', zh: '句子',    sentence: 'Read one sentence.' },
+    { word: 'man',     zh: '男人',     sentence: 'See that man.' },
+    { word: 'think',   zh: '想',       sentence: 'Think on it.' },
+    { word: 'say',     zh: '說',       sentence: 'What did you say?' },
+    { word: 'great',   zh: '很棒的',   sentence: 'You are great!' },
+    { word: 'where',   zh: '哪裡',     sentence: 'Where do I go?' },
+    { word: 'help',    zh: '幫忙',     sentence: 'Help me up.' },
+    { word: 'through', zh: '穿過',     sentence: 'Through the day.' },
   ],
 
   sightColors: ['#FF6B6B','#A29BFE','#FFD93D','#00B894','#FF85CA','#74B9FF','#E17055','#FD79A8','#00CEC9','#6C5CE7','#55EFC4'],
 
   sentenceGroups: [
-    { title: '🏰 The Grumpy Old Giant', count: 15 },
+    { title: '🏰 The Grumpy Old Giant', count: 16 },
     { title: '👅 Taste & Touch', count: 5 },
   ],
 
   sentences: [
-    // The Grumpy Old Giant (15)
-    { en: 'Once upon a time, there was a grumpy old giant.', zh: '從前從前，有一個脾氣暴躁的老巨人。' },
-    { en: 'He lived in a very big house in the forest.', zh: '他住在森林裡一棟特別大的房子裡。' },
-    { en: 'His garden had many, many plants.', zh: '他的花園裡有好多好多植物。' },
-    { en: 'A little girl passed by the giant\'s garden every day.', zh: '有一個小女孩每天經過巨人的花園。' },
-    { en: 'She asked the giant, "Do you want to play a game with me?"', zh: '她問巨人：「你要不要跟我一起玩遊戲？」' },
-    { en: 'The giant shouted, "Go away! I don\'t want to play with you!"', zh: '巨人大聲喊道：「走開！我才不跟你玩！」' },
+    // The Grumpy Old Giant (16)
+    { en: 'Once upon a time, there was a big, old, grumpy giant.', zh: '從前從前，有一個又大又老、脾氣又暴躁的巨人。' },
+    { en: 'He lived in a quiet and dark part of the forest.', zh: '他住在森林裡一個安靜又黑暗的地方。' },
+    { en: 'His house was rough looking with a massive garden and a goat wandering around eating the grass.', zh: '他的房子看起來很粗糙，旁邊有一個很大的花園，還有一隻山羊在四處吃草。' },
+    { en: 'Every day a little girl walked past his house and shouted, "Good day, Mr. Giant! Will you come play a game with me?"', zh: '每天都有一個小女孩經過他的房子並喊道：「巨人先生你好！你要不要跟我一起玩遊戲？」' },
+    { en: 'He just gave a loud shout, "Go away! Get out of here. I\'m not going anywhere!"', zh: '他只是大聲喊道：「走開！從這裡滾開。我哪裡都不去！」' },
+    { en: 'With a soft voice, she would say, "I will give you some cookies. I will come back tomorrow."', zh: '她用輕柔的聲音說：「我會給你一些餅乾。我明天會再回來的。」' },
     { en: 'She left a bag of sour dough and salty cookies on his doorstep.', zh: '她留了一袋酸麵糰和鹹餅乾在階梯上。' },
     { en: 'Time passed by.', zh: '時間慢慢過去。' },
     { en: 'The little girl never gave up.', zh: '那小女孩不曾放棄。' },
@@ -71,7 +82,7 @@ window.WEEK_DATA = {
   ],
 
   weeklyQuote: { en: 'A kind heart is the best garden.', emoji: '🌸' },
-  weeklySong: { title: 'If You\'re Happy and You Know It', line: 'If you\'re happy and you know it, clap your hands!' },
+  weeklySong: { title: 'It\'s A Small World (After All)', line: 'It\'s a small world after all' },
 
   dialogues: [
     { q: 'What are these?', qzh: '這些是什麼？', a: 'Those are granny\'s fruits. They feel rough but taste sweet.', azh: '那些是奶奶的水果。它們摸起來粗粗的但嚐起來甜甜的。' },
