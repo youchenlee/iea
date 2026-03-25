@@ -1282,5 +1282,157 @@
   "he just gave a loud roar, \"get out of here. i'm not going anywhere!\"": {
     "file": "9ccd2178a7.mp3",
     "timings": []
+  },
+  "see": {
+    "file": "3d637fc604.mp3",
+    "timings": []
+  },
+  "hear": {
+    "file": "ca607cf696.mp3",
+    "timings": []
+  },
+  "smell": {
+    "file": "410acf5ec6.mp3",
+    "timings": []
+  },
+  "taste": {
+    "file": "270fdbaac5.mp3",
+    "timings": []
+  },
+  "touch": {
+    "file": "f4d1f01938.mp3",
+    "timings": []
+  },
+  "eyes": {
+    "file": "577edc67ce.mp3",
+    "timings": []
+  },
+  "ears": {
+    "file": "0c721df988.mp3",
+    "timings": []
+  },
+  "nose": {
+    "file": "1a1f58c9ad.mp3",
+    "timings": []
+  },
+  "tongue": {
+    "file": "647b3042c9.mp3",
+    "timings": []
+  },
+  "hands": {
+    "file": "75fbb38766.mp3",
+    "timings": []
+  },
+  "mouth": {
+    "file": "87d1782579.mp3",
+    "timings": []
+  },
+  "listen": {
+    "file": "2147a9e5f9.mp3",
+    "timings": []
+  },
+  "sight": {
+    "file": "89be8e3911.mp3",
+    "timings": []
+  },
+  "fit": {
+    "file": "9c20b9ba55.mp3",
+    "timings": []
+  },
+  "flew": {
+    "file": "d1de9198a0.mp3",
+    "timings": []
+  },
+  "flower": {
+    "file": "5a46b8253d.mp3",
+    "timings": []
+  },
+  "fly": {
+    "file": "41a682cadf.mp3",
+    "timings": []
+  },
+  "for": {
+    "file": "43eef9a62a.mp3",
+    "timings": []
+  },
+  "four": {
+    "file": "9f8f7eec5d.mp3",
+    "timings": []
+  },
+  "friend": {
+    "file": "e69867ca7d.mp3",
+    "timings": []
+  },
+  "from": {
+    "file": "0b1e95cfd9.mp3",
+    "timings": []
+  },
+  "funny": {
+    "file": "bf48095db4.mp3",
+    "timings": []
+  },
+  "i see a beautiful flower.": {
+    "file": "f5bbbbddd3.mp3",
+    "timings": []
+  },
+  "i hear the birds singing.": {
+    "file": "7c12a3edd1.mp3",
+    "timings": []
+  },
+  "i smell the sweet cookies.": {
+    "file": "ac26f1af24.mp3",
+    "timings": []
+  },
+  "i taste the yummy fruit.": {
+    "file": "e168a02bb0.mp3",
+    "timings": []
+  },
+  "i touch the soft grass.": {
+    "file": "c2c5d6f082.mp3",
+    "timings": []
+  },
+  "open your mouth and taste it.": {
+    "file": "f5022c274e.mp3",
+    "timings": []
+  },
+  "listen to the birds!": {
+    "file": "deafc06c2b.mp3",
+    "timings": []
+  },
+  "what a beautiful sight!": {
+    "file": "d0b2023a1e.mp3",
+    "timings": []
+  },
+  "the birds flew away.": {
+    "file": "48617f62b8.mp3",
+    "timings": []
+  },
+  "the flower smells sweet.": {
+    "file": "09028841f9.mp3",
+    "timings": []
+  },
+  "birds can fly high.": {
+    "file": "2e49a5b4b9.mp3",
+    "timings": []
+  },
+  "this is for you.": {
+    "file": "8ae3f63ce9.mp3",
+    "timings": []
+  },
+  "i have four friends.": {
+    "file": "67df454c54.mp3",
+    "timings": []
+  },
+  "she is my best friend.": {
+    "file": "d8db383377.mp3",
+    "timings": []
+  },
+  "she came from far away.": {
+    "file": "4385461fee.mp3",
+    "timings": []
+  },
+  "that bug looks funny!": {
+    "file": "ddc1ca0795.mp3",
+    "timings": []
   }
 }
