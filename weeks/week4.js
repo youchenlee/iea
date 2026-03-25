@@ -41,34 +41,27 @@ window.WEEK_DATA = {
   sightColors: ['#FF6B6B','#A29BFE','#FFD93D','#00B894','#FF85CA','#74B9FF','#E17055','#FD79A8','#00CEC9','#6C5CE7','#55EFC4'],
 
   sentenceGroups: [
-    { title: '🏰 The Grumpy Old Giant', count: 22 },
+    { title: '🏰 The Grumpy Old Giant', count: 15 },
     { title: '👅 Taste & Touch', count: 5 },
   ],
 
   sentences: [
-    // The Grumpy Old Giant (22)
+    // The Grumpy Old Giant (15)
     { en: 'Once upon a time, there was a grumpy old giant.', zh: '從前從前，有一個脾氣暴躁的老巨人。' },
-    { en: 'He lived in a big, big house with a beautiful garden.', zh: '他住在一棟大大的房子裡，旁邊有一座很美的花園。' },
-    { en: 'Every tree in the garden had sweet, colorful fruit.', zh: '花園裡每棵樹上都結滿了甜美、五彩繽紛的水果。' },
-    { en: 'There were small red ones and big purple ones.', zh: '有紅色的小水果，也有紫色的大水果。' },
-    { en: 'Little birds sang in the trees all day long.', zh: '小鳥在樹上整天嘰嘰喳喳地唱著歌。' },
-    { en: 'Snails walked slowly on the soft green grass.', zh: '蝸牛在柔軟的綠色草地上悠悠哉哉地散步。' },
-    { en: 'It was the most wonderful place.', zh: '這是一個最美好的地方。' },
-    { en: 'Many children loved to play games in the garden.', zh: '很多小朋友很喜歡來花園裡玩遊戲。' },
-    { en: 'But one day, the giant came back from his long trip.', zh: '但有一天，巨人從很遠的地方旅行回來了。' },
-    { en: 'He saw the children and became very angry.', zh: '他看到小朋友們就變得很生氣。' },
-    { en: 'The giant shouted in a loud voice,', zh: '巨人大聲吼道：' },
-    { en: '"What are you doing here? This is my garden! Get out!"', zh: '「你們在這裡做什麼？這是我的花園！快出去！」' },
-    { en: 'The children were so scared that they all ran away.', zh: '小朋友們嚇得全部跑走了。' },
-    { en: 'The selfish giant built a tall wall around his garden.', zh: '自私的巨人在花園四周築起了高高的圍牆。' },
-    { en: 'Without the children, the garden became dark and cold.', zh: '沒有了小朋友，花園變得又暗又冷。' },
-    { en: 'The flowers stopped growing and the birds stopped singing.', zh: '花不再開了，鳥也不唱歌了。' },
-    { en: 'The giant felt very lonely.', zh: '巨人覺得好孤單。' },
-    { en: 'One morning, a little girl climbed over the wall.', zh: '有一天早上，一個小女孩爬過了圍牆。' },
-    { en: 'She sat under a tree, and the tree began to bloom.', zh: '她坐在一棵樹下，那棵樹突然開始開花了。' },
-    { en: 'The giant felt sorry. He said, "I have been so selfish!"', zh: '巨人覺得很慚愧。他說：「我真是太自私了！」' },
-    { en: 'He knocked down the wall and gave the garden back to the children.', zh: '他推倒了圍牆，把花園還給了小朋友們。' },
-    { en: 'The kind giant and the children played together happily in the garden.', zh: '善良的巨人和小朋友們在花園裡開心地一起玩耍。' },
+    { en: 'He lived in a very big house in the forest.', zh: '他住在森林裡一棟特別大的房子裡。' },
+    { en: 'His garden had many, many plants.', zh: '他的花園裡有好多好多植物。' },
+    { en: 'A little girl passed by the giant\'s garden every day.', zh: '有一個小女孩每天經過巨人的花園。' },
+    { en: 'She asked the giant, "Do you want to play a game with me?"', zh: '她問巨人：「你要不要跟我一起玩遊戲？」' },
+    { en: 'The giant shouted, "Go away! I don\'t want to play with you!"', zh: '巨人大聲喊道：「走開！我才不跟你玩！」' },
+    { en: 'She left a bag of sour dough and salty cookies on his doorstep.', zh: '她留了一袋酸麵糰和鹹餅乾在階梯上。' },
+    { en: 'Time passed by.', zh: '時間慢慢過去。' },
+    { en: 'The little girl never gave up.', zh: '那小女孩不曾放棄。' },
+    { en: 'The giant started to wonder why this girl wanted to be his friend.', zh: '巨人開始好奇為什麼這個小女孩想成為他的朋友。' },
+    { en: 'A few days later, to the girl\'s surprise, the giant had a different reply.', zh: '幾天後，讓小女孩驚訝的是，巨人給了不一樣的回應。' },
+    { en: '"I will play a game with you."', zh: '「我願意跟你玩遊戲。」' },
+    { en: '"I\'m so glad you came to play, Mr. Giant."', zh: '「我很開心你願意來玩，巨人先生。」' },
+    { en: 'The giant smiled.', zh: '巨人露出微笑。' },
+    { en: 'They played until the moon light came out.', zh: '他們一直玩到月亮出來才願意休息呢。' },
     // Taste & Touch — Sentence Patterns (5)
     { en: 'This toy is soft.', zh: '這個玩具是軟的。' },
     { en: 'This rock is hard.', zh: '這塊石頭是硬的。' },
@@ -80,5 +73,9 @@ window.WEEK_DATA = {
   weeklyQuote: { en: 'A kind heart is the best garden.', emoji: '🌸' },
   weeklySong: { title: 'If You\'re Happy and You Know It', line: 'If you\'re happy and you know it, clap your hands!' },
 
-  dialogues: [],
+  dialogues: [
+    { q: 'What are these?', qzh: '這些是什麼？', a: 'Those are granny\'s fruits. They feel rough but taste sweet.', azh: '那些是奶奶的水果。它們摸起來粗粗的但嚐起來甜甜的。' },
+    { q: 'Have you ever felt a smooth rock?', qzh: '你有摸過光滑的石頭嗎？', a: 'Yes! Those felt really soft and smooth.', azh: '有！那些摸起來又軟又滑。' },
+    { q: 'Do you like the sour ones or the sweet ones?', qzh: '你喜歡酸的還是甜的？', a: 'I like the sweet ones because they taste like honey!', azh: '我喜歡甜的，因為嚐起來像蜂蜜！' },
+  ],
 };
