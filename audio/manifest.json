@@ -1195,10 +1195,6 @@
     "file": "61d317292e.mp3",
     "timings": []
   },
-  "he just gave a loud shout, \"go away! get out of here. i'm not going anywhere!\"": {
-    "file": "b3fd70a170.mp3",
-    "timings": []
-  },
   "with a soft voice, she would say, \"i will give you some cookies. i will come back tomorrow.\"": {
     "file": "82eee9cfd6.mp3",
     "timings": []
@@ -1281,6 +1277,10 @@
   },
   "through": {
     "file": "be6a563e76.mp3",
+    "timings": []
+  },
+  "he just gave a loud roar, \"get out of here. i'm not going anywhere!\"": {
+    "file": "9ccd2178a7.mp3",
     "timings": []
   }
 }

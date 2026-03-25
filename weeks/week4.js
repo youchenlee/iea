@@ -62,7 +62,7 @@ window.WEEK_DATA = {
     { en: 'He lived in a quiet and dark part of the forest.', zh: '他住在森林裡一個安靜又黑暗的地方。' },
     { en: 'His house was rough looking with a massive garden and a goat wandering around eating the grass.', zh: '他的房子看起來很粗糙，旁邊有一個很大的花園，還有一隻山羊在四處吃草。' },
     { en: 'Every day a little girl walked past his house and shouted, "Good day, Mr. Giant! Will you come play a game with me?"', zh: '每天都有一個小女孩經過他的房子並喊道：「巨人先生你好！你要不要跟我一起玩遊戲？」' },
-    { en: 'He just gave a loud shout, "Go away! Get out of here. I\'m not going anywhere!"', zh: '他只是大聲喊道：「走開！從這裡滾開。我哪裡都不去！」' },
+    { en: 'He just gave a loud roar, "Get out of here. I\'m not going anywhere!"', zh: '他只是大聲咆哮：「從這裡滾開。我哪裡都不去！」' },
     { en: 'With a soft voice, she would say, "I will give you some cookies. I will come back tomorrow."', zh: '她用輕柔的聲音說：「我會給你一些餅乾。我明天會再回來的。」' },
     { en: 'She left a bag of sour dough and salty cookies on his doorstep.', zh: '她留了一袋酸麵糰和鹹餅乾在階梯上。' },
     { en: 'Time passed by.', zh: '時間慢慢過去。' },
