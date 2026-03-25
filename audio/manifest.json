@@ -19,6 +19,10 @@
     "file": "e741500993.mp3",
     "timings": []
   },
+  "bitter": {
+    "file": "1d6ad39ff8.mp3",
+    "timings": []
+  },
   "bored": {
     "file": "f5b5c28bec.mp3",
     "timings": []
@@ -37,6 +41,10 @@
   },
   "curious": {
     "file": "821ae63dbe.mp3",
+    "timings": []
+  },
+  "dark": {
+    "file": "a82fd95db1.mp3",
     "timings": []
   },
   "disgusted": {
@@ -79,20 +87,68 @@
     "file": "7b849a50da.mp3",
     "timings": []
   },
+  "game": {
+    "file": "c8d46d341b.mp3",
+    "timings": []
+  },
+  "garden": {
+    "file": "e2704f30f5.mp3",
+    "timings": []
+  },
+  "gave": {
+    "file": "0f5afcd1ba.mp3",
+    "timings": []
+  },
+  "gentle": {
+    "file": "a35b6ec571.mp3",
+    "timings": []
+  },
+  "get": {
+    "file": "b5eda0a745.mp3",
+    "timings": []
+  },
   "get that thing": {
     "file": "eb49e86169.mp3",
+    "timings": []
+  },
+  "girl": {
+    "file": "28ca53d2b7.mp3",
+    "timings": []
+  },
+  "give": {
+    "file": "a1ec23e9b9.mp3",
     "timings": []
   },
   "give it back": {
     "file": "2cd40bcd87.mp3",
     "timings": []
   },
+  "glad": {
+    "file": "3ad10171fa.mp3",
+    "timings": []
+  },
+  "go": {
+    "file": "34d1f91fb2.mp3",
+    "timings": []
+  },
+  "goat": {
+    "file": "a94aa000f9.mp3",
+    "timings": []
+  },
   "grateful": {
     "file": "f6bc81b1fa.mp3",
     "timings": []
   },
+  "grumpy": {
+    "file": "6061345f98.mp3",
+    "timings": []
+  },
   "happy": {
     "file": "56ab24c15b.mp3",
+    "timings": []
+  },
+  "hard": {
+    "file": "d64a84456a.mp3",
     "timings": []
   },
   "hungry": {
@@ -107,12 +163,24 @@
     "file": "1339103d98.mp3",
     "timings": []
   },
+  "joyful": {
+    "file": "6d6ea3c664.mp3",
+    "timings": []
+  },
   "just our thing": {
     "file": "900f37de36.mp3",
     "timings": []
   },
+  "kind": {
+    "file": "d939aaf7d2.mp3",
+    "timings": []
+  },
   "know": {
     "file": "af9dc3cd6c.mp3",
+    "timings": []
+  },
+  "light": {
+    "file": "2ac43aa43b.mp3",
     "timings": []
   },
   "little": {
@@ -121,6 +189,10 @@
   },
   "lonely": {
     "file": "7e49f5a0a9.mp3",
+    "timings": []
+  },
+  "loud": {
+    "file": "51edf3fe81.mp3",
     "timings": []
   },
   "loving": {
@@ -163,12 +235,28 @@
     "file": "a3e0f6576a.mp3",
     "timings": []
   },
+  "quiet": {
+    "file": "556966c783.mp3",
+    "timings": []
+  },
+  "rough": {
+    "file": "0e4f006ac4.mp3",
+    "timings": []
+  },
   "sad": {
     "file": "49f0bad299.mp3",
     "timings": []
   },
+  "salty": {
+    "file": "daf3ae813a.mp3",
+    "timings": []
+  },
   "scared": {
     "file": "df97e07789.mp3",
+    "timings": []
+  },
+  "selfish": {
+    "file": "2ecf5c61f3.mp3",
     "timings": []
   },
   "shy": {
@@ -183,12 +271,32 @@
     "file": "6e59126599.mp3",
     "timings": []
   },
+  "smooth": {
+    "file": "a7887cc809.mp3",
+    "timings": []
+  },
+  "soft": {
+    "file": "dc58a79718.mp3",
+    "timings": []
+  },
+  "sorry": {
+    "file": "73cf0e3889.mp3",
+    "timings": []
+  },
   "sound": {
     "file": "0b8263d341.mp3",
     "timings": []
   },
+  "sour": {
+    "file": "f50e6c3593.mp3",
+    "timings": []
+  },
   "surprised": {
     "file": "6d62d50652.mp3",
+    "timings": []
+  },
+  "sweet": {
+    "file": "e549a20037.mp3",
     "timings": []
   },
   "take": {
@@ -227,6 +335,14 @@
     "file": "f1d4c19d42.mp3",
     "timings": []
   },
+  "\"what are you doing here? this is my garden! get out!\"": {
+    "file": "776aa20ecd.mp3",
+    "timings": []
+  },
+  "a kind heart is the best garden.": {
+    "file": "0f27827a3c.mp3",
+    "timings": []
+  },
   "after the day is done, we rest.": {
     "file": "bf7ab13184.mp3",
     "timings": []
@@ -263,6 +379,14 @@
     "file": "2808456f3e.mp3",
     "timings": []
   },
+  "but one day, the giant came back from his long trip.": {
+    "file": "53454af0db.mp3",
+    "timings": []
+  },
+  "can i get some water?": {
+    "file": "9f9b3ca319.mp3",
+    "timings": []
+  },
   "can monkeys climb trees?": {
     "file": "1a40f8cfbc.mp3",
     "timings": []
@@ -295,6 +419,10 @@
     "file": "215d2fd635.mp3",
     "timings": []
   },
+  "every tree in the garden had sweet, colorful fruit.": {
+    "file": "ed7c092de1.mp3",
+    "timings": []
+  },
   "finally, she used her tongue to taste a red berry from a bush.": {
     "file": "0cd30f02c6.mp3",
     "timings": []
@@ -305,6 +433,10 @@
   },
   "give it back to me, please.": {
     "file": "eae9215ec7.mp3",
+    "timings": []
+  },
+  "give it back to me.": {
+    "file": "4c4f54e297.mp3",
     "timings": []
   },
   "give one to each child.": {
@@ -327,12 +459,24 @@
     "file": "f8746d48de.mp3",
     "timings": []
   },
+  "he knocked down the wall and gave the garden back to the children.": {
+    "file": "6e8aa10542.mp3",
+    "timings": []
+  },
+  "he lived in a big, big house with a beautiful garden.": {
+    "file": "6ffe1dbdc0.mp3",
+    "timings": []
+  },
   "he loved to fish far from the farm house.": {
     "file": "2013180d2e.mp3",
     "timings": []
   },
   "he often fell down and hurt his knee.": {
     "file": "28619fea53.mp3",
+    "timings": []
+  },
+  "he saw the children and became very angry.": {
+    "file": "284bc3fdb9.mp3",
     "timings": []
   },
   "he would be a bit worried that a crab would find his toes tasty.": {
@@ -369,6 +513,10 @@
   },
   "his mother felt very nervous when he rode his bike.": {
     "file": "33e8615398.mp3",
+    "timings": []
+  },
+  "i am glad you are here.": {
+    "file": "3b3250e092.mp3",
     "timings": []
   },
   "i am nervous to speak english.": {
@@ -479,6 +627,10 @@
     "file": "938650342f.mp3",
     "timings": []
   },
+  "if you\\": {
+    "file": "6a1976b779.mp3",
+    "timings": []
+  },
   "it feels all squishy when you touch it.": {
     "file": "2dbfc1968d.mp3",
     "timings": []
@@ -495,8 +647,20 @@
     "file": "7ad560f1dc.mp3",
     "timings": []
   },
+  "it was the most wonderful place.": {
+    "file": "581d7c6b89.mp3",
+    "timings": []
+  },
   "joe loves the story about the brave bear": {
     "file": "2482f889d0.mp3",
+    "timings": []
+  },
+  "let us go to the garden.": {
+    "file": "f37928301d.mp3",
+    "timings": []
+  },
+  "let us play a game!": {
+    "file": "4c09c5145a.mp3",
     "timings": []
   },
   "life is better when you are happy.": {
@@ -507,12 +671,20 @@
     "file": "a94673c61a.mp3",
     "timings": []
   },
+  "little birds sang in the trees all day long.": {
+    "file": "a682d1fe17.mp3",
+    "timings": []
+  },
   "look at the duck!": {
     "file": "18c94614df.mp3",
     "timings": []
   },
   "love was out to get me.": {
     "file": "802dd86303.mp3",
+    "timings": []
+  },
+  "many children loved to play games in the garden.": {
+    "file": "546d82ca13.mp3",
     "timings": []
   },
   "meant for someone else, but not for me.": {
@@ -559,6 +731,14 @@
     "file": "93ebc4c7a1.mp3",
     "timings": []
   },
+  "once upon a time, there was a grumpy old giant.": {
+    "file": "69b14a0385.mp3",
+    "timings": []
+  },
+  "one morning, a little girl climbed over the wall.": {
+    "file": "98e50616a6.mp3",
+    "timings": []
+  },
   "one story was about a duck with a dress": {
     "file": "7d2edea8ec.mp3",
     "timings": []
@@ -587,12 +767,20 @@
     "file": "aa79ac4e4b.mp3",
     "timings": []
   },
+  "she gave me a flower.": {
+    "file": "fc832072f2.mp3",
+    "timings": []
+  },
   "she likes pink.": {
     "file": "7d4c7d9521.mp3",
     "timings": []
   },
   "she said, \"every day is a gift — for those who know how to see.\"": {
     "file": "468d5dd208.mp3",
+    "timings": []
+  },
+  "she sat under a tree, and the tree began to bloom.": {
+    "file": "549a38fc75.mp3",
     "timings": []
   },
   "she saw four birds fly from the big tree.": {
@@ -609,6 +797,10 @@
   },
   "sit down please.": {
     "file": "6b81060bbd.mp3",
+    "timings": []
+  },
+  "snails walked slowly on the soft green grass.": {
+    "file": "1d1cf93568.mp3",
     "timings": []
   },
   "some of my classmates get very bored": {
@@ -631,6 +823,14 @@
     "file": "ab810c2d3c.mp3",
     "timings": []
   },
+  "the candy tastes sweet.": {
+    "file": "e775146614.mp3",
+    "timings": []
+  },
+  "the children were so scared that they all ran away.": {
+    "file": "998c564661.mp3",
+    "timings": []
+  },
   "the first thing he did when he got hungry and thirsty at the river,": {
     "file": "a3d7e2c2b4.mp3",
     "timings": []
@@ -639,8 +839,56 @@
     "file": "ff83b7f1e2.mp3",
     "timings": []
   },
+  "the flowers stopped growing and the birds stopped singing.": {
+    "file": "4c8ef1f3e8.mp3",
+    "timings": []
+  },
+  "the garden is bright and light.": {
+    "file": "3dc3a78656.mp3",
+    "timings": []
+  },
+  "the garden is quiet and peaceful again.": {
+    "file": "7e68d4e659.mp3",
+    "timings": []
+  },
+  "the giant felt sorry. he said, \"i have been so selfish!\"": {
+    "file": "8a53c79af9.mp3",
+    "timings": []
+  },
+  "the giant felt very lonely.": {
+    "file": "81aca36a4f.mp3",
+    "timings": []
+  },
+  "the giant has a big garden.": {
+    "file": "2a39ad99c5.mp3",
+    "timings": []
+  },
+  "the giant shouted in a loud voice,": {
+    "file": "37d7faca0d.mp3",
+    "timings": []
+  },
+  "the girl is very kind.": {
+    "file": "886fb5f3c6.mp3",
+    "timings": []
+  },
+  "the goat eats the grass.": {
+    "file": "18211190c1.mp3",
+    "timings": []
+  },
+  "the kind giant and the children played together happily in the garden.": {
+    "file": "78da9e27d4.mp3",
+    "timings": []
+  },
   "the leaves felt smooth and cool.": {
     "file": "04fb9b15cf.mp3",
+    "timings": []
+  },
+  "the lemon is very sour.": {
+    "file": "9d5a511b92.mp3",
+    "timings": []
+  },
+  "the library is quiet.": {
+    "file": "99930fef1b.mp3",
     "timings": []
   },
   "the little cat is cute.": {
@@ -651,12 +899,40 @@
     "file": "163c02743c.mp3",
     "timings": []
   },
+  "the music is very loud.": {
+    "file": "4c2aeb83d0.mp3",
+    "timings": []
+  },
   "the other night, dear, as i lay sleeping.": {
     "file": "e8b00956d6.mp3",
     "timings": []
   },
+  "the rock is very hard.": {
+    "file": "51ba556e02.mp3",
+    "timings": []
+  },
+  "the room is very dark.": {
+    "file": "545899d232.mp3",
+    "timings": []
+  },
+  "the selfish giant built a tall wall around his garden.": {
+    "file": "3061cfbe57.mp3",
+    "timings": []
+  },
   "the singing was so beautiful and fun to listen to.": {
     "file": "f12bc308a6.mp3",
+    "timings": []
+  },
+  "the soup is too salty.": {
+    "file": "0c266d21c1.mp3",
+    "timings": []
+  },
+  "the table is smooth.": {
+    "file": "3ca0b83247.mp3",
+    "timings": []
+  },
+  "the tree bark feels rough.": {
+    "file": "f2cd199a5e.mp3",
     "timings": []
   },
   "then i saw her face, now i\\": {
@@ -665,6 +941,10 @@
   },
   "then she used her ears to hear the birds sing.": {
     "file": "1d78e0c8ac.mp3",
+    "timings": []
+  },
+  "there were small red ones and big purple ones.": {
+    "file": "d91ca4e79c.mp3",
     "timings": []
   },
   "they are my mom\\": {
@@ -689,6 +969,18 @@
   },
   "this made him feel not so hungry and thirsty any more.": {
     "file": "0972663778.mp3",
+    "timings": []
+  },
+  "this medicine tastes bitter.": {
+    "file": "b9ef10846a.mp3",
+    "timings": []
+  },
+  "this rock is hard.": {
+    "file": "22c75f37ee.mp3",
+    "timings": []
+  },
+  "this toy is soft.": {
+    "file": "f5482c2942.mp3",
     "timings": []
   },
   "we are all a good fit.": {
@@ -733,6 +1025,10 @@
   },
   "when i wanted sunshine, i got rain.": {
     "file": "d5d08ba385.mp3",
+    "timings": []
+  },
+  "without the children, the garden became dark and cold.": {
+    "file": "b905bcc1ee.mp3",
     "timings": []
   },
   "yes, i do. but my sister doesn\\": {
